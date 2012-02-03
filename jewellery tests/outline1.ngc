@@ -1,0 +1,141 @@
+;PYCAM-META-DATA: Filename: /home/matt/cad/jewellery tests/outline1.dxf
+;PYCAM-META-DATA: Timestamp: 2012-01-17 13:04:13.426654
+;PYCAM-META-DATA: Version: 0.5.1
+;Estimated machine time: 1 minutes
+G40 (disable tool radius compensation)
+G49 (disable tool length compensation)
+G80 (cancel modal motion)
+G54 (select coordinate system 1)
+G90 (disable incremental moves)
+G21 (metric)
+G61 (exact path mode)
+F200.00000
+S1000.00000
+;PYCAM_TOOLPATH_SETTINGS: START
+;[Bounds]
+;maxz = 0.0
+;maxx = 20.4
+;maxy = 42.4374499645
+;minx = -4.4
+;miny = -5.40624166075
+;minz = -1.1
+;
+;[Tool]
+;torus_radius = 0.25
+;speed = 1000.0
+;shape = CylindricalCutter
+;tool_radius = 2.0
+;feedrate = 200.0
+;
+;[SupportGrid]
+;height = 0.6
+;average_distance = 30.0
+;thickness = 0.5
+;length = 5.0
+;type = distributed_corners
+;
+;[Process]
+;engrave_offset = 2.0
+;step_down = 0.6
+;generator = EngraveCutter
+;postprocessor = SimpleCutter
+;milling_style = conventional
+;material_allowance = 0.0
+;pocketing_type = none
+;path_direction = x
+;
+;PYCAM_TOOLPATH_SETTINGS: END
+T1 M6
+G0 Z10.0000
+M3 (start spindle)
+G04 P3 (wait for 3 seconds)
+ X4.3838 Y0.2876
+G1 Z-0.5500
+ X4.7146 Y-0.2978
+ X5.1595 Y-0.8193
+G0 Z10.0000
+ X9.5767 Y-1.6784
+G1 Z-0.5500
+ X10.1847 Y-1.3617
+ X10.7863 Y-0.8828
+ X11.2854 Y-0.2978
+ X11.6162 Y0.2876
+ X17.6836 Y13.9392
+ X17.8502 Y14.3978
+ X17.9660 Y14.9435
+ X18.0000 Y15.4303
+ Y32.4575
+ X17.9630 Y32.8655
+G0 Z10.0000
+ X15.3559 Y36.5675
+G1 Z-0.5500
+ X13.4509 Y37.7761
+ X11.3497 Y38.6078
+ X9.1299 Y39.0312
+ X6.8701
+ X4.6503 Y38.6078
+ X2.5491 Y37.7761
+ X0.6441 Y36.5675
+G0 Z10.0000
+ X-1.9630 Y32.8655
+G1 Z-0.5500
+ X-2.0000 Y32.4575
+ Y15.4303
+ X-1.9660 Y14.9435
+ X-1.8502 Y14.3978
+ X-1.6836 Y13.9392
+ X4.3838 Y0.2876
+ Z-1.1000
+ X4.7146 Y-0.2978
+ X5.0889 Y-0.7366
+ X5.2137 Y-0.8828 Z-0.5000
+ X5.8153 Y-1.3617
+ X6.4973 Y-1.7170
+ X7.2346 Y-1.9355
+ X8.0000 Y-2.0093
+ X8.7654 Y-1.9355
+ X9.5027 Y-1.7170
+ X9.5766 Y-1.6785
+ X9.5770 Y-1.6783 Z-1.1000
+ X10.1847 Y-1.3617
+ X10.7863 Y-0.8828
+ X11.2854 Y-0.2978
+ X11.6162 Y0.2876
+ X17.6836 Y13.9392
+ X17.8502 Y14.3978
+ X17.9660 Y14.9435
+ X18.0000 Y15.4303
+ Y32.4575
+ X17.9631 Y32.8653
+ X17.9630 Y32.8656 Z-0.5000
+ X17.9429 Y33.0874
+ X17.7493 Y33.7842
+ X17.4336 Y34.4349
+ X17.0038 Y35.0214
+ X15.3591 Y36.5654
+ X15.3531 Y36.5692 Z-1.1000
+ X13.4509 Y37.7761
+ X11.3497 Y38.6078
+ X9.1299 Y39.0312
+ X6.8701
+ X4.6503 Y38.6078
+ X2.5491 Y37.7761
+ X1.0225 Y36.8076
+ X0.6409 Y36.5654 Z-0.5000
+ X-1.0038 Y35.0214
+ X-1.4336 Y34.4349
+ X-1.7493 Y33.7842
+ X-1.9429 Y33.0874
+ X-1.9630 Y32.8659
+ X-1.9631 Y32.8653 Z-1.1000
+ X-2.0000 Y32.4575
+ Y15.4303
+ X-1.9660 Y14.9435
+ X-1.8502 Y14.3978
+ X-1.6836 Y13.9392
+ X4.3838 Y0.2876
+G0 Z10.0000
+M5 (stop spindle)
+G04 P3 (wait for 3 seconds)
+G0 Z10.0000
+M2 (end program)

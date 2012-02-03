@@ -1,0 +1,86 @@
+;PYCAM-META-DATA: Filename: /home/matt/cad/testing/20mm circle.dxf
+;PYCAM-META-DATA: Timestamp: 2012-01-15 13:26:32.962466
+;PYCAM-META-DATA: Version: 0.5.1
+;Estimated machine time: 0 minutes
+G40 (disable tool radius compensation)
+G49 (disable tool length compensation)
+G80 (cancel modal motion)
+G54 (select coordinate system 1)
+G90 (disable incremental moves)
+G21 (metric)
+G61 (exact path mode)
+F400.00000
+S1000.00000
+;PYCAM_TOOLPATH_SETTINGS: START
+;[Bounds]
+;maxz = 0.0
+;maxx = 22.0
+;maxy = 22.0
+;minx = -2.0
+;miny = -2.0
+;minz = 0.0
+;
+;[Tool]
+;torus_radius = 0.25
+;speed = 1000.0
+;shape = CylindricalCutter
+;tool_radius = 2.0
+;feedrate = 400.0
+;
+;[Process]
+;engrave_offset = 2.0
+;step_down = 1.0
+;generator = EngraveCutter
+;postprocessor = SimpleCutter
+;milling_style = conventional
+;material_allowance = 0.0
+;pocketing_type = none
+;path_direction = x
+;
+;PYCAM_TOOLPATH_SETTINGS: END
+T1 M6
+G0 Z25.0000
+M3 (start spindle)
+G04 P3 (wait for 3 seconds)
+ X-2.0000 Y9.9017
+G1 Z0.0000
+ X-1.7789 Y7.6570
+ X-1.0955 Y5.4041
+ X0.0143 Y3.3278
+ X1.5079 Y1.5079
+ X3.3278 Y0.0143
+ X5.4041 Y-1.0955
+ X7.6570 Y-1.7789
+ X9.9017 Y-2.0000
+ X10.0983
+ X12.3430 Y-1.7789
+ X14.5959 Y-1.0955
+ X16.6722 Y0.0143
+ X18.4921 Y1.5079
+ X19.9857 Y3.3278
+ X21.0955 Y5.4041
+ X21.7789 Y7.6570
+ X22.0000 Y9.9017
+ Y10.0983
+ X21.7789 Y12.3430
+ X21.0955 Y14.5959
+ X19.9857 Y16.6722
+ X18.4921 Y18.4921
+ X16.6722 Y19.9857
+ X14.5959 Y21.0955
+ X12.3430 Y21.7789
+ X10.0983 Y22.0000
+ X9.9017
+ X7.6570 Y21.7789
+ X5.4041 Y21.0955
+ X3.3278 Y19.9857
+ X1.5079 Y18.4921
+ X0.0143 Y16.6722
+ X-1.0955 Y14.5959
+ X-1.7789 Y12.3430
+ X-2.0000 Y10.0983
+G0 Z25.0000
+M5 (stop spindle)
+G04 P3 (wait for 3 seconds)
+G0 Z25.0000
+M2 (end program)

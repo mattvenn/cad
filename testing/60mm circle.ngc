@@ -1,0 +1,31 @@
+(Generated with: dxf2gcode_b02, Version: TKINTER Beta 02, Date: 2010-05-04)
+(Time: Thu Dec  8 21:52:21 2011)
+(Created from file: /home/matt/cad/testing/60mm circle.dxf)
+G21 (Unit in mm)
+G90 (Absolute distance mode)
+G64 P0.01 (Exact Path 0.001 tol.)
+G17
+G40 (Cancel diameter comp.)
+G49 (Cancel length comp.)
+T1M6 (Tool change to T1)
+M8 (Coolant flood on)
+S5000M03 (Spindle 5000rpm cw)
+G0 Z   3.000 
+G0 X  28.787 Y  28.787
+G0 Z   3.000 
+F150
+G1 Z  -1.500
+F600
+G3 X  71.213 Y  71.213 I  21.213 J  21.213
+G3 X  28.787 Y  28.787 I -21.213 J -21.213
+F150
+G1 Z  -3.000
+F600
+G3 X  71.213 Y  71.213 I  21.213 J  21.213
+G3 X  28.787 Y  28.787 I -21.213 J -21.213
+G1 Z   3.000
+G0 Z   3.000 
+G0 X   0.000 Y   0.000
+M9 (Coolant off)
+M5 (Spindle off)
+M2 (Prgram end)

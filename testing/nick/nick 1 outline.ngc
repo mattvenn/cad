@@ -1,0 +1,119 @@
+;PYCAM-META-DATA: Filename: /home/matt/cad/testing/nick/nick 1 outline.dxf
+;PYCAM-META-DATA: Timestamp: 2012-01-06 17:59:02.531558
+;PYCAM-META-DATA: Version: 0.5.1
+;Estimated machine time: 10 minutes
+G40 (disable tool radius compensation)
+G49 (disable tool length compensation)
+G80 (cancel modal motion)
+G54 (select coordinate system 1)
+G90 (disable incremental moves)
+G21 (metric)
+G61 (exact path mode)
+F500.00000
+S1000.00000
+;PYCAM_TOOLPATH_SETTINGS: START
+;[Bounds]
+;maxz = 4.0
+;maxx = 423.75
+;maxy = 409.75
+;minx = -53.75
+;miny = -39.75
+;minz = 0.0
+;
+;[Tool]
+;torus_radius = 0.25
+;speed = 1000.0
+;shape = CylindricalCutter
+;tool_radius = 3.25
+;feedrate = 500.0
+;
+;[SupportGrid]
+;height = 1.0
+;distance_x = 250.0
+;distance_y = 250.0
+;adjustments_x = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+;adjustments_y = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+;thickness = 1.0
+;offset_x = 0.0
+;offset_y = 40.0
+;type = grid
+;
+;[Process]
+;engrave_offset = 3.25
+;step_down = 2.0
+;generator = EngraveCutter
+;postprocessor = SimpleCutter
+;milling_style = conventional
+;material_allowance = 0.0
+;pocketing_type = none
+;path_direction = x
+;
+;PYCAM_TOOLPATH_SETTINGS: END
+T1 M6
+G0 Z25.0000
+M3 (start spindle)
+G04 P3 (wait for 3 seconds)
+ X103.2500 Y173.2500
+G1 Z2.0000
+ Y296.7500
+ X266.7500
+ Y173.2500
+ X103.2500
+G0 Z25.0000
+ X-3.2500 Y-3.2500
+G1 Z2.0000
+ X373.2500
+ Y373.2500
+ X-3.2500
+ Y-3.2500
+G0 Z25.0000
+ X103.2500 Y173.2500
+G1 Z0.0000
+ Y221.2494
+ Y221.2502 Z1.0000
+ Y228.7499
+ Y228.7503 Z0.0000
+ Y296.7500
+ X181.2500
+ X181.2501 Z1.0000
+ X188.7498
+ X188.7514 Z0.0000
+ X266.7500
+ Y228.7507
+ Y228.7491 Z1.0000
+ Y221.2510
+ Y221.2494 Z0.0000
+ Y173.2500
+ X188.7500
+ X188.7499 Z1.0000
+ X181.2502
+ X181.2486 Z0.0000
+ X103.2500
+G0 Z25.0000
+ X-3.2500 Y-3.2500
+G1 Z0.0000
+ X181.2499
+ X181.2501 Z1.0000
+ X188.7497
+ X188.7512 Z0.0000
+ X373.2500
+ Y221.2493
+ Y221.2509 Z1.0000
+ Y228.7499
+ Y228.7501 Z0.0000
+ Y373.2500
+ X188.7501
+ X188.7499 Z1.0000
+ X181.2503
+ X181.2488 Z0.0000
+ X-3.2500
+ Y228.7502
+ Y228.7487 Z1.0000
+ Y221.2509
+ Y221.2493 Z0.0000
+ Y-3.2500
+G0 Z25.0000
+M5 (stop spindle)
+G04 P3 (wait for 3 seconds)
+G0 Z25.0000
+M2 (end program)

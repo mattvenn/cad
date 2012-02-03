@@ -1,0 +1,73 @@
+(Generated with: dxf2gcode_b02, Version: TKINTER Beta 02, Date: 2010-05-04)
+(Time: Tue Dec  6 15:58:16 2011)
+(Created from file: /home/matt/cad/testing/m.dxf)
+G21 (Unit in mm)
+G90 (Absolute distance mode)
+G64 P0.01 (Exact Path 0.001 tol.)
+G17
+G40 (Cancel diameter comp.)
+G49 (Cancel length comp.)
+T1M6 (Tool change to T1)
+M8 (Coolant flood on)
+S5000M03 (Spindle 5000rpm cw)
+G0 Z  15.000 
+G0 X  30.000 Y  30.000
+G0 Z   3.000 
+F150
+G1 Z  -6.000
+F400
+G1 X  30.000 Y  70.000
+G1 X  50.000 Y  50.000
+G1 X  70.000 Y  70.000
+G1 X  70.000 Y  30.000
+F150
+G1 Z -12.000
+F400
+G1 X  70.000 Y  70.000
+G1 X  50.000 Y  50.000
+G1 X  30.000 Y  70.000
+G1 X  30.000 Y  30.000
+F150
+G1 Z -18.000
+F400
+G1 X  30.000 Y  70.000
+G1 X  50.000 Y  50.000
+G1 X  70.000 Y  70.000
+G1 X  70.000 Y  30.000
+F150
+G1 Z -20.000
+F400
+G1 X  70.000 Y  70.000
+G1 X  50.000 Y  50.000
+G1 X  30.000 Y  70.000
+G1 X  30.000 Y  30.000
+G1 Z   3.000
+G0 Z  15.000 
+G0 X  49.293 Y  79.293
+G0 Z   3.000 
+F150
+G1 Z  -6.000
+F400
+G2 X  50.707 Y  80.707 I   0.707 J   0.707
+G2 X  49.293 Y  79.293 I  -0.707 J  -0.707
+F150
+G1 Z -12.000
+F400
+G2 X  50.707 Y  80.707 I   0.707 J   0.707
+G2 X  49.293 Y  79.293 I  -0.707 J  -0.707
+F150
+G1 Z -18.000
+F400
+G2 X  50.707 Y  80.707 I   0.707 J   0.707
+G2 X  49.293 Y  79.293 I  -0.707 J  -0.707
+F150
+G1 Z -20.000
+F400
+G2 X  50.707 Y  80.707 I   0.707 J   0.707
+G2 X  49.293 Y  79.293 I  -0.707 J  -0.707
+G1 Z   3.000
+G0 Z  15.000 
+G0 X   0.000 Y   0.000
+M9 (Coolant off)
+M5 (Spindle off)
+M2 (Prgram end)

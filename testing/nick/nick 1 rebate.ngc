@@ -1,0 +1,63 @@
+;PYCAM-META-DATA: Filename: /home/matt/cad/testing/nick/nick 1 rebate.dxf
+;PYCAM-META-DATA: Timestamp: 2012-01-06 17:48:24.884266
+;PYCAM-META-DATA: Version: 0.5.1
+;Estimated machine time: 5 minutes
+G40 (disable tool radius compensation)
+G49 (disable tool length compensation)
+G80 (cancel modal motion)
+G54 (select coordinate system 1)
+G90 (disable incremental moves)
+G21 (metric)
+G61 (exact path mode)
+F200.00000
+S1000.00000
+;PYCAM_TOOLPATH_SETTINGS: START
+;[Bounds]
+;maxz = 2.0
+;maxx = 386.75
+;maxy = 132.75
+;minx = -16.75
+;miny = 57.25
+;minz = 0.0
+;
+;[Tool]
+;torus_radius = 0.25
+;speed = 1000.0
+;shape = CylindricalCutter
+;tool_radius = 3.25
+;feedrate = 200.0
+;
+;[Process]
+;engrave_offset = 3.25
+;step_down = 2.0
+;generator = EngraveCutter
+;postprocessor = SimpleCutter
+;milling_style = conventional
+;material_allowance = 0.0
+;pocketing_type = none
+;path_direction = x
+;
+;PYCAM_TOOLPATH_SETTINGS: END
+T1 M6
+G0 Z25.0000
+M3 (start spindle)
+G04 P3 (wait for 3 seconds)
+ X3.2500 Y66.7500
+G1 Z0.0000
+ X223.2500
+ Y96.7500
+ X293.2500
+ Y126.7500
+ X366.7500
+ Y123.2500
+ X296.7500
+ Y93.2500
+ X226.7500
+ Y63.2500
+ X3.2500
+ Y66.7500
+G0 Z25.0000
+M5 (stop spindle)
+G04 P3 (wait for 3 seconds)
+G0 Z25.0000
+M2 (end program)
