@@ -34,6 +34,8 @@ setp parport.0.pin-07-out-invert 1
 net zdir => parport.0.pin-07-out
 
 
+
+net probe parport.0.pin-10-in-not => motion.probe-input
 net estop-ext <= parport.0.pin-11-in-not
 net home-y <= parport.0.pin-12-in
 net home-x <= parport.0.pin-13-in
