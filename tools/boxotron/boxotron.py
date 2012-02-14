@@ -8,7 +8,7 @@
 # posted on thingiverse.com
 
 import os,string,math
-from sdxf import *
+from SVG import *
 from optparse import OptionParser
 import ConfigParser
 
@@ -145,13 +145,13 @@ class face:
 		db = self.opt.bolt * self.opt.bolt_tab_clearance 
 		hs = self.opt.slot_length / 2.0 
 		thickness = self.opt.thickness
-		d.append(Circle(center=(x,y),radius=self.opt.bolt/2.0,layer="CUTS"))
+		d.Circle(cent=(2,3),radius=self.opt.bolt/2.0)
 		if orient == 'h':
-			d.append(Rectangle(point=(x-hl,y-ht,0),width=hs-db,height=thickness,layer="CUTS"))
-			d.append(Rectangle(point=(x-hl+hs+db,y-ht,0),width=hs-db,height=thickness,layer="CUTS"))
+			d.Rectangle(point=(x-hl,y-ht),width=hs-db,height=thickness)
+			d.Rectangle(point=(x-hl+hs+db,y-ht),width=hs-db,height=thickness)
 		if orient == 'v':
-			d.append(Rectangle(point=(x-ht,y-hl,0),height=hs-db,width=thickness,layer="CUTS"))
-			d.append(Rectangle(point=(x-ht,y-hl+hs+db,0),height=hs-db,width=thickness,layer="CUTS"))
+			d.Rectangle(point=(x-ht,y-hl),height=hs-db,width=thickness)
+			d.Rectangle(point=(x-ht,y-hl+hs+db),height=hs-db,width=thickness)
 
 	def bolt_tab(self,d,x,y,orient,flip):
 		# bolty tab
@@ -174,61 +174,61 @@ class face:
 		thickness = self.opt.thickness
 		if orient == 'h':
 			# tab 1 
-			d.append(Line(points=[(x-hl,y),(x-hl,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x-hl,y-fl),(x+hl-hs-db,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x-hl+hs-db,y),(x-hl+hs-db,y-fl)],layer="CUTS"))
+			d.Line(points=[(x-hl,y),(x-hl,y-fl)])
+			d.Line(points=[(x-hl,y-fl),(x+hl-hs-db,y-fl)])
+			d.Line(points=[(x-hl+hs-db,y),(x-hl+hs-db,y-fl)])
 			# tab 2
-			d.append(Line(points=[(x+hl-hs+db,y),(x+hl-hs+db,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x+hl-hs+db,y-fl),(x+hl,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x+hl,y),(x+hl,y-fl)],layer="CUTS"))
+			d.Line(points=[(x+hl-hs+db,y),(x+hl-hs+db,y-fl)])
+			d.Line(points=[(x+hl-hs+db,y-fl),(x+hl,y-fl)])
+			d.Line(points=[(x+hl,y),(x+hl,y-fl)])
 			# bolt hole vertical 
-			d.append(Line(points=[(x-hl+hs-db,y),(x-hb,y)],layer="CUTS"))
-			d.append(Line(points=[(x-hb,y),(x-hb,y+nd)],layer="CUTS"))
+			d.Line(points=[(x-hl+hs-db,y),(x-hb,y)])
+			d.Line(points=[(x-hb,y),(x-hb,y+nd)])
 			# bolt detent a
-			d.append(Line(points=[(x-hb,y+nd),(x-nw,y+nd)],layer="CUTS"))
-			d.append(Line(points=[(x-nw,y+nd),(x-nw,y+nd+bb)],layer="CUTS"))
-			d.append(Line(points=[(x-nw,y+nd+bb),(x-hb,y+nd+bb)],layer="CUTS"))
-			d.append(Line(points=[(x-hb,y+nd+bb),(x-hb,y+bf)],layer="CUTS"))
+			d.Line(points=[(x-hb,y+nd),(x-nw,y+nd)])
+			d.Line(points=[(x-nw,y+nd),(x-nw,y+nd+bb)])
+			d.Line(points=[(x-nw,y+nd+bb),(x-hb,y+nd+bb)])
+			d.Line(points=[(x-hb,y+nd+bb),(x-hb,y+bf)])
 			# bottom
-			d.append(Line(points=[(x+hb,y+bf),(x-hb,y+bf)],layer="CUTS"))
+			d.Line(points=[(x+hb,y+bf),(x-hb,y+bf)])
 			# bolt detent b
-			d.append(Line(points=[(x+hb,y+nd+bb),(x+hb,y+bf)],layer="CUTS"))
-			d.append(Line(points=[(x+nw,y+nd+bb),(x+hb,y+nd+bb)],layer="CUTS"))
-			d.append(Line(points=[(x+nw,y+nd),(x+nw,y+nd+bb)],layer="CUTS"))
-			d.append(Line(points=[(x+hb,y+nd),(x+nw,y+nd)],layer="CUTS"))
+			d.Line(points=[(x+hb,y+nd+bb),(x+hb,y+bf)])
+			d.Line(points=[(x+nw,y+nd+bb),(x+hb,y+nd+bb)])
+			d.Line(points=[(x+nw,y+nd),(x+nw,y+nd+bb)])
+			d.Line(points=[(x+hb,y+nd),(x+nw,y+nd)])
 			# side
-			d.append(Line(points=[(x+hb,y+nd),(x+hb,y)],layer="CUTS"))
+			d.Line(points=[(x+hb,y+nd),(x+hb,y)])
 			# top
-			d.append(Line(points=[(x+hb,y),(x+hl-hs+db,y)],layer="CUTS"))
+			d.Line(points=[(x+hb,y),(x+hl-hs+db,y)])
 
 		if orient == 'v':
-			#d.append(Line(points=[(x+fl,y-hl),(x+fl,y+hl)],layer="CUTS"))
+			#d.Line(points=[(x+fl,y-hl),(x+fl,y+hl)])
 			# tab 1
-			d.append(Line(points=[(x,y-hl),(x+fl,y-hl)],layer="CUTS"))
-			d.append(Line(points=[(x+fl,y-hl),(x+fl,y-hl+hs-db)],layer="CUTS"))
-			d.append(Line(points=[(x,y-hl+hs-db),(x+fl,y-hl+hs-db)],layer="CUTS"))
+			d.Line(points=[(x,y-hl),(x+fl,y-hl)])
+			d.Line(points=[(x+fl,y-hl),(x+fl,y-hl+hs-db)])
+			d.Line(points=[(x,y-hl+hs-db),(x+fl,y-hl+hs-db)])
 			# tab 2
-			d.append(Line(points=[(x,y+hl),(x+fl,y+hl)],layer="CUTS"))
-			d.append(Line(points=[(x+fl,y+hl),(x+fl,y+hl-hs+db)],layer="CUTS"))
-			d.append(Line(points=[(x,y+hl-hs+db),(x+fl,y+hl-hs+db)],layer="CUTS"))
+			d.Line(points=[(x,y+hl),(x+fl,y+hl)])
+			d.Line(points=[(x+fl,y+hl),(x+fl,y+hl-hs+db)])
+			d.Line(points=[(x,y+hl-hs+db),(x+fl,y+hl-hs+db)])
 			#bolt hole horizontal
-			d.append(Line(points=[(x,y-hl+hs-db),(x,y-hb)],layer="CUTS"))
-			d.append(Line(points=[(x,y-hb,),(x-nd,y-hb)],layer="CUTS"))
+			d.Line(points=[(x,y-hl+hs-db),(x,y-hb)])
+			d.Line(points=[(x,y-hb,),(x-nd,y-hb)])
 			# bolt detent a
-			d.append(Line(points=[(x-nd,y-hb),(x-nd,y-nw)],layer="CUTS"))
-			d.append(Line(points=[(x-nd,y-nw),(x-nd-bb,y-nw)],layer="CUTS"))
-			d.append(Line(points=[(x-nd-bb,y-nw),(x-nd-bb,y-hb)],layer="CUTS"))
-			d.append(Line(points=[(x-nd-bb,y-hb),(x-bf,y-hb)],layer="CUTS"))
+			d.Line(points=[(x-nd,y-hb),(x-nd,y-nw)])
+			d.Line(points=[(x-nd,y-nw),(x-nd-bb,y-nw)])
+			d.Line(points=[(x-nd-bb,y-nw),(x-nd-bb,y-hb)])
+			d.Line(points=[(x-nd-bb,y-hb),(x-bf,y-hb)])
 			# bottom
-			d.append(Line(points=[(x-bf,y-hb),(x-bf,y+hb)],layer="CUTS"))
+			d.Line(points=[(x-bf,y-hb),(x-bf,y+hb)])
 			# bolt detent a
-			d.append(Line(points=[(x-nd,y+hb),(x-nd,y+nw)],layer="CUTS"))
-			d.append(Line(points=[(x-nd,y+nw),(x-nd-bb,y+nw)],layer="CUTS"))
-			d.append(Line(points=[(x-nd-bb,y+nw),(x-nd-bb,y+hb)],layer="CUTS"))
-			d.append(Line(points=[(x-nd-bb,y+hb),(x-bf,y+hb)],layer="CUTS"))
+			d.Line(points=[(x-nd,y+hb),(x-nd,y+nw)])
+			d.Line(points=[(x-nd,y+nw),(x-nd-bb,y+nw)])
+			d.Line(points=[(x-nd-bb,y+nw),(x-nd-bb,y+hb)])
+			d.Line(points=[(x-nd-bb,y+hb),(x-bf,y+hb)])
 			# side
-			d.append(Line(points=[(x-nd,y+hb,),(x,y+hb)],layer="CUTS"))
-			d.append(Line(points=[(x,y+hb),(x,y+hl-hs+db)],layer="CUTS"))
+			d.Line(points=[(x-nd,y+hb,),(x,y+hb)])
+			d.Line(points=[(x,y+hb),(x,y+hl-hs+db)])
 
 
 	def simple_slot(self,d,x,y,orient):
@@ -237,9 +237,9 @@ class face:
 		slot_length = self.opt.slot_length
 		thickness = self.opt.thickness
 		if orient == 'h':
-			d.append(Rectangle(point=(x-hl,y-ht,0),width=slot_length,height=thickness,layer="CUTS"))
+			d.Rectangle(point=(x-hl,y-ht,0),width=slot_length,height=thickness)
 		if orient == 'v':
-			d.append(Rectangle(point=(x-ht,y-hl,0),height=slot_length,width=thickness,layer="CUTS"))
+			d.Rectangle(point=(x-ht,y-hl,0),height=slot_length,width=thickness)
 
 	def simple_tab(self,d,x,y,orient,flip):
 		# flip left right , up down
@@ -251,13 +251,13 @@ class face:
 		ht = self.opt.thickness / 2.0
 		fl = self.opt.thickness*flipper
 		if orient == 'h':
-			d.append(Line(points=[(x-hl,y-fl),(x+hl,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x-hl,y),(x-hl,y-fl)],layer="CUTS"))
-			d.append(Line(points=[(x+hl,y),(x+hl,y-fl)],layer="CUTS"))
+			d.Line(points=[(x-hl,y-fl),(x+hl,y-fl)])
+			d.Line(points=[(x-hl,y),(x-hl,y-fl)])
+			d.Line(points=[(x+hl,y),(x+hl,y-fl)])
 		if orient == 'v':
-			d.append(Line(points=[(x+fl,y-hl),(x+fl,y+hl)],layer="CUTS"))
-			d.append(Line(points=[(x,y-hl),(x+fl,y-hl)],layer="CUTS"))
-			d.append(Line(points=[(x,y+hl),(x+fl,y+hl)],layer="CUTS"))
+			d.Line(points=[(x+fl,y-hl),(x+fl,y+hl)])
+			d.Line(points=[(x,y-hl),(x+fl,y-hl)])
+			d.Line(points=[(x,y+hl),(x+fl,y+hl)])
 
 	def gen(self,d):
 		print '\tgen face ' + self.name + ' ('+str(self.x)+','+str(self.y)+')'
@@ -266,10 +266,10 @@ class face:
 		x = self.x
 		y = self.y
 		# basic outline ( for inset testing ) 
-		d.append(Line(points=[(sx,sy),(sx+x,sy)],layer="CONSTRUCTION"))
-		d.append(Line(points=[(sx+x,sy),(sx+x,sy+y)],layer="CONSTRUCTION"))
-		d.append(Line(points=[(sx,sy),(sx,sy+y)],layer="CONSTRUCTION"))
-		d.append(Line(points=[(sx,sy+y),(sx+x,sy+y)],layer="CONSTRUCTION"))
+		d.Line(points=[(sx,sy),(sx+x,sy)])
+		d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
+		d.Line(points=[(sx,sy),(sx,sy+y)])
+		d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
 
 		# bodging up inset 
 		osx = self.sx
@@ -295,57 +295,57 @@ class face:
 		slot_length = self.opt.slot_length
 		# first
 		if self.edges[0] == 0:
-			d.append(Line(points=[(sx,sy),(sx+x,sy)],layer="CUTS"))
+			d.Line(points=[(sx,sy),(sx+x,sy)])
 			for i in range(0,xjoins):
 				self.slot(d,osx+xstart+i*xinc,sy+inset,'h')
 		if self.edges[0] == 1:
-			d.append(Line(points=[(sx,sy),(osx+xstart-hl,sy)],layer="CUTS"))
+			d.Line(points=[(sx,sy),(osx+xstart-hl,sy)])
 			for i in range(0,xjoins):
 				if i < xjoins-1:
-					d.append(Line(points=[(osx+xstart+i*xinc+hl,sy),(osx+xstart+(i+1)*xinc-hl,sy)],layer="CUTS"))
+					d.Line(points=[(osx+xstart+i*xinc+hl,sy),(osx+xstart+(i+1)*xinc-hl,sy)])
 				self.tab(d,osx+xstart+i*xinc,sy,'h',0)
-			d.append(Line(points=[(osx+xinc*xjoins-xstart+hl,sy),(sx+x,sy)],layer="CUTS"))
+			d.Line(points=[(osx+xinc*xjoins-xstart+hl,sy),(sx+x,sy)])
 			
 		# second
 		if self.edges[1] == 0:
-			d.append(Line(points=[(sx+x,sy),(sx+x,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
 			for i in range(0,yjoins):
 				self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v')
 		if self.edges[1] == 1:
-			d.append(Line(points=[(sx+x,sy),(sx+x,osy+ystart-hl)],layer="CUTS"))
+			d.Line(points=[(sx+x,sy),(sx+x,osy+ystart-hl)])
 			for i in range(0,yjoins):
 				if i < yjoins-1:
-					d.append(Line(points=[(sx+x,osy+ystart+i*yinc+hl),(sx+x,osy+ystart+(i+1)*yinc-hl)],layer="CUTS"))
+					d.Line(points=[(sx+x,osy+ystart+i*yinc+hl),(sx+x,osy+ystart+(i+1)*yinc-hl)])
 				self.tab(d,sx+x,osy+ystart+i*yinc,'v',0)
-			d.append(Line(points=[(sx+x,osy+yinc*yjoins-ystart+hl),(sx+x,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx+x,osy+yinc*yjoins-ystart+hl),(sx+x,sy+y)])
 
 		# third 
 		if self.edges[2] == 0:
-			d.append(Line(points=[(sx,sy+y),(sx+x,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
 			for i in range(0,xjoins):
 				self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h')
 		if self.edges[2] == 1:
-			d.append(Line(points=[(sx,sy+y),(osx+xstart-hl,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx,sy+y),(osx+xstart-hl,sy+y)])
 			for i in range(0,xjoins):
 				if i < xjoins-1:
-					d.append(Line(points=[(osx+xstart+i*xinc+hl,sy+y),(osx+xstart+(i+1)*xinc-hl,sy+y)],layer="CUTS"))
+					d.Line(points=[(osx+xstart+i*xinc+hl,sy+y),(osx+xstart+(i+1)*xinc-hl,sy+y)])
 				self.tab(d,osx+xstart+i*xinc,sy+y,'h',1)
-			d.append(Line(points=[(osx+xinc*xjoins-xstart+hl,sy+y),(sx+x,sy+y)],layer="CUTS"))
+			d.Line(points=[(osx+xinc*xjoins-xstart+hl,sy+y),(sx+x,sy+y)])
 
 		# fourth
 		if self.edges[1] == 0:
-			d.append(Line(points=[(sx,sy),(sx,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx,sy),(sx,sy+y)])
 			for i in range(0,yjoins):
 				self.slot(d,osx + inset ,osy+ystart+i*yinc,'v')
 		if self.edges[1] == 1:
-			d.append(Line(points=[(sx,sy),(sx,osy+ystart-hl)],layer="CUTS"))
+			d.Line(points=[(sx,sy),(sx,osy+ystart-hl)])
 			for i in range(0,yjoins):
 				if i < yjoins-1:
-					d.append(Line(points=[(sx,osy+ystart+i*yinc+hl),(sx,osy+ystart+(i+1)*yinc-hl)],layer="CUTS"))
+					d.Line(points=[(sx,osy+ystart+i*yinc+hl),(sx,osy+ystart+(i+1)*yinc-hl)])
 				self.tab(d,sx,osy+ystart+i*yinc,'v',1)
-			d.append(Line(points=[(sx,osy+yinc*yjoins-ystart+hl),(sx,sy+y)],layer="CUTS"))
+			d.Line(points=[(sx,osy+yinc*yjoins-ystart+hl),(sx,sy+y)])
 		#label
-		d.append(Text(self.name,point=(sx+x/2,sy+y/2,0),layer="TEXT",height=5))
+		#d.append(Text(self.name,point=(sx+x/2,sy+y/2,0),layer="TEXT",height=5))
 		for i in self.extra:
 			i.gen(d)
 
@@ -408,9 +408,6 @@ def main():
 	# create the drawing
 	d = Drawing()
 	# generate the box object
-	d.layers.append(Layer(name="TEXT",color=2))
-	d.layers.append(Layer(name="CUTS",color=0))
-	d.layers.append(Layer(name="CONSTRUCTION",color=1))
 	cc = construct(option,d)
 	# generage the dxf file
 	cc.gen()
