@@ -165,10 +165,10 @@ class face:
 		hl = self.opt.slot_length / 2.0
 		ht = self.opt.thickness / 2.0
 		fl = self.opt.thickness * flipper
-		bf = self.opt.bolt_length * flipper
+		bf = ( self.opt.bolt_length + self.opt.radius ) * flipper
 		db = self.opt.bolt * self.opt.bolt_tab_clearance 
 		hb = self.opt.bolt / 2.0
-		bb = self.opt.bolt * flipper 
+		bb = ( self.opt.bolt + self.opt.radius )* flipper
 		hs = self.opt.slot_length / 2.0 
 		nd = self.opt.bolt_length * self.opt.nut_depth * flipper
 		nw = self.opt.bolt * self.opt.nut_multiplier / 2.0
@@ -386,16 +386,16 @@ def parse(parser):
 	parser.add_option("-t","--thickness",dest="thickness",help="thickness of material in mm",type=float,default=3.0)
 	parser.add_option("-c","--clearance",dest="clearance",help="clearance between panels of material in mm",type=float,default=3.0)
 	parser.add_option("-i","--inset",dest="inset",help="inset to middle of slot material in mm",type=float,default=5.0)
-	parser.add_option("-s","--slot_length",dest="slot_length",help="length of slot in mm",type=float,default=30.0)
+	parser.add_option("-s","--slot_length",dest="slot_length",help="length of slot in mm",type=float,default=60.0)
 	parser.add_option("-f","--file_name",dest="filename",help="file_name",default="box.dxf")
 	parser.add_option("-j","--join_every",dest="join_every",type=float,help="join every x in mm ",default=60.0)
 	parser.add_option("--type",dest="type",help="box type = slot , bolt ",default="bolt")
-	parser.add_option("-b","--bolt_size",dest="bolt",help="bolt size in mm",type=int,default=3.0)
+	parser.add_option("-b","--bolt_size",dest="bolt",help="bolt size in mm",type=float,default=3.0)
 	parser.add_option("--bolt_length",dest="bolt_length",help="bolt length in mm",type=int,default=16.0)
 	parser.add_option("--bolt_clearance",dest="bolt_tab_clearance",help="clearance between bolt and tab , multiple of bolt size",type=float,default=2.0)
 	parser.add_option("--nut_multiplier",dest="nut_multiplier",help="nut size - multiple of bolt size",type=float,default=1.9)
 	parser.add_option("--nut_depth",dest="nut_depth",help="nut depth - multiple of bolt size",type=float,default=0.5)
-	parser.add_option("--radius",dest="radius",help="radius of cutting bit",type=float,default=0.0)
+	parser.add_option("--radius",dest="radius",help="radius of cutting bit",type=float,default=1.5)
 		
 def main():
 	op = OptionParser()
