@@ -145,7 +145,7 @@ class face:
 		db = self.opt.bolt * self.opt.bolt_tab_clearance 
 		hs = self.opt.slot_length / 2.0 
 		thickness = self.opt.thickness
-		d.Circle(cent=(2,3),radius=self.opt.bolt/2.0)
+		d.Circle(cent=(x,y),radius=self.opt.bolt/2.0)
 		if orient == 'h':
 			d.Rectangle(point=(x-hl,y-ht),width=hs-db,height=thickness)
 			d.Rectangle(point=(x-hl+hs+db,y-ht),width=hs-db,height=thickness)
@@ -266,10 +266,10 @@ class face:
 		x = self.x
 		y = self.y
 		# basic outline ( for inset testing ) 
-		d.Line(points=[(sx,sy),(sx+x,sy)])
-		d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
-		d.Line(points=[(sx,sy),(sx,sy+y)])
-		d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
+		d.CLine(points=[(sx,sy),(sx+x,sy)])
+		d.CLine(points=[(sx+x,sy),(sx+x,sy+y)])
+		d.CLine(points=[(sx,sy),(sx,sy+y)])
+		d.CLine(points=[(sx,sy+y),(sx+x,sy+y)])
 
 		# bodging up inset 
 		osx = self.sx
