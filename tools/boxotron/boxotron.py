@@ -140,6 +140,7 @@ class face:
 
 	
 	def bolt_slot(self,d,x,y,orient):
+		sr = self.opt.radius
 		hl = self.opt.slot_length / 2.0
 		ht = self.opt.thickness / 2.0
 		db = self.opt.bolt * self.opt.bolt_tab_clearance 
@@ -147,11 +148,11 @@ class face:
 		thickness = self.opt.thickness
 		d.Circle(cent=(x,y),radius=self.opt.bolt/2.0)
 		if orient == 'h':
-			d.Rectangle(point=(x-hl,y-ht),width=hs-db,height=thickness)
-			d.Rectangle(point=(x-hl+hs+db,y-ht),width=hs-db,height=thickness)
+			d.Rectangle(point=(x-hl-sr,y-ht),width=hs-db+2*sr,height=thickness)
+			d.Rectangle(point=(x-hl-sr+hs+db,y-ht),width=hs-db+2*sr,height=thickness)
 		if orient == 'v':
-			d.Rectangle(point=(x-ht,y-hl),height=hs-db,width=thickness)
-			d.Rectangle(point=(x-ht,y-hl+hs+db),height=hs-db,width=thickness)
+			d.Rectangle(point=(x-ht,y-hl-sr),height=hs-db+2*sr,width=thickness)
+			d.Rectangle(point=(x-ht,y-hl-sr+hs+db),height=hs-db+2*sr,width=thickness)
 
 	def bolt_tab(self,d,x,y,orient,flip):
 		# bolty tab
@@ -384,16 +385,17 @@ def parse(parser):
 	parser.add_option("-d","--depth",dest="depth",help="depth of box in mm",type=float,default=100.0)
 	parser.add_option("-t","--thickness",dest="thickness",help="thickness of material in mm",type=float,default=3.0)
 	parser.add_option("-c","--clearance",dest="clearance",help="clearance between panels of material in mm",type=float,default=3.0)
-	parser.add_option("-i","--inset",dest="inset",help="inset to middle of slot material in mm",type=float,default=3.0)
+	parser.add_option("-i","--inset",dest="inset",help="inset to middle of slot material in mm",type=float,default=5.0)
 	parser.add_option("-s","--slot_length",dest="slot_length",help="length of slot in mm",type=float,default=30.0)
 	parser.add_option("-f","--file_name",dest="filename",help="file_name",default="box.dxf")
-	parser.add_option("-j","--join_every",dest="join_every",type=float,help="join every x in mm ",default=30.0)
+	parser.add_option("-j","--join_every",dest="join_every",type=float,help="join every x in mm ",default=60.0)
 	parser.add_option("--type",dest="type",help="box type = slot , bolt ",default="bolt")
 	parser.add_option("-b","--bolt_size",dest="bolt",help="bolt size in mm",type=int,default=3.0)
-	parser.add_option("--bolt_length",dest="bolt_length",help="bolt length in mm",type=int,default=15.0)
+	parser.add_option("--bolt_length",dest="bolt_length",help="bolt length in mm",type=int,default=16.0)
 	parser.add_option("--bolt_clearance",dest="bolt_tab_clearance",help="clearance between bolt and tab , multiple of bolt size",type=float,default=2.0)
-	parser.add_option("--nut_multiplier",dest="nut_multiplier",help="nut size - multiple of bolt size",type=float,default=1.6)
+	parser.add_option("--nut_multiplier",dest="nut_multiplier",help="nut size - multiple of bolt size",type=float,default=1.9)
 	parser.add_option("--nut_depth",dest="nut_depth",help="nut depth - multiple of bolt size",type=float,default=0.5)
+	parser.add_option("--radius",dest="radius",help="radius of cutting bit",type=float,default=0.0)
 		
 def main():
 	op = OptionParser()
@@ -407,6 +409,8 @@ def main():
 			print 'config file name must end in .cfg'
 	# create the drawing
 	d = Drawing()
+	#bolt length was depth of bolt hole in material, rather than actual bolt length
+	option.bolt_length = option.bolt_length - option.thickness
 	# generate the box object
 	cc = construct(option,d)
 	# generage the dxf file
