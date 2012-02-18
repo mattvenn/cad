@@ -30,6 +30,7 @@ class Drawing():
     def Line(self,points):
         self.lines.add(svgwrite.shapes.Polyline(convArrayTupleCM(points)))
 
+    #hack to put in a different group
     def CLine(self,points):
         self.constructionlines.add(svgwrite.shapes.Polyline(convArrayTupleCM(points)))
 
@@ -39,6 +40,8 @@ class Drawing():
     def Rectangle(self,point,width,height):
         self.lines.add(self.dwg.rect(insert=convTupleCM(point),size=convTupleCM((width,height))))
 
+    def Text(self,text,point,height):
+        self.constructionlines.add(svgwrite.text.Text(text,convTupleCM(point)))
 """ 
 
 def basic_shapes(name):
