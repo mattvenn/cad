@@ -1,7 +1,13 @@
 import svgwrite
+
+"""
+simple wrapper for svgwrite that replaces all the original sdxf calls from boxotron
+"""
     
+#I don't understand this magic number - and I can't get svgwrite to let me specify polylines with mm/cm
 cm = 3.543307
 
+#helper routines to scale pixels to cm
 def convArrayTupleCM(points):
     newpoints = []
     for point in points:
@@ -11,14 +17,14 @@ def convArrayTupleCM(points):
 def convTupleCM(point):
     return tuple([x*cm for x in point])
 
+#main class
 class Drawing():
-    def __init__(self):
-        name = "test.svg"
+    def __init__(self,name):
         self.dwg = svgwrite.Drawing(filename=name, debug=True)
         self.lines = self.dwg.add(self.dwg.g(id='lines', stroke='black', fill='none', stroke_width='0.1mm'))
         self.constructionlines = self.dwg.add(self.dwg.g(id='constructionlines', stroke='red', opacity='0.50'))
 
-    def saveas(self,filename):
+    def saveas(self):
         self.dwg.save()
 
     def Line(self,points):

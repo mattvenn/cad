@@ -390,7 +390,7 @@ def parse(parser):
 	parser.add_option("-c","--clearance",dest="clearance",help="clearance between panels of material in mm",type=float,default=3.0)
 	parser.add_option("-i","--inset",dest="inset",help="inset to middle of slot material in mm",type=float,default=5.0)
 	parser.add_option("-s","--slot_length",dest="slot_length",help="length of slot in mm",type=float,default=60.0)
-	parser.add_option("-f","--file_name",dest="filename",help="file_name",default="box.dxf")
+	parser.add_option("-f","--file_name",dest="filename",help="file_name",default="box.svg")
 	parser.add_option("-j","--join_every",dest="join_every",type=float,help="join every x in mm ",default=60.0)
 	parser.add_option("--type",dest="type",help="box type = slot , bolt ",default="bolt")
 	parser.add_option("-b","--bolt_size",dest="bolt",help="bolt size in mm",type=float,default=3.0)
@@ -411,13 +411,13 @@ def main():
 		else:
 			print 'config file name must end in .cfg'
 	# create the drawing
-	d = Drawing()
+	d = Drawing(option.filename)
 	#bolt length was depth of bolt hole in material, rather than actual bolt length
 	option.bolt_length = option.bolt_length - option.thickness
 	# generate the box object
 	cc = construct(option,d)
 	# generage the dxf file
 	cc.gen()
-	d.saveas(option.filename)
+	d.saveas()
 
 if __name__ == '__main__' : main()
