@@ -154,6 +154,18 @@ class face:
         hs = self.opt.slot_length / 2.0 
         co = self.opt.bolt_hole_offset * flipper
         thickness = self.opt.thickness
+
+        """ work in progress
+        if self.name == 'top' and self.opt.bigslot:
+            print "setting hl to width"
+            if orient == 'h':
+                hs = self.opt.width / 2
+                hl = self.opt.width / 2
+            if orient == 'v':
+                hs = self.opt.depth / 2
+                hl = self.opt.depth / 2
+        """
+
         if orient == 'h':
             d.Circle(cent=(x,y+co),radius=self.opt.bolt/2.0)
             d.Rectangle(point=(x-hl-sr,y-ht),width=hs-db+2*sr,height=thickness)
@@ -292,12 +304,20 @@ class face:
         xjoins = int(self.x/self.opt.join_every)-1
         if xjoins == 0:
             xjoins = 1
+
+        if self.opt.bigslot:
+            xjoins = 1
+
         xstart = self.x/(xjoins*2)
         xinc = self.x/xjoins
 
         yjoins = int(self.y/self.opt.join_every)-1
         if yjoins == 0:
             yjoins = 1
+
+        if self.opt.bigslot:
+            yjoins = 1
+
         ystart = self.y/(yjoins*2)
         yinc = self.y/yjoins
         hl = self.opt.slot_length / 2.0
@@ -355,7 +375,7 @@ class face:
                 self.tab(d,sx,osy+ystart+i*yinc,'v',1)
             d.Line(points=[(sx,osy+yinc*yjoins-ystart+hl),(sx,sy+y)])
         #label
-        #d.append(Text(self.name,point=(sx+x/2,sy+y/2,0),layer="TEXT",height=5))
+        d.Text(self.name,point=(sx+x/2,sy+y/2,0),height=5)
         for i in self.extra:
             i.gen(d)
 
@@ -406,6 +426,7 @@ def parse(parser):
     parser.add_option("--nut_depth",dest="nut_depth",help="nut depth - multiple of bolt size",type=float,default=0.5)
     parser.add_option("--radius",dest="radius",help="radius of cutting bit",type=float,default=1.5)
     parser.add_option("--bolt_hole_offset",dest="bolt_hole_offset",help="allows you to move the bolt further away from the edge - useful with low inset values",type=float,default=0)
+    parser.add_option("--minslots",dest="bigslot",help="overrides a bunch of options to give you the biggest joins with fewest bolts",action="store_true")
         
 def main():
     op = OptionParser()
@@ -419,9 +440,14 @@ def main():
             print 'config file name must end in .cfg'
 
     #sanity checking
+    
+    safety_gap = 0
+    #a half assed guess at what the minimum amount of material we can remove with a mill
+    if option.radius > 0:
+        safety_gap = option.radius * 2
 
     #check slot tabs are at least 2mm wide
-    min_slot = 2*(option.bolt * option.bolt_tab_clearance) + 2
+    min_slot = 2*(option.bolt * option.bolt_tab_clearance) + safety_gap 
     if option.slot_length < min_slot:
         print 'impossibly small slot length for this bolt size and bolt clearance'
         print 'slot length must be at least %d mm' % min_slot
@@ -434,14 +460,23 @@ def main():
 
     #check slot length is smaller than minimum dimension
     min_dim = min( option.length, option.depth, option.width )
-    if option.slot_length + 2 * option.inset > min_dim:
-        print 'slot length is more than than the smallest dimension + inset'
+
+    max_slot = (min_dim - (2 * option.thickness +option.radius * 2+2*safety_gap))
+    if option.slot_length > max_slot:
+        print 'slot length (%f) is more than room available on smallest dimension. Needs to be less than %f' % (option.slot_length,min_dim+max_slot-min_dim)
+        exit(1)
+
+    #check join_every vs min_dim is valid
+    if option.join_every > min_dim:
+        print 'join_every is bigger than the smallest dimension: %d' % min_dim
         exit(1)
 
     #check bolt_hole_offset is small
     if option.bolt_hole_offset > 2:
         print "bolts won't work if bolt_hole_offset is more than 2mm"
         exit(1)
+
+    #fixups
 
     #bolt length was depth of bolt hole in material, rather than actual bolt length
     option.bolt_length = option.bolt_length - option.thickness
