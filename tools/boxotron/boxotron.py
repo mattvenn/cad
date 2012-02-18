@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
-# box-o-tron 0.2
-# 20090324
+# box-o-tron svg 0.1
+# 2012 02 18
+# Matt Venn
+# GPL
+
+# original boxotron: http://www.thingiverse.com/thing:404
 # Simon Kirkby
 # tigger@interthingy.com
-# GPL
 # posted on thingiverse.com
 
 import os,string,math
