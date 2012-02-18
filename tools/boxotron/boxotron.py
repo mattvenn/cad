@@ -142,18 +142,24 @@ class face:
         self.edges.append(d)
 
     
-    def bolt_slot(self,d,x,y,orient):
+    def bolt_slot(self,d,x,y,orient,flip):
+        if flip == 0:
+            flipper = 1
+        else:
+            flipper = -1
         sr = self.opt.radius
         hl = self.opt.slot_length / 2.0
         ht = self.opt.thickness / 2.0
         db = self.opt.bolt * self.opt.bolt_tab_clearance 
         hs = self.opt.slot_length / 2.0 
+        co = self.opt.bolt_hole_offset * flipper
         thickness = self.opt.thickness
-        d.Circle(cent=(x,y),radius=self.opt.bolt/2.0)
         if orient == 'h':
+            d.Circle(cent=(x,y+co),radius=self.opt.bolt/2.0)
             d.Rectangle(point=(x-hl-sr,y-ht),width=hs-db+2*sr,height=thickness)
             d.Rectangle(point=(x-hl-sr+hs+db,y-ht),width=hs-db+2*sr,height=thickness)
         if orient == 'v':
+            d.Circle(cent=(x+co,y),radius=self.opt.bolt/2.0)
             d.Rectangle(point=(x-ht,y-hl-sr),height=hs-db+2*sr,width=thickness)
             d.Rectangle(point=(x-ht,y-hl-sr+hs+db),height=hs-db+2*sr,width=thickness)
 
@@ -301,7 +307,7 @@ class face:
         if self.edges[0] == 0:
             d.Line(points=[(sx,sy),(sx+x,sy)])
             for i in range(0,xjoins):
-                self.slot(d,osx+xstart+i*xinc,sy+inset,'h')
+                self.slot(d,osx+xstart+i*xinc,sy+inset,'h',0)
         if self.edges[0] == 1:
             d.Line(points=[(sx,sy),(osx+xstart-hl,sy)])
             for i in range(0,xjoins):
@@ -314,7 +320,7 @@ class face:
         if self.edges[1] == 0:
             d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
             for i in range(0,yjoins):
-                self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v')
+                self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v',1)
         if self.edges[1] == 1:
             d.Line(points=[(sx+x,sy),(sx+x,osy+ystart-hl)])
             for i in range(0,yjoins):
@@ -327,7 +333,7 @@ class face:
         if self.edges[2] == 0:
             d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
             for i in range(0,xjoins):
-                self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h')
+                self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h',1)
         if self.edges[2] == 1:
             d.Line(points=[(sx,sy+y),(osx+xstart-hl,sy+y)])
             for i in range(0,xjoins):
@@ -340,7 +346,7 @@ class face:
         if self.edges[1] == 0:
             d.Line(points=[(sx,sy),(sx,sy+y)])
             for i in range(0,yjoins):
-                self.slot(d,osx + inset ,osy+ystart+i*yinc,'v')
+                self.slot(d,osx + inset ,osy+ystart+i*yinc,'v',0)
         if self.edges[1] == 1:
             d.Line(points=[(sx,sy),(sx,osy+ystart-hl)])
             for i in range(0,yjoins):
@@ -399,6 +405,7 @@ def parse(parser):
     parser.add_option("--nut_multiplier",dest="nut_multiplier",help="nut size - multiple of bolt size",type=float,default=1.9)
     parser.add_option("--nut_depth",dest="nut_depth",help="nut depth - multiple of bolt size",type=float,default=0.5)
     parser.add_option("--radius",dest="radius",help="radius of cutting bit",type=float,default=1.5)
+    parser.add_option("--bolt_hole_offset",dest="bolt_hole_offset",help="allows you to move the bolt further away from the edge - useful with low inset values",type=float,default=0)
         
 def main():
     op = OptionParser()
@@ -414,8 +421,26 @@ def main():
     #sanity checking
 
     #check slot tabs are at least 2mm wide
-    if option.slot_length < 2*(option.bolt * option.bolt_tab_clearance) + 2:
+    min_slot = 2*(option.bolt * option.bolt_tab_clearance) + 2
+    if option.slot_length < min_slot:
         print 'impossibly small slot length for this bolt size and bolt clearance'
+        print 'slot length must be at least %d mm' % min_slot
+        exit(1)
+
+    #check inset is more than 1/2 thickness
+    if option.inset < option.thickness/2:
+        print 'inset has to be more than 1/2 thickness: %f mm' % (option.thickness / 2)
+        exit(1)
+
+    #check slot length is smaller than minimum dimension
+    min_dim = min( option.length, option.depth, option.width )
+    if option.slot_length + 2 * option.inset > min_dim:
+        print 'slot length is more than than the smallest dimension + inset'
+        exit(1)
+
+    #check bolt_hole_offset is small
+    if option.bolt_hole_offset > 2:
+        print "bolts won't work if bolt_hole_offset is more than 2mm"
         exit(1)
 
     #bolt length was depth of bolt hole in material, rather than actual bolt length
