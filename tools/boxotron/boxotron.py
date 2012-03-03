@@ -406,8 +406,6 @@ def conffile(opt,config_file):
         c.write(open(config_file,'w'))
         
 def parse(parser):
-    # parse the command line options
-    print 'Options'
     # define the command line variables
     parser.add_option("-l","--length",dest="length",help="Length of box in mm",type=float,default=100.0)
     parser.add_option("-w","--width",dest="width",help="width of box in mm",type=float,default=100.0)
@@ -475,6 +473,14 @@ def main():
     if option.bolt_hole_offset > 2:
         print "bolts won't work if bolt_hole_offset is more than 2mm"
         exit(1)
+
+    #print most important options
+    print "Options\n" 
+    print "- making a box %.2f x %.2f x %.2f mm" % ( option.length, option.width, option.depth )
+    print "- material is %.2f mm thickness" % option.thickness
+    print "- bolts are %.2f mm long and %.2f mm diameter, moved %.2f mm away from edge" % ( option.bolt_length, option.bolt, option.bolt_hole_offset )
+    print "- nut is %.2f times bolt diameter, %.2f times bolt length from edge" % (option.nut_multiplier, option.nut_depth)
+    print "- using a cutting tool of %.2f mm radius\n" % option.radius
 
     #fixups
 
