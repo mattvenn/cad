@@ -150,6 +150,7 @@ class face:
         sr = self.opt.radius
         hl = self.opt.slot_length / 2.0
         ht = self.opt.thickness / 2.0
+        fl = ht * flipper
         db = self.opt.bolt * self.opt.bolt_tab_clearance 
         hs = self.opt.slot_length / 2.0 
         co = self.opt.bolt_hole_offset * flipper
@@ -166,14 +167,36 @@ class face:
                 hl = self.opt.depth / 2
         """
 
-        if orient == 'h':
-            d.Circle(cent=(x,y+co),radius=self.opt.bolt/2.0)
-            d.Rectangle(point=(x-hl-sr,y-ht),width=hs-db+2*sr,height=thickness)
-            d.Rectangle(point=(x-hl-sr+hs+db,y-ht),width=hs-db+2*sr,height=thickness)
-        if orient == 'v':
-            d.Circle(cent=(x+co,y),radius=self.opt.bolt/2.0)
-            d.Rectangle(point=(x-ht,y-hl-sr),height=hs-db+2*sr,width=thickness)
-            d.Rectangle(point=(x-ht,y-hl-sr+hs+db),height=hs-db+2*sr,width=thickness)
+        # arran
+        if self.opt.inset==(thickness / 2):
+            print "slot touching edge"
+            if orient == 'h':
+                    d.Line(points=[(x-hl-sr,y-ht),(x-hl-sr,y+ht)])
+                    d.Line(points=[(x-hl-sr,y+fl),(x-hl-sr+(hs-db+2*sr),y+fl)])
+                    d.Line(points=[(x-hl+sr+hs-db,y-ht),(x-hl+sr+hs-db,y+ht)])
+                    d.Line(points=[(x-hl+sr+hs-db,y-fl),(x-hl-sr+hs+db,y-fl)])
+                    d.Line(points=[(x-hl-sr+hs+db,y-ht),(x-hl-sr+hs+db,y+ht)])
+                    d.Line(points=[(x-hl-sr+hs+db,y+fl),(x-hl-sr+(2*hs+2*sr),y+fl)])
+                    d.Line(points=[(x-hl+sr+2*hs,y-ht),(x-hl+sr+2*hs,y+ht)])
+                    d.Circle(cent=(x,y+co),radius=self.opt.bolt/2.0)
+            if orient == 'v':
+                    d.Line(points=[(x-ht,y-hl-sr),(x+ht,y-hl-sr)])
+                    d.Line(points=[(x+fl,y-hl-sr),(x+fl,y-hl+sr+hs-db)])
+                    d.Line(points=[(x-ht,y-hl+sr+hs-db),(x+ht,y-hl+sr+hs-db)])
+                    d.Line(points=[(x-fl,y-hl+sr+hs-db),(x-fl,y-hl-sr+hs+db)])
+                    d.Line(points=[(x-ht,y-hl-sr+hs+db),(x+ht,y-hl-sr+hs+db)])
+                    d.Line(points=[(x+fl,y-hl-sr+hs+db),(x+fl,y-hl+sr+2*hs)])
+                    d.Line(points=[(x-ht,y-hl+sr+2*hs),(x+ht,y-hl+sr+2*hs)])
+                    d.Circle(cent=(x+co,y),radius=self.opt.bolt/2.0)
+        else:        
+            if orient == 'h':
+                d.Circle(cent=(x,y+co),radius=self.opt.bolt/2.0)
+                d.Rectangle(point=(x-hl-sr,y-ht),width=hs-db+2*sr,height=thickness)
+                d.Rectangle(point=(x-hl-sr+hs+db,y-ht),width=hs-db+2*sr,height=thickness)
+            if orient == 'v':
+                d.Circle(cent=(x+co,y),radius=self.opt.bolt/2.0)
+                d.Rectangle(point=(x-ht,y-hl-sr),height=hs-db+2*sr,width=thickness)
+                d.Rectangle(point=(x-ht,y-hl-sr+hs+db),height=hs-db+2*sr,width=thickness)
 
     def bolt_tab(self,d,x,y,orient,flip):
         # bolty tab
@@ -323,11 +346,22 @@ class face:
         hl = self.opt.slot_length / 2.0
         inset = self.opt.inset
         slot_length = self.opt.slot_length
+        no_inset = (inset==(self.opt.thickness / 2.0))
+        rad = self.opt.radius
+        
         # first
         if self.edges[0] == 0:
-            d.Line(points=[(sx,sy),(sx+x,sy)])
-            for i in range(0,xjoins):
-                self.slot(d,osx+xstart+i*xinc,sy+inset,'h',0)
+            if no_inset:
+                d.Line(points=[(sx,sy),(osx+xstart-hl-rad,sy)])
+                for i in range(0,xjoins):
+                    if i < xjoins-1:
+                        d.Line(points=[(osx+xstart+i*xinc+hl+rad,sy),(osx+xstart+(i+1)*xinc-hl-rad,sy)])
+                    self.slot(d,osx+xstart+i*xinc,sy+inset,'h',0)
+                d.Line(points=[(osx+xinc*xjoins-xstart+hl+rad,sy),(sx+x,sy)])
+            else:
+                d.Line(points=[(sx,sy),(sx+x,sy)])
+                for i in range(0,xjoins):
+                    self.slot(d,osx+xstart+i*xinc,sy+inset,'h',0)
         if self.edges[0] == 1:
             d.Line(points=[(sx,sy),(osx+xstart-hl,sy)])
             for i in range(0,xjoins):
@@ -338,9 +372,17 @@ class face:
             
         # second
         if self.edges[1] == 0:
-            d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
-            for i in range(0,yjoins):
-                self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v',1)
+            if no_inset:
+                d.Line(points=[(sx+x,sy),(sx+x,osy+ystart-hl-rad)])
+                for i in range(0,yjoins):
+                    if i < yjoins-1:
+                        d.Line(points=[(sx+x,osy+ystart+i*yinc+hl+rad),(sx+x,osy+ystart+(i+1)*yinc-hl-rad)])
+                    self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v',1)
+                d.Line(points=[(sx+x,osy+yinc*yjoins-ystart+hl+rad),(sx+x,sy+y)])
+            else:
+                d.Line(points=[(sx+x,sy),(sx+x,sy+y)])
+                for i in range(0,yjoins):
+                    self.slot(d,osx + x - inset ,osy+ystart+i*yinc,'v',1)
         if self.edges[1] == 1:
             d.Line(points=[(sx+x,sy),(sx+x,osy+ystart-hl)])
             for i in range(0,yjoins):
@@ -351,9 +393,17 @@ class face:
 
         # third 
         if self.edges[2] == 0:
-            d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
-            for i in range(0,xjoins):
-                self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h',1)
+            if no_inset:
+                d.Line(points=[(sx,sy+y),(osx+xstart-hl-rad,sy+y)])
+                for i in range(0,xjoins):
+                    if i < xjoins-1:
+                        d.Line(points=[(osx+xstart+i*xinc+hl+rad,sy+y),(osx+xstart+(i+1)*xinc-hl-rad,sy+y)])
+                    self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h',1)
+                d.Line(points=[(osx+xinc*xjoins-xstart+hl+rad,sy+y),(sx+x,sy+y)])
+            else:
+                d.Line(points=[(sx,sy+y),(sx+x,sy+y)])
+                for i in range(0,xjoins):
+                    self.slot(d,osx+xstart+i*xinc,osy+y-inset,'h',1)
         if self.edges[2] == 1:
             d.Line(points=[(sx,sy+y),(osx+xstart-hl,sy+y)])
             for i in range(0,xjoins):
@@ -364,9 +414,17 @@ class face:
 
         # fourth
         if self.edges[1] == 0:
-            d.Line(points=[(sx,sy),(sx,sy+y)])
-            for i in range(0,yjoins):
-                self.slot(d,osx + inset ,osy+ystart+i*yinc,'v',0)
+            if no_inset:
+                d.Line(points=[(sx,sy),(sx,osy+ystart-hl-rad)])
+                for i in range(0,yjoins):
+                    if i < yjoins-1:
+                        d.Line(points=[(sx,osy+ystart+i*yinc+hl+rad),(sx,osy+ystart+(i+1)*yinc-hl-rad)])
+                    self.slot(d,osx + inset ,osy+ystart+i*yinc,'v',0)
+                d.Line(points=[(sx,osy+yinc*yjoins-ystart+hl+rad),(sx,sy+y)])
+            else:
+                d.Line(points=[(sx,sy),(sx,sy+y)])
+                for i in range(0,yjoins):
+                    self.slot(d,osx + inset ,osy+ystart+i*yinc,'v',0)
         if self.edges[1] == 1:
             d.Line(points=[(sx,sy),(sx,osy+ystart-hl)])
             for i in range(0,yjoins):
