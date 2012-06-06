@@ -93,13 +93,13 @@ if __name__ == '__main__':
     prop['lineLengthSpace'] = prop['lineLength'] / ( prop['lines'] - 1 )
     prop['markSize'] = prop['lineWidthSpace'] * 0.05
     numDots = prop['lines'] * prop['lines']
-    numPieces = numDots / 2 #?
+    numPieces = numDots * 0.75 #75% of the full number
     numPieces /= 2 #as we make 2 files, one for each colour
     prop['rows'] = int(stoneCutLength / (prop['stoneRadius'] * 2 + prop['laserSpacing'] ))
     prop['columns'] = int(numPieces / prop['rows']) 
     actualNumPieces = prop['rows'] * prop['columns']
 
-    print "making a %d x %d board, %d mm wide, with %d peices of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], actualNumPieces )
+    print "making a %d x %d board, %d mm wide, with %d stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], actualNumPieces )
 
     makeBoard(prop,'board.svg')
     makeStones(prop,'stonesB.svg')
