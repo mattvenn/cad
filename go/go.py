@@ -65,6 +65,9 @@ if __name__ == '__main__':
     parser.add_argument('--lines',
         action='store', dest='lines', type=int, default=19,
         help="number of lines on the board")
+    parser.add_argument('--stoneCutLength',
+        action='store', dest='stoneCutLength', type=int, default=150,
+        help="mm long side of material to cut the stones from")
     args = parser.parse_args()
 
     #set values
@@ -74,7 +77,7 @@ if __name__ == '__main__':
     prop['lines'] = args.lines
     prop['laserSpacing'] = 2.0 ##from each other
     prop['stoneSizeRatio'] = 0.8 #ratio to square width
-    stoneCutLength = 150 #mm long side of material to cut the stones from
+    prop['stoneCutLength'] = args.stoneCutLength
     prop['markCentre'] = True
 
     #calculated values
@@ -95,7 +98,7 @@ if __name__ == '__main__':
     numDots = prop['lines'] * prop['lines']
     numPieces = numDots * 0.75 #75% of the full number
     numPieces /= 2 #as we make 2 files, one for each colour
-    prop['rows'] = int(stoneCutLength / (prop['stoneRadius'] * 2 + prop['laserSpacing'] ))
+    prop['rows'] = int(prop['stoneCutLength'] / (prop['stoneRadius'] * 2 + prop['laserSpacing'] ))
     prop['columns'] = int(numPieces / prop['rows']) 
     actualNumPieces = prop['rows'] * prop['columns']
 
