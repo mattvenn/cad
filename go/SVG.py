@@ -6,9 +6,9 @@ simple wrapper for svgwrite that replaces all the original sdxf calls from boxot
     
 #I don't understand this magic number - and I can't get svgwrite to let me specify polylines with mm/cm
 #SVGBUST
-#cm = 3.543307
+cm = 3.543307
 #for corel draw
-cm = 3.779527
+#cm = 3.779527
 
 #helper routines to scale pixels to cm, mainly because polylines can't be given units along with the dimensions
 #SVGBUST
