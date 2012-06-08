@@ -35,6 +35,9 @@ class Drawing():
     def saveas(self):
         self.dwg.save()
 
+    def text(self,id,point,text,font_size):
+        self.styles[id].add(svgwrite.text.Text(text, insert=convTupleCM(point), font_family='sansserif', font_size = font_size))
+
     def idLine(self,id,points):
         self.styles[id].add(svgwrite.shapes.Polyline(convArrayTupleCM(points)))
 
