@@ -28,7 +28,7 @@ def makeBoard(prop):
         d=Drawing('engrave.svg')
         drawAlignmentCorners(d,prop)
 
-    #engraved lines
+    #engraved lines kindly provided by Cartesian Co-ordinates Ltd.
     #vern tickle
     for x in range(prop['lines']):
         points = [ ( prop['boardBorder'] + x * prop['lineWidthSpace'] , prop['boardBorder'] ), (prop['boardBorder'] + x * prop['lineWidthSpace'], prop['boardBorder']+ prop['lineLength'] ) ]
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #set values
+    #set values, must be a better way of doing this
     prop = {}
     prop['drawText'] = args.drawText
     prop['drawSizeLine'] = args.drawSizeLine
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     prop['lineLength'] = prop['boardHeight'] - prop['boardBorder'] * 2
     prop['lineWidthSpace'] = prop['lineWidth'] / ( prop['lines'] - 1 )
     prop['lineLengthSpace'] = prop['lineLength'] / ( prop['lines'] - 1 )
-    prop['markSize'] = prop['lineWidthSpace'] * 0.05
+    prop['markSize'] = prop['lineWidthSpace'] * 0.03
     numDots = prop['lines'] * prop['lines']
     numPieces = numDots * 0.75 #75% of the full number
     numPieces /= 2 #as we make 2 files, one for each colour
@@ -135,5 +135,6 @@ if __name__ == '__main__':
 
     print "making a %d x %d board, (%d mm x %d mm), with %d stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces )
 
+    #actually do it
     makeBoard(prop)
     makeStones(prop)
