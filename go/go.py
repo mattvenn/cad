@@ -57,7 +57,6 @@ def makeBoard(prop):
     #text
     if prop['drawText']:
         fontSize = 10 #what units?
-        print prop['boardBorder']
         d.text('engrave',(prop['boardBorder'],prop['boardBorder']/2+1),"Make another board - thingiverse.com/thing:24532",fontSize)
         d.text('engrave',(prop['boardBorder'],prop['boardHeight']-(prop['boardBorder']/2)+1),"Getting started with Go - bit.ly/rQx2Lf",fontSize)
 
