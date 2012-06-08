@@ -79,7 +79,7 @@ if __name__ == '__main__':
         description="go board")
     parser.add_argument('--boardHeight',
         action='store', dest='boardHeight', type=float, default="280",
-        help="board width in mm")
+        help="board height in mm")
     parser.add_argument('--lines',
         action='store', dest='lines', type=int, default=19,
         help="number of lines on the board")
@@ -92,9 +92,9 @@ if __name__ == '__main__':
     parser.add_argument('--splitEngraveFile',
         action='store_const', const=True, dest='splitEngraveFile', default=False,
         help="split the engrave file to a separate file")
-    parser.add_argument('--drawText',
+    parser.add_argument('--noText',
         action='store_const', const=False, dest='drawText', default=True,
-        help="draw the text for thingiverse and go introduction")
+        help="don't draw the text for thingiverse and go introduction")
 
     args = parser.parse_args()
 
