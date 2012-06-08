@@ -4,8 +4,8 @@ import math
 import argparse
 
 
-def makeStones(prop,name):
-    d=Drawing(name)
+def makeStones(prop):
+    d=Drawing('stones.svg')
     lasty=0
     for x in range(prop['rows']):
         for y in range(prop['columns']):
@@ -13,16 +13,20 @@ def makeStones(prop,name):
             lasty = centre[1]
             d.idCircle('cut',centre,prop['stoneRadius'])
    
-    draw100mmLine(d,0,lasty + prop['stoneRadius'] + 10)
+    if prop['drawSizeLine']:
+        draw100mmLine(d,0,lasty + prop['stoneRadius'] + 10)
 
     d.saveas()
 
-        
-def makeBoard(prop,name):
-    d=Drawing(name)
-
+def makeBoard(prop):
     #cut
+    d=Drawing('board.svg')
     d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'])
+
+    if prop['splitEngraveFile']:
+        d.saveas()
+        d=Drawing('engrave.svg')
+        drawAlignmentCorners(d,prop)
 
     #engraved lines
     #vern tickle
@@ -50,9 +54,23 @@ def makeBoard(prop,name):
         #bottom right
         d.idCircle('engrave',(prop['boardBorder']+prop['lineWidth']- cornerMarkDivs * prop['lineWidthSpace'],prop['boardBorder']+prop['lineLength']-cornerMarkDivs * prop['lineLengthSpace']),prop['markSize'])
 
-    draw100mmLine(d,0,prop['boardHeight'] + 10)
+    #text
+    if prop['drawText']:
+        fontSize = 10 #what units?
+        print prop['boardBorder']
+        d.text('engrave',(prop['boardBorder'],prop['boardBorder']/2+1),"Make another board - thingiverse.com/thing:24532",fontSize)
+        d.text('engrave',(prop['boardBorder'],prop['boardHeight']-(prop['boardBorder']/2)+1),"Getting started with Go - bit.ly/rQx2Lf",fontSize)
 
     d.saveas()
+
+def drawAlignmentCorners(d,prop):
+    cutLength = 10 #mm
+    #bottom left
+    points = [(cutLength,prop['boardHeight']),(0,prop['boardHeight']),(0,prop['boardHeight']-cutLength)]
+    d.idLine('engrave',points)
+    #top right
+    points = [(prop['boardWidth']-cutLength,0),(prop['boardWidth'],0),(prop['boardWidth'],cutLength)]
+    d.idLine('engrave',points)
 
 def draw100mmLine(d,x,y):
    d.idLine('cline',[(x,y),(x+100,y)])
@@ -69,10 +87,23 @@ if __name__ == '__main__':
     parser.add_argument('--stoneCutLength',
         action='store', dest='stoneCutLength', type=int, default=280,
         help="mm long side of material to cut the stones from")
+    parser.add_argument('--drawSizeLine',
+        action='store_const', const=True, dest='drawSizeLine', default=False,
+        help="Draw a 100mm sizing line to help with scaling problems")
+    parser.add_argument('--splitEngraveFile',
+        action='store_const', const=True, dest='splitEngraveFile', default=False,
+        help="split the engrave file to a separate file")
+    parser.add_argument('--drawText',
+        action='store_const', const=False, dest='drawText', default=True,
+        help="draw the text for thingiverse and go introduction")
+
     args = parser.parse_args()
 
     #set values
     prop = {}
+    prop['drawText'] = args.drawText
+    prop['drawSizeLine'] = args.drawSizeLine
+    prop['splitEngraveFile'] = args.splitEngraveFile
     prop['boardHeight'] = args.boardHeight
     prop['widthHeightRatio'] = 0.95 #skew the board
     prop['lines'] = args.lines
@@ -105,6 +136,5 @@ if __name__ == '__main__':
 
     print "making a %d x %d board, (%d mm x %d mm), with %d stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces )
 
-    makeBoard(prop,'board.svg')
-    makeStones(prop,'stonesB.svg')
-    makeStones(prop,'stonesW.svg')
+    makeBoard(prop)
+    makeStones(prop)
