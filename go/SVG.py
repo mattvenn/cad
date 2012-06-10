@@ -4,62 +4,35 @@ import svgwrite
 simple wrapper for svgwrite that replaces all the original sdxf calls from boxotron
 """
     
-#I don't understand this magic number - and I can't get svgwrite to let me specify polylines with mm/cm
-#SVGBUST
-cm = 3.543307
-#for corel draw
-#cm = 3.779527
-
-#helper routines to scale pixels to cm, mainly because polylines can't be given units along with the dimensions
-#SVGBUST
-def convArrayTupleCM(points):
-    newpoints = []
-    for point in points:
-        newpoints.append(convTupleCM(point))
-    return newpoints
-
-def convTupleCM(point):
-    return tuple([x*cm for x in point])
-
 #main class
 class Drawing():
-    def __init__(self,name):
-        self.dwg = svgwrite.Drawing(filename=name, debug=True)
+    def __init__(self,name,width,height):
+        widthmm = "%fmm" % width
+        heightmm = "%fmm" % height
+        self.dwg = svgwrite.Drawing(filename=name, debug=True, size=(widthmm,heightmm))
+        self.dwg.viewbox(width=width,height=height)
         self.styles = {}
-        self.styles['line'] = self.dwg.add(self.dwg.g(id='lines', stroke='black', fill='none', stroke_width='0.3mm'))
+        self.styles['line'] = self.dwg.add(self.dwg.g(id='lines', stroke='black', fill='none', stroke_width='0.3'))
         self.styles['cline']= self.dwg.add(self.dwg.g(id='constructionlines', stroke='red', opacity='0.50'))
-        self.styles['cut']= self.dwg.add(self.dwg.g(id='cutlines', stroke='black', stroke_width='0.3mm', fill='none'))
-        self.styles['mline'] = self.dwg.add(self.dwg.g(id='mazelines', stroke='black', stroke_width='0.3mm'))
-        self.styles['engrave'] = self.dwg.add(self.dwg.g(id='engravlines', fill='none', stroke='blue', stroke_width='0.3mm'))
+        self.styles['cut']= self.dwg.add(self.dwg.g(id='cutlines', stroke='black', stroke_width='0.3', fill='none'))
+        self.styles['mline'] = self.dwg.add(self.dwg.g(id='mazelines', stroke='black', stroke_width='0.3'))
+        self.styles['engrave'] = self.dwg.add(self.dwg.g(id='engravlines', fill='none', stroke='blue', stroke_width='0.3'))
 
     def saveas(self):
         self.dwg.save()
 
     def text(self,id,point,text,font_size):
-        self.styles[id].add(svgwrite.text.Text(text, insert=convTupleCM(point), font_family='sansserif', font_size = font_size))
+        self.styles[id].add(svgwrite.text.Text(text, insert=point, font_family='sansserif', font_size = font_size))
 
     def idLine(self,id,points):
-        self.styles[id].add(svgwrite.shapes.Polyline(convArrayTupleCM(points)))
+        self.styles[id].add(svgwrite.shapes.Polyline(points))
 
     def idCircle(self,id,cent,radius):
-        self.styles[id].add(self.dwg.circle(center=convTupleCM(cent), r=radius*cm ))
+        self.styles[id].add(self.dwg.circle(center=cent, r=radius ))
 
     def idRectangle(self,id,point,width,height):
-        self.styles[id].add(self.dwg.rect(insert=convTupleCM(point),size=convTupleCM((width,height))))
+        self.styles[id].add(self.dwg.rect(insert=point,size=(width,height)))
 
     def idText(self,id,text,point,height):
-        self.styles[id].add(svgwrite.text.Text(text,convTupleCM(point)))
+        self.styles[id].add(svgwrite.text.Text(text,point))
 
-""" 
-
-def basic_shapes(name):
-    lines = dwg.add(dwg.g(id='lines', fill='black'))
-    points = convCm([ (0,0),(2,0),(2,2),(0,2),(0,0) ])
-   
-    print points
-    lines.add(svgwrite.shapes.Polyline(points))
-    dwg.save()
-
-if __name__ == '__main__':
-    basic_shapes('basic_shapes.svg')
-"""
