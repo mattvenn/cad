@@ -5,11 +5,13 @@ import argparse
 
 
 def makeStones(prop):
-    d=Drawing('stones.svg')
+    height = prop['stoneCutLength']
+    width = prop['rows'] * (prop['stoneRadius'] * 2 + prop['laserSpacing'] ) + prop['laserSpacing'] 
+    d=Drawing('stones.svg',width,height)
     lasty=0
     for x in range(prop['rows']):
         for y in range(prop['columns']):
-            centre = ( prop['stoneMargin'] + prop['stoneRadius'] + x*(prop['stoneRadius']*2 + prop['laserSpacing']),prop['stoneRadius'] + y*(prop['stoneRadius']*2+prop['laserSpacing']))
+            centre = ( prop['laserSpacing'] + prop['stoneRadius'] + x*(prop['stoneRadius']*2 + prop['laserSpacing']),prop['laserSpacing']+prop['stoneRadius'] + y*(prop['stoneRadius']*2+prop['laserSpacing']))
             lasty = centre[1]
             d.idCircle('cut',centre,prop['stoneRadius'])
    
@@ -20,7 +22,7 @@ def makeStones(prop):
 
 def makeBoard(prop):
     #cut
-    d=Drawing('board.svg')
+    d=Drawing('board.svg',prop['boardWidth'],prop['boardHeight'])
     d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'])
 
     if prop['splitEngraveFile']:
@@ -28,7 +30,7 @@ def makeBoard(prop):
         d=Drawing('engrave.svg')
         drawAlignmentCorners(d,prop)
 
-    #engraved lines
+    #engraved lines kindly provided by Cartesian Co-ordinates Ltd.
     #vern tickle
     for x in range(prop['lines']):
         points = [ ( prop['boardBorder'] + x * prop['lineWidthSpace'] , prop['boardBorder'] ), (prop['boardBorder'] + x * prop['lineWidthSpace'], prop['boardBorder']+ prop['lineLength'] ) ]
@@ -56,9 +58,9 @@ def makeBoard(prop):
 
     #text
     if prop['drawText']:
-        fontSize = 10 #what units?
-        d.text('engrave',(prop['boardBorder'],prop['boardBorder']/2+1),"Make another board - thingiverse.com/thing:24532",fontSize)
-        d.text('engrave',(prop['boardBorder'],prop['boardHeight']-(prop['boardBorder']/2)+1),"Getting started with Go - bit.ly/rQx2Lf",fontSize)
+        fontSize = prop['boardBorder'] / 3 
+        d.text('engrave',(prop['boardBorder'],prop['boardBorder']/2),"Make another board - thingiverse.com/thing:24532",fontSize)
+        d.text('engrave',(prop['boardBorder'],prop['boardHeight']-(prop['boardBorder']/2)),"Getting started with Go - bit.ly/rQx2Lf",fontSize)
 
     d.saveas()
 
@@ -98,7 +100,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #set values
+    #set values, must be a better way of doing this
     prop = {}
     prop['drawText'] = args.drawText
     prop['drawSizeLine'] = args.drawSizeLine
@@ -125,15 +127,16 @@ if __name__ == '__main__':
     prop['lineLength'] = prop['boardHeight'] - prop['boardBorder'] * 2
     prop['lineWidthSpace'] = prop['lineWidth'] / ( prop['lines'] - 1 )
     prop['lineLengthSpace'] = prop['lineLength'] / ( prop['lines'] - 1 )
-    prop['markSize'] = prop['lineWidthSpace'] * 0.05
+    prop['markSize'] = prop['lineWidthSpace'] * 0.03
     numDots = prop['lines'] * prop['lines']
     numPieces = numDots * 0.75 #75% of the full number
     numPieces /= 2 #as we make 2 files, one for each colour
-    prop['columns'] = int(prop['stoneCutLength'] / (prop['stoneRadius'] * 2 + prop['laserSpacing'] ))
+    prop['columns'] = int(( prop['stoneCutLength'] - prop['laserSpacing'] )  / ( (prop['stoneRadius'] * 2 + prop['laserSpacing'] )))
     prop['rows'] = int(numPieces / prop['columns']) 
     actualNumPieces = prop['rows'] * prop['columns']
 
     print "making a %d x %d board, (%d mm x %d mm), with %d stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces )
 
+    #actually do it
     makeBoard(prop)
     makeStones(prop)
