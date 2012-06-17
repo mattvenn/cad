@@ -23,7 +23,7 @@ def makeStones(prop):
 def makeBoard(prop):
     #cut
     d=Drawing('board.svg',prop['boardWidth'],prop['boardHeight'])
-    d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'])
+    d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'],2*prop['stoneRadius'])
 
     if prop['splitEngraveFile']:
         d.saveas()

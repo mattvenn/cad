@@ -30,8 +30,8 @@ class Drawing():
     def idCircle(self,id,cent,radius):
         self.styles[id].add(self.dwg.circle(center=cent, r=radius ))
 
-    def idRectangle(self,id,point,width,height):
-        self.styles[id].add(self.dwg.rect(insert=point,size=(width,height)))
+    def idRectangle(self,id,point,width,height,round=0):
+        self.styles[id].add(self.dwg.rect(insert=point,size=(width,height),rx=round,ry=round))
 
     def idText(self,id,text,point,height):
         self.styles[id].add(svgwrite.text.Text(text,point))
