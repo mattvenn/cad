@@ -22,7 +22,7 @@ class Drawing():
         self.dwg.save()
 
     def text(self,id,point,text,font_size):
-        self.styles[id].add(svgwrite.text.Text(text, insert=point, font_family='sansserif', font_size = font_size))
+        self.styles[id].add(svgwrite.text.Text(text, insert=point, font_family='sans-serif', font_size = font_size))
 
     def idLine(self,id,points):
         self.styles[id].add(svgwrite.shapes.Polyline(points))
