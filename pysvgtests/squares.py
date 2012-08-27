@@ -70,6 +70,12 @@ if __name__ == '__main__':
   state = {}
   loadedvars = {} 
 
+  if args.drawoutline:
+    dwg = setup(args)
+    square( args.width / 2,args.height/2, args.width, dwg )
+    dwg.save()
+    exit(0)
+
   if args.load:
     print "using numbers from file"
     loadedvars = pickle.load( open( "vars.p", "rb" ) )
