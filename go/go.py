@@ -135,7 +135,7 @@ if __name__ == '__main__':
     prop['rows'] = int(numPieces / prop['columns']) 
     actualNumPieces = prop['rows'] * prop['columns']
 
-    print "making a %d x %d board, (%d mm x %d mm), with %d stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces )
+    print "making a %d x %d board, (%d mm x %d mm), with %d %dmm stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces, prop['stoneRadius']*2 )
 
     #actually do it
     makeBoard(prop)
