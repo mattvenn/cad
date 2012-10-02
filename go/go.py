@@ -7,6 +7,8 @@ import argparse
 def makeStones(prop):
     height = prop['stoneCutLength']
     width = prop['rows'] * (prop['stoneDiameter']  + prop['laserSpacing'] ) + prop['laserSpacing'] 
+    if prop['drawSizeLine']:
+        width += 10
     d=Drawing('stones.svg',width,height)
     lasty=0
     for x in range(prop['rows']):
@@ -16,14 +18,21 @@ def makeStones(prop):
             d.idCircle('cut',centre,prop['stoneDiameter']/2)
    
     if prop['drawSizeLine']:
-        draw100mmLine(d,0,lasty + prop['stoneDiameter']/2 + 10)
+        draw100mmLine(d,width - 5,0)
 
     d.saveas()
 
 def makeBoard(prop):
     #cut
-    d=Drawing('board.svg',prop['boardWidth'],prop['boardHeight'])
+    width = prop['boardWidth']
+    if prop['drawSizeLine']:
+        width += 10
+
+    d=Drawing('board.svg',width,prop['boardHeight'])
     d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'],prop['stoneDiameter'])
+
+    if prop['drawSizeLine']:
+        draw100mmLine(d,width - 5,0)
 
     if prop['splitEngraveFile']:
         d.saveas()
@@ -74,7 +83,7 @@ def drawAlignmentCorners(d,prop):
     d.idLine('engrave',points)
 
 def draw100mmLine(d,x,y):
-   d.idLine('cline',[(x,y),(x+100,y)])
+   d.idLine('cline',[(x,y),(x,y+100)])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -122,13 +131,16 @@ if __name__ == '__main__':
     prop['stoneCutLength'] = args.stoneCutLength
     prop['markCentre'] = True
 
+    if not args.stoneDiameter and not args.boardHeight:
+        args.stoneDiameter = defaultStoneDiameter
+
 #        prop['boardBorder'] = args.boardHeight * defaultBoardBorderToHeightRatio
     #specify stones or width?
     if args.stoneDiameter:
         squareWidth = args.stoneDiameter * 1/prop['stoneSizeRatio'] 
         boardMarksWidth = squareWidth * ( args.lines - 1 )
         boardMarksHeight=boardMarksWidth * 1/prop['widthHeightRatio']
-        prop['boardBorder'] = boardMarksHeight * defaultBoardBorderToMarksHeightRatio
+        prop['boardBorder'] = args.stoneDiameter / 1.3
         prop['boardHeight'] = boardMarksHeight +prop['boardBorder']*2
         prop['stoneDiameter'] = args.stoneDiameter
     elif args.boardHeight:
@@ -137,11 +149,14 @@ if __name__ == '__main__':
         stoneDiameter = boardMarksWidth / ( prop['lines'] -1 )
         prop['stoneDiameter'] = stoneDiameter * prop['stoneSizeRatio']
         prop['boardHeight'] = args.boardHeight
-        prop['boardBorder'] = boardMarksHeight * defaultBoardBorderToMarksHeightRatio
+        prop['boardBorder'] = args.stoneDiameter / 1.3
+        prop['boardHeight'] = boardMarksHeight +prop['boardBorder']*2
+    """
     else:
         prop['boardHeight'] = defaultBoardHeight
         prop['stoneDiameter'] = defaultStoneDiameter
         prop['boardBorder'] = defaultBoardBorder
+    """
 
     #calculated values
     if prop['lines'] >= 13:
