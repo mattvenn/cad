@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+program to make laser cutterable labels for bristol hackspace storage boxes.
+needs digital-7 font installed: http://www.dafont.com/digital-7.font
+relies on inkscape to make the svg into an eps, and then pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
+
+"""
 import argparse
 from pysvg.shape import *
 from pysvg import parser
