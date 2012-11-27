@@ -94,7 +94,11 @@ if __name__ == '__main__':
   dwg.save("label.svg")
 
   import os
+  #magic!
   os.system("inkscape -E label.eps label.svg") 
   os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
+  #get rid of old temp files
+  os.system("rm label.svg")
+  os.system("rm label.eps")
 
   print "laser cutter settings. power at 1 turn, 50mm per second"
