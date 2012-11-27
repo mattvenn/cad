@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+program to make laser cutterable labels for bristol hackspace storage boxes.
+needs digital-7 font installed: http://www.dafont.com/digital-7.font
+relies on inkscape to make the svg into an eps, and then pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
+
+"""
 import argparse
 from pysvg.shape import *
 from pysvg import parser
@@ -81,7 +87,12 @@ if __name__ == '__main__':
   
   dwg = setup()
   square(dwg)
-  #write_label(dwg)
+  write_label(dwg)
   dwg.save("label.svg")
+
+  import os
+  os.system("inkscape -E label.eps label.svg") 
+  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps label.dxf")
+
   print "now open label.svg with inkscape. Then select all, object to path, save as a desktop cutting plotter (r13) .dxf file"
   print "laser cutter settings. power at 1 turn, 50mm per second"
