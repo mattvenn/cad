@@ -6,24 +6,33 @@ import argparse
 
 def makeStones(prop):
     height = prop['stoneCutLength']
-    width = prop['rows'] * (prop['stoneRadius'] * 2 + prop['laserSpacing'] ) + prop['laserSpacing'] 
+    width = prop['rows'] * (prop['stoneDiameter']  + prop['laserSpacing'] ) + prop['laserSpacing'] 
+    if prop['drawSizeLine']:
+        width += 10
     d=Drawing('stones.svg',width,height)
     lasty=0
     for x in range(prop['rows']):
         for y in range(prop['columns']):
-            centre = ( prop['laserSpacing'] + prop['stoneRadius'] + x*(prop['stoneRadius']*2 + prop['laserSpacing']),prop['laserSpacing']+prop['stoneRadius'] + y*(prop['stoneRadius']*2+prop['laserSpacing']))
+            centre = ( prop['laserSpacing'] + prop['stoneDiameter'] /2 + x*(prop['stoneDiameter'] + prop['laserSpacing']),prop['laserSpacing']+prop['stoneDiameter'] /2 + y*(prop['stoneDiameter']+prop['laserSpacing']))
             lasty = centre[1]
-            d.idCircle('cut',centre,prop['stoneRadius'])
+            d.idCircle('cut',centre,prop['stoneDiameter']/2)
    
     if prop['drawSizeLine']:
-        draw100mmLine(d,0,lasty + prop['stoneRadius'] + 10)
+        draw100mmLine(d,width - 5,0)
 
     d.saveas()
 
 def makeBoard(prop):
     #cut
-    d=Drawing('board.svg',prop['boardWidth'],prop['boardHeight'])
-    d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'],2*prop['stoneRadius'])
+    width = prop['boardWidth']
+    if prop['drawSizeLine']:
+        width += 10
+
+    d=Drawing('board.svg',width,prop['boardHeight'])
+    d.idRectangle('cut',(0,0),prop['boardWidth'],prop['boardHeight'],prop['stoneDiameter'])
+
+    if prop['drawSizeLine']:
+        draw100mmLine(d,width - 5,0)
 
     if prop['splitEngraveFile']:
         d.saveas()
@@ -74,19 +83,22 @@ def drawAlignmentCorners(d,prop):
     d.idLine('engrave',points)
 
 def draw100mmLine(d,x,y):
-   d.idLine('cline',[(x,y),(x+100,y)])
+   d.idLine('cline',[(x,y),(x,y+100)])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="go board")
     parser.add_argument('--boardHeight',
-        action='store', dest='boardHeight', type=float, default="280",
+        action='store', dest='boardHeight', type=float,
         help="board height in mm")
+    parser.add_argument('--stoneDiameter',
+        action='store', dest='stoneDiameter', type=float,
+        help="diameter of stones in mm")
     parser.add_argument('--lines',
         action='store', dest='lines', type=int, default=19,
         help="number of lines on the board")
     parser.add_argument('--stoneCutLength',
-        action='store', dest='stoneCutLength', type=int, default=280,
+        action='store', dest='stoneCutLength', type=int, default=455,
         help="mm long side of material to cut the stones from")
     parser.add_argument('--drawSizeLine',
         action='store_const', const=True, dest='drawSizeLine', default=False,
@@ -102,26 +114,57 @@ if __name__ == '__main__':
 
     #set values, must be a better way of doing this
     prop = {}
+
+    #measured from my big go board
+    defaultBoardHeight=455.0
+    defaultBoardBorder=17
+    defaultStoneDiameter=21.6
+    defaultBoardBorderToMarksHeightRatio = 17.0 / 422.0
+
     prop['drawText'] = args.drawText
     prop['drawSizeLine'] = args.drawSizeLine
     prop['splitEngraveFile'] = args.splitEngraveFile
-    prop['boardHeight'] = args.boardHeight
-    prop['widthHeightRatio'] = 0.95 #skew the board
+    prop['widthHeightRatio'] = 0.93 #skew the board
     prop['lines'] = args.lines
     prop['laserSpacing'] = 2.0 ##from each other
-    prop['stoneSizeRatio'] = 0.9 #ratio to square width
+    prop['stoneSizeRatio'] = 0.99 #ratio to square width
     prop['stoneCutLength'] = args.stoneCutLength
     prop['markCentre'] = True
 
+    if not args.stoneDiameter and not args.boardHeight:
+        args.stoneDiameter = defaultStoneDiameter
+
+#        prop['boardBorder'] = args.boardHeight * defaultBoardBorderToHeightRatio
+    #specify stones or width?
+    if args.stoneDiameter:
+        squareWidth = args.stoneDiameter * 1/prop['stoneSizeRatio'] 
+        boardMarksWidth = squareWidth * ( args.lines - 1 )
+        boardMarksHeight=boardMarksWidth * 1/prop['widthHeightRatio']
+        prop['boardBorder'] = args.stoneDiameter / 1.3
+        prop['boardHeight'] = boardMarksHeight +prop['boardBorder']*2
+        prop['stoneDiameter'] = args.stoneDiameter
+    elif args.boardHeight:
+        boardMarksHeight = 1 / (( defaultBoardBorderToMarksHeightRatio * 2 + 1 ) / args.boardHeight ) 
+        boardMarksWidth = boardMarksHeight * prop['widthHeightRatio'] 
+        stoneDiameter = boardMarksWidth / ( prop['lines'] -1 )
+        prop['stoneDiameter'] = stoneDiameter * prop['stoneSizeRatio']
+        prop['boardHeight'] = args.boardHeight
+        prop['boardBorder'] = args.stoneDiameter / 1.3
+        prop['boardHeight'] = boardMarksHeight +prop['boardBorder']*2
+    """
+    else:
+        prop['boardHeight'] = defaultBoardHeight
+        prop['stoneDiameter'] = defaultStoneDiameter
+        prop['boardBorder'] = defaultBoardBorder
+    """
+
     #calculated values
-    prop['boardBorder'] = prop['boardHeight'] / 20
     if prop['lines'] >= 13:
         prop['markCorners'] = True
     else:
         prop['markCorners'] = False
 
     prop['boardWidth'] = prop['boardHeight'] * prop['widthHeightRatio']
-    prop['stoneRadius'] =  prop['stoneSizeRatio'] * prop['boardWidth'] / prop['lines'] / 2
     prop['stoneMargin'] = 0 # boardWidth + laserSpacing
     prop['lineWidth'] = prop['boardWidth'] - prop['boardBorder'] * 2
     prop['lineLength'] = prop['boardHeight'] - prop['boardBorder'] * 2
@@ -129,13 +172,13 @@ if __name__ == '__main__':
     prop['lineLengthSpace'] = prop['lineLength'] / ( prop['lines'] - 1 )
     prop['markSize'] = prop['lineWidthSpace'] * 0.03
     numDots = prop['lines'] * prop['lines']
-    numPieces = numDots * 0.75 #75% of the full number
+    numPieces = numDots # * 0.75 #75% of the full number
     numPieces /= 2 #as we make 2 files, one for each colour
-    prop['columns'] = int(( prop['stoneCutLength'] - prop['laserSpacing'] )  / ( (prop['stoneRadius'] * 2 + prop['laserSpacing'] )))
+    prop['columns'] = int(( prop['stoneCutLength'] - prop['laserSpacing'] )  / ( (prop['stoneDiameter']  + prop['laserSpacing'] )))
     prop['rows'] = int(numPieces / prop['columns']) 
     actualNumPieces = prop['rows'] * prop['columns']
 
-    print "making a %d x %d board, (%d mm x %d mm), with %d %dmm stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], actualNumPieces, prop['stoneRadius']*2 )
+    print "making a %d x %d board, (%d mm x %d mm including % dmm border), with %d %.1fmm stones of each colour" % ( prop['lines'], prop['lines'], prop['boardWidth'], prop['boardHeight'], prop['boardBorder'], actualNumPieces, prop['stoneDiameter'] )
 
     #actually do it
     makeBoard(prop)
