@@ -59,6 +59,9 @@ def setup():
 if __name__ == '__main__':
   argparser = argparse.ArgumentParser(
       description="generates square based energy drawings")
+  argparser.add_argument('--file',
+      action='store', dest='file', default="label.dxf",
+      help="dxf file to create")
   argparser.add_argument('--text',
       action='store', dest='text', default="no label",
       help="text to print")
@@ -92,7 +95,6 @@ if __name__ == '__main__':
 
   import os
   os.system("inkscape -E label.eps label.svg") 
-  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps label.dxf")
+  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
 
-  print "now open label.svg with inkscape. Then select all, object to path, save as a desktop cutting plotter (r13) .dxf file"
   print "laser cutter settings. power at 1 turn, 50mm per second"
