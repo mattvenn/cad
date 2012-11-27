@@ -94,5 +94,4 @@ if __name__ == '__main__':
   os.system("inkscape -E label.eps label.svg") 
   os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps label.dxf")
 
-  print "now open label.svg with inkscape. Then select all, object to path, save as a desktop cutting plotter (r13) .dxf file"
-  print "laser cutter settings. power at 1 turn, 50mm per second"
+  print "laser cutter settings: power at 1 turn, 50mm per second"
