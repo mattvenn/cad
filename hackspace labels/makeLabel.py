@@ -15,38 +15,37 @@ from pysvg.style import *
 from pysvg.structure import svg
 from pysvg.builders import *
 
+pix_to_mm = 3.77
+
 def get_style():
     style=StyleBuilder()
-    style.setFontFamily(fontfamily="Digital-7")
-#    style.setFontFamily(fontfamily="FreeSans")
-    style.setFontSize(args.fontsize/3.39) 
+    style.setFontFamily(fontfamily=args.fontfamily)
+    style.setFontSize(fontsize) 
     style.setFilling("black")
     return style.getStyle()
 
 def write_label(svg):
     (textWidth,textHeight)=get_font_size(fontsize)
-    print textWidth,textHeight
-    if textWidth > width:
-      print "text too long"
+    if textWidth > width or textHeight > height:
+      print "text too big"
       exit(1)
-    x=0 #(width-textWidth)/2
-    y=height #10 #height #(height-textHeight)/2+textHeight
-    margin = 0
+    x=(width-textWidth)/2
+    y=(height-textHeight)/2+textHeight
+    print x,y
     t=text(args.text,x+margin,y+margin)
     t.set_style(get_style())
     svg.addElement(t)
 
 #takes a font size and returns mm it is
 def get_font_size(fontsize):
-  font = ImageFont.truetype(args.font,args.fontsize) #fontsize)
+  font = ImageFont.truetype(args.font,fontsize*pix_to_mm) #fontsize)
   im = Image.new('RGBA', (400,200),"yellow")
   draw = ImageDraw.Draw(im)
   w, h = font.getsize(args.text)
   draw.text(((400-w)/2,(200-h)/2), args.text, fill="black",font=font)
-  im.save("hello.png", "PNG")
-  print w,h
-  print w/3.8,h/3.8
-  return(w/3.8, h/3.8)
+#  im.save("hello.png", "PNG")
+  print w/pix_to_mm,h/pix_to_mm
+  return w/pix_to_mm,h/pix_to_mm
 
 def square(svg):
   x=margin
@@ -82,6 +81,9 @@ if __name__ == '__main__':
   argparser.add_argument('--text',
       action='store', dest='text', default="no label",
       help="text to print")
+  argparser.add_argument('--fontname',
+      action='store', dest='fontfamily', default="Digital-7",
+      help="font name")
   argparser.add_argument('--size',
       action='store', dest='size', type=int, default=0,
       help="size, 0=small box, 1=big box")
@@ -96,15 +98,20 @@ if __name__ == '__main__':
       help="don't remove temporary files")
 
   args = argparser.parse_args()
-
+  if args.font == None:
+    print "supply the path to the font given. needed to calculate text size"
+    exit(1)
   if args.size == 0:
-    height=50 #23
-    width=100 #75
-    fontsize=10 #results in text char size 5x7mm
+    height=23
+    width=75
+    fontsize=10 
   elif args.size == 1:
     height=35
     width=104
-    fontsize=15 #results in text char size 5x7mm
+    fontsize=15
+
+  if args.fontsize:
+    fontsize = args.fontsize
 
   margin = 5
   pagewidth=width+2*margin
