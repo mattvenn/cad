@@ -6,24 +6,26 @@ from pysvg.builders import *
 
 from Styles import get_style
 
-def base(defaults,svg):
-    x=defaults["width"]/2
-    y=defaults["height"]/2
-#    t=text("yo",x,y)
-#    t.set_style(get_style(defaults))
-    r=rect(0,0,50,50,5,5)
-    r.set_style(get_style(defaults))
+def base(d,svg):
+    x=d["width"]/2
+    y=d["height"]/2
+    r=rect(0,0,150,150,5,5)
+    r.set_style(get_style(d))
     svg.addElement(r)
-    x=10
-    y=10
+
+    #draw the solenoids
+    solenoid_x_offset = d["stepper"]["width"]+d["stepper"]["margin"]
+    solenoid_y_offset = 10
+    x=solenoid_x_offset
+    y=solenoid_y_offset
     sol_num=0
-    for i in range(defaults["solenoid"]["number"]):
-      solenoid(defaults,svg,x,y)
+    for i in range(d["solenoid"]["number"]):
+      solenoid(d,svg,x,y)
       sol_num+=1
-      x=x+defaults["solenoid"]["x_shift"]
-      y=y+defaults["solenoid"]["y_shift"]
+      x=x+d["solenoid"]["x_shift"]
+      y=y+d["solenoid"]["y_shift"]
       if sol_num == 4:
-        y=10
+        y=solenoid_y_offset
 
 def solenoid(d,svg,x,y):
   trough_width = 8
@@ -31,7 +33,7 @@ def solenoid(d,svg,x,y):
   s_width=d["solenoid"]["width"]
   s_length=d["solenoid"]["length"]
   lip = (d["solenoid"]["width"]-trough_width)/2
-  p = path("M%d,%d" % (x,y))
+  p = path("M%f,%f" % (x,y))
   p.appendLineToPath(x+s_width,y,False)
   p.appendLineToPath(x+s_width,y+s_length,False)
   p.appendLineToPath(x+s_width-lip,y+s_length,False)
@@ -42,4 +44,3 @@ def solenoid(d,svg,x,y):
   p.appendLineToPath(x,y,False)
   p.set_style(get_style(d))
   svg.addElement(p)
-  

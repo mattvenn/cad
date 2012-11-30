@@ -46,6 +46,10 @@ if __name__ == '__main__':
     pageheight=height+2*margin
   """
   
+  #stepper
+  defaults["stepper"]={}
+  defaults["stepper"]["width"]=40
+  defaults["stepper"]["margin"]=40 #distance between stepper and solenoids
   #solenoid stuff
   defaults["solenoid"]={}
   defaults["solenoid"]["length"] = 20.4
@@ -56,7 +60,7 @@ if __name__ == '__main__':
   defaults["solenoid"]["y_shift"] = defaults["solenoid"]["length"]+defaults["solenoid"]["t_length"]+4
 
   dwg = setup()
-  base(defaults,dwg)
+  base(defaults,dwg) #draw the base that the solenoids fit on
   dwg.save("label.svg")
 """
   import os
