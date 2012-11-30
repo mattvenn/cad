@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#./makeLabel.py --fontname 'Stencil Gothic JL' --font ~/.fonts/Stencil\ Gothic\ JL.ttf --noremove --text  SPEAKERS --y_offset -3 --file speakergoth.dxf
 import os
 list=open("list")
 count=0
