@@ -32,13 +32,14 @@ def write_label(svg):
     x=(width-textWidth)/2
     y=(height-textHeight)/2+textHeight
     print x,y
+    y=y+args.y_offset
     t=text(args.text,x+margin,y+margin)
     t.set_style(get_style())
     svg.addElement(t)
 
 #takes a font size and returns mm it is
 def get_font_size(fontsize):
-  font = ImageFont.truetype(args.font,fontsize*pix_to_mm) #fontsize)
+  font = ImageFont.truetype(args.font,int(fontsize*pix_to_mm)) #fontsize)
   im = Image.new('RGBA', (400,200),"yellow")
   draw = ImageDraw.Draw(im)
   w, h = font.getsize(args.text)
@@ -84,6 +85,9 @@ if __name__ == '__main__':
   argparser.add_argument('--fontname',
       action='store', dest='fontfamily', default="Digital-7",
       help="font name")
+  argparser.add_argument('--y_offset',
+      action='store', dest='y_offset', type=int, default=0,
+      help="move y about")
   argparser.add_argument('--size',
       action='store', dest='size', type=int, default=0,
       help="size, 0=small box, 1=big box")
@@ -124,8 +128,8 @@ if __name__ == '__main__':
 
   import os
   #magic!
-  #os.system("inkscape -E label.eps label.svg") 
-  #os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
+  os.system("inkscape -E label.eps label.svg") 
+  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
   #get rid of old temp files
   if args.remove:
     os.system("rm label.svg")
