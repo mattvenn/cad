@@ -39,7 +39,7 @@ if __name__ == '__main__':
   defaults["width"]=250
   defaults["height"]=200
   defaults["fontsize"]=10
-  defaults["stroke"]=1
+  defaults["stroke"]=0.5
   """
     margin = 5
     pagewidth=width+2*margin
@@ -49,8 +49,11 @@ if __name__ == '__main__':
   #solenoid stuff
   defaults["solenoid"]={}
   defaults["solenoid"]["length"] = 20.4
+  defaults["solenoid"]["t_length"] = 8 #trough length
   defaults["solenoid"]["width"] = 10.6
   defaults["solenoid"]["number"] = 8
+  defaults["solenoid"]["x_shift"] = 3.25 #distance between centres
+  defaults["solenoid"]["y_shift"] = defaults["solenoid"]["length"]+defaults["solenoid"]["t_length"]+4
 
   dwg = setup()
   base(defaults,dwg)

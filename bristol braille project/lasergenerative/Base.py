@@ -14,22 +14,31 @@ def base(defaults,svg):
     r=rect(0,0,50,50,5,5)
     r.set_style(get_style(defaults))
     svg.addElement(r)
-    solenoid(defaults,svg,20,20)
+    x=10
+    y=10
+    sol_num=0
+    for i in range(defaults["solenoid"]["number"]):
+      solenoid(defaults,svg,x,y)
+      sol_num+=1
+      x=x+defaults["solenoid"]["x_shift"]
+      y=y+defaults["solenoid"]["y_shift"]
+      if sol_num == 4:
+        y=10
 
 def solenoid(d,svg,x,y):
   trough_width = 8
-  trough_height= 8
+  trough_length= d["solenoid"]["t_length"]
   s_width=d["solenoid"]["width"]
-  s_height=d["solenoid"]["length"]
+  s_length=d["solenoid"]["length"]
   lip = (d["solenoid"]["width"]-trough_width)/2
   p = path("M%d,%d" % (x,y))
   p.appendLineToPath(x+s_width,y,False)
-  p.appendLineToPath(x+s_width,y+s_height,False)
-  p.appendLineToPath(x+s_width-lip,y+s_height,False)
-  p.appendLineToPath(x+s_width-lip,y+s_height+trough_height,False)
-  p.appendLineToPath(x+lip,y+s_height+trough_height,False)
-  p.appendLineToPath(x+lip,y+s_height,False)
-  p.appendLineToPath(x,y+s_height,False)
+  p.appendLineToPath(x+s_width,y+s_length,False)
+  p.appendLineToPath(x+s_width-lip,y+s_length,False)
+  p.appendLineToPath(x+s_width-lip,y+s_length+trough_length,False)
+  p.appendLineToPath(x+lip,y+s_length+trough_length,False)
+  p.appendLineToPath(x+lip,y+s_length,False)
+  p.appendLineToPath(x,y+s_length,False)
   p.appendLineToPath(x,y,False)
   p.set_style(get_style(d))
   svg.addElement(p)
