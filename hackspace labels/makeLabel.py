@@ -31,7 +31,7 @@ def write_label(svg):
       exit(1)
     x=(width-textWidth)/2
     y=(height-textHeight)/2+textHeight
-    print x,y
+    #print x,y
     y=y+args.y_offset
     t=text(args.text,x+margin,y+margin)
     t.set_style(get_style())
@@ -45,7 +45,7 @@ def get_font_size(fontsize):
   w, h = font.getsize(args.text)
   draw.text(((400-w)/2,(200-h)/2), args.text, fill="black",font=font)
 #  im.save("hello.png", "PNG")
-  print w/pix_to_mm,h/pix_to_mm
+  #print w/pix_to_mm,h/pix_to_mm
   return w/pix_to_mm,h/pix_to_mm
 
 def square(svg):
