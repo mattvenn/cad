@@ -2,6 +2,8 @@
 from pysvg.structure import svg
 import argparse
 from Base import base
+import Stepper
+
 """
   p = path("M%d,%d" % (x,y))
   p.appendLineToPath(x,y+height,False)
@@ -12,12 +14,12 @@ from Base import base
   dwg.addElement(p)
 """
 
-def setup():
-  widthmm = "%fmm" % defaults["width"] #pagewidth
-  heightmm = "%fmm" % defaults["height"] #pageheight
-
-  dwg = svg(width=widthmm,height=heightmm)
-  dwg.set_viewBox("0 0 %s %s" % (defaults["width"], defaults["height"]))
+def setup(width,length):
+  widthmm = "%fmm" % width
+  lengthmm = "%fmm" % length
+  print width,length
+  dwg = svg(width=widthmm,height=lengthmm)
+  dwg.set_viewBox("0 0 %s %s" % (width, length))
   return dwg
 
 if __name__ == '__main__':
@@ -35,39 +37,59 @@ if __name__ == '__main__':
 
   args = argparser.parse_args()
 
-  defaults = {}
-  defaults["width"]=250
-  defaults["height"]=200
-  defaults["fontsize"]=10
-  defaults["stroke"]=0.5
+  conf = {}
+  conf["pitch"] = 3.25 #distance between centres
+  conf["thickness"]=3
+  conf["margin"]=10 #10mm margin all round
+  conf["spindle_y"]=50 #the spindle for the rotors
+  conf["letters"]=4 #the spindle for the rotors
+
+  conf["fontsize"]=10
+  conf["stroke"]=0.5
   """
     margin = 5
     pagewidth=width+2*margin
     pageheight=height+2*margin
   """
-  
+ 
+  #base
+  conf["base"]={}
   #stepper
-  defaults["stepper"]={}
-  defaults["stepper"]["width"]=40
-  defaults["stepper"]["margin"]=40 #distance between stepper and solenoids
+  conf["stepper"]={}
+  conf["stepper"]["bush_radius"]=10
+  conf["stepper"]["hole_radius"]=1.5
+  conf["stepper"]["mount_hole_distance"]=20
+  conf["stepper"]["length"]=40
+  conf["stepper"]["width"]=float(40)
+  conf["stepper"]["height"]=40
+  conf["stepper"]["margin"]=40 #distance between stepper and solenoids
   #solenoid stuff
-  defaults["solenoid"]={}
-  defaults["solenoid"]["length"] = 20.4
-  defaults["solenoid"]["t_length"] = 8 #trough length
-  defaults["solenoid"]["width"] = 10.6
-  defaults["solenoid"]["number"] = 8
-  defaults["solenoid"]["x_shift"] = 3.25 #distance between centres
-  defaults["solenoid"]["y_shift"] = defaults["solenoid"]["length"]+defaults["solenoid"]["t_length"]+4
+  conf["solenoid"]={}
+  conf["solenoid"]["solenoids_per_column"] = 4
+  conf["solenoid"]["length"] = 20.4
+  conf["solenoid"]["width"] = 10.6
+  conf["solenoid"]["number"] = conf["letters"]*2
+  conf["solenoid"]["x_shift"] = conf["pitch"]
+  conf["solenoid"]["y_shift"] = 4
 
+  bases=base(conf) #draw the base that the solenoids fit on
+  #now we should have the base size, so can setup
+  dwg = setup(conf["base"]["width"],conf["base"]["length"])
+  dwg.addElement(bases)
+  #Stepper.stepper_mount_holes(conf,dwg)
+  dwg.save("base.svg")
+#  stepper(conf) #draw the base that the solenoids fit on
+  """
   dwg = setup()
-  base(defaults,dwg) #draw the base that the solenoids fit on
-  dwg.save("label.svg")
-"""
+  support=Stepper.stepper_support(conf)
+  dwg.addElement(support)
+  dwg.save("stepper_support.svg")
+  """
+
   import os
   #magic!
-  os.system("inkscape -E label.eps label.svg") 
-  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
+  os.system("inkscape -E base.eps base.svg") 
+  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' base.eps base.dxf")
   #get rid of old temp files
-  os.system("rm label.svg")
-  os.system("rm label.eps")
-"""
+#  os.system("rm label.svg")
+#  os.system("rm label.eps")
