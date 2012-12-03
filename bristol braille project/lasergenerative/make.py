@@ -59,6 +59,7 @@ if __name__ == '__main__':
   conf["stepper"]["bush_radius"]=10
   conf["stepper"]["hole_radius"]=1.5
   conf["stepper"]["mount_hole_distance"]=20
+  conf["stepper"]["bush_length"]=20 #separation between stepper and the spindle
   conf["stepper"]["length"]=40
   conf["stepper"]["width"]=float(40)
   conf["stepper"]["height"]=40

@@ -9,26 +9,31 @@ import Styles
 def base(d):
   group=g();
   conf=d["base"]
-  conf["width"]=d["margin"]
-  conf["length"]=d["margin"]
-  #starting from the left
+
+  conf["width"]=0 #d["margin"]
+  conf["length"]=0 #d["margin"]
+
+  #starting from the left, do the motor mount
   group.addElement(motor_mount(d))
+
+  #solenoid holes, starting from the right of the motor
   group.addElement(solenoid_holes(d))
 
 #    group.addElement(edge_holes(d))
+
+  conf["width"]=conf["solenoid_max_x"] + d["margin"]
+  conf["length"]=conf["solenoid_max_y"] + d["margin"]
+
   group.addElement(base_outline(d))
+
   pprint(d)
   return group
 
 def base_outline(d):
   conf=d["base"]
-  #how much is this going to add to the width and length
-  conf["width"]+=d["margin"]
-  conf["length"]+=d["margin"]
-
   r=rect(0,0,conf["width"],conf["length"],5,5) #rounded corners
   r.set_style(Styles.get_cut_style(d))
-  return r;
+  return r
 
 def solenoid_holes(d):
     conf=d["base"]
@@ -53,16 +58,15 @@ def solenoid_holes(d):
         y=0
     
     th=TransformBuilder()
-    conf["solenoid_start_x"]=conf["width"]
+    conf["solenoid_start_x"]=conf["motor_max_x"]+d["stepper"]["bush_length"]
     conf["solenoid_start_y"]=d["margin"]
+
     th.setTranslation('%f,%f' % (conf["solenoid_start_x"],conf["solenoid_start_y"]))
     group.set_transform(th.getTransform())
-
-    #sol's total width,length calculated by solenoid_hole()
-    total_length=ymax #+d["solenoid"]["total_length"] 
-    conf["length"]+=total_length-d["solenoid"]["y_shift"]
-    total_width=x+d["solenoid"]["total_width"]
-    conf["width"]+=total_width-d["pitch"]
+   
+    print x
+    conf["solenoid_max_x"] = x + conf["solenoid_start_x"] - d["pitch"] + d["solenoid"]["total_width"]
+    conf["solenoid_max_y"] = ymax + conf["solenoid_start_y"] - d["solenoid"]["y_shift"]
 
     return group
 
@@ -76,8 +80,6 @@ def solenoid_hole(d):
   s_length=conf["length"]
   lip = (conf["width"]-trough_width)/2
 
-  conf["total_length"]=s_length+trough_length 
-  conf["total_width"]=s_width
 
   p = path("M%f,%f" % (x,y))
   p.appendLineToPath(x+s_width,y,False)
@@ -89,7 +91,10 @@ def solenoid_hole(d):
   p.appendLineToPath(x,y+s_length,False)
   p.appendLineToPath(x,y,False)
   p.set_style(Styles.get_cut_style(d))
-
+  
+  #bbox=(s_length+trough_length, s_width)
+  conf["total_length"]=s_length+trough_length
+  conf["total_width"]=s_width
   return p
 
 def motor_mount(d):
@@ -100,14 +105,13 @@ def motor_mount(d):
     stepper_mount_holes=Stepper.stepper_mount_holes(d)
     th=TransformBuilder()
     th.setRotation('90.0')
-    conf["stepper_mount_hole_x"]=d["margin"]+d["stepper"]["length"]
-    conf["stepper_mount_hole_y"]=d["margin"]+d["stepper"]["width"]
+    conf["stepper_mount_hole_x"]=d["thickness"] + d["margin"] + d["stepper"]["length"]
+    conf["stepper_mount_hole_y"]=d["margin"] #d["stepper"]["width"]+20
     th.setTranslation('%f,%f' % (conf["stepper_mount_hole_x"],conf["stepper_mount_hole_y"]))
     stepper_mount_holes.set_transform(th.getTransform())
 
     #how much is this going to add to the width and length?
-    conf["width"]+=conf["stepper_mount_hole_x"]+d["thickness"]
-    conf["length"]+=conf["stepper_mount_hole_y"]+d["stepper"]["width"]
-    print conf["width"]
+    conf["motor_max_x"]=conf["stepper_mount_hole_x"]#+d["thickness"]
+    conf["motor_max_y"]=conf["stepper_mount_hole_y"]+d["stepper"]["width"]
     return stepper_mount_holes
 
