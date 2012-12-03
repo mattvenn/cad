@@ -1,4 +1,4 @@
-wall_thickness=5;
+wall_thickness=3;
 num_blades=3;
 blade_rake=20;
 open_top=true;
@@ -32,10 +32,10 @@ module motorbase(width,length)
         //holes for the winding post
         rotate([90,0,0])
             translate([0,0,-width/2+wall_thickness/2])
-                winding_hole(width/2,magnet_length,wall_thickness*2);
+                winding_base(width/2,magnet_length,wall_thickness*2);
         rotate([-90,0,0])
             translate([0,0,-width/2+wall_thickness/2])
-                winding_hole(width/2,magnet_length,wall_thickness*2);
+                winding_base(width/2,magnet_length,wall_thickness*2);
         
     }
 }
@@ -46,23 +46,29 @@ module winding(width,length,height)
 {
     difference()
     {
-        winding_hole(width,length,wall_thickness);
+        //the base
+        translate([0,0,wall_thickness/2])
+            winding_base(width,length,wall_thickness);
         union()
         {
+        //the two slots to make the clip connection
         translate([length/2-0.75*wall_thickness,width/2,0])
             cube([wall_thickness/2,width,wall_thickness*2],center=true);
         translate([-length/2+0.75*wall_thickness,-width/2,0])
             cube([wall_thickness/2,width,wall_thickness*2],center=true);
         }
     }
+    //the coils go round this
     translate([0,0,height/2])
         cube([length*0.7,wall_thickness,height],center=true);
-    translate([0,0,height])
+    //and don't fall off because of this
+    top_height=wall_thickness/2;
+    translate([0,0,height-wall_thickness/4])
         cube([length*0.9,wall_thickness,wall_thickness/2],center=true);
 
 }
 //height in this case refers to the height of the base block, so we can use it also for boolean removal of a hole that fits the winding
-module winding_hole(width,length,height)
+module winding_base(width,length,height)
 {
         union()
         {
@@ -81,13 +87,14 @@ module magnet_mount()
     {
         union()
         {
-
             rotate([0,90,0])
                 magnet_holder();
             cylinder(r=shaft_diameter/2+wall_thickness/2,h=length-wall_thickness*2,center=true);
         }
         cylinder(r=shaft_diameter/2,h=length+wall_thickness+1,center=true);
     }
+    echo("mag holder");
+    echo(magnet_holder_height);
 }
 //TODO: needs to be made printable by removing overhangs
 module magnet_holder()
@@ -100,8 +107,7 @@ module magnet_holder()
 
     }
     //possible to measure this rathr than calculate it?
-    magnet_holder_height=height;
-    echo( magnet_holder_height);
+    echo(height);
 }
 
 module blade_holder()
@@ -152,35 +158,40 @@ module blade_mount()
 
 }
 
-color("blue")
+echo($t*360);
+rotate([$t*360,0,0])
 {
+color("blue")
     translate([length/2+10,0,0])
-    {
         rotate([0,90,0])
-        {
             blade_holder();
-        }
-    }
-}
-motorbase(width,length);
 
 //show the ally tube
 color("red")
     rotate([0,90,0])
         cylinder(r=shaft_diameter/2,h=length*1.5,center=true);
 
-winding_height = 10; //((width - magnet_holder_height) + 2 )/ 2;
-echo(winding_height);
-color("grey"){
-    rotate([90,0,0])
-        translate([0,0,-width/2+wall_thickness/2])
-            winding(width/2,magnet_length,winding_height);
-    rotate([-90,0,0])
-        translate([0,0,-width/2+wall_thickness/2])
-            winding(width/2,magnet_length,winding_height);
-            }
-
 //translate([-100,0,0])
 color("green")
     rotate([90,0,90])
         magnet_mount();
+}
+//FIXME!
+magnet_holder_height=17;
+winding_clearance=6;
+winding_height=(width - magnet_holder_height - winding_clearance )/ 2;
+echo("winding height:");
+echo(winding_height);
+
+//static stuff
+motorbase(width,length);
+
+color("grey"){
+    rotate([90,0,0])
+        translate([0,0,-width/2])
+            winding(width/2,magnet_length,winding_height);
+    rotate([-90,0,0])
+        translate([0,0,-width/2])
+            winding(width/2,magnet_length,winding_height);
+            }
+
