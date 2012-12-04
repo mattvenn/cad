@@ -11,6 +11,7 @@ magnet_length=25.2;
 magnet_width=10;
 magnet_height=3;
 width=50;
+height=35;
 length=50;
 
 spindle_length=length-wall_thickness*2;
@@ -20,12 +21,13 @@ magnet_holder_length=magnet_length+wall_thickness;
 winding_clearance=4;
 winding_height=(width - magnet_holder_height - winding_clearance )/ 2;
 
+//needs a redesign to aviod mega sag
 module motorbase(width,length)
 {
     difference()
     {
-        cube([length,width,width],center=true);
-        cube([length-wall_thickness*2,width-wall_thickness*2,width-wall_thickness*2],center=true);
+        cube([length,width,height],center=true);
+        cube([length-wall_thickness*2,width-wall_thickness*2,height-wall_thickness*2],center=true);
 
         if(open_top)
         {
@@ -92,6 +94,7 @@ module winding_base(width,length,height)
             cube([length,width,height],center=true);
         }
 }
+//put a bolt hole and captive nut on this?
 module spindle()
 {
 	cone_height=(spindle_length-magnet_holder_length)/2;
