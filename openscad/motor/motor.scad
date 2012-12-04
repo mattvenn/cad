@@ -4,7 +4,7 @@ draw_ally=true;
 
 wall_thickness=3;
 num_blades=3;
-blade_rake=20;
+blade_rake=30;
 bearing_diameter=22;
 shaft_diameter=8;
 magnet_length=25.2;
@@ -99,7 +99,7 @@ module spindle()
 	end_radius=shaft_diameter/2+2*wall_thickness;
     difference()
     {
-        % union()
+        union()
         {
             rotate([0,90,0])
                 magnet_holder();
@@ -151,7 +151,7 @@ module blade_holder()
             }
         }
         translate([0,0,-2])
-            cylinder(r=shaft_diameter/2,h=10);
+            cylinder(r=shaft_diameter/2,h=20);
     }
         
 }
@@ -175,7 +175,7 @@ module blade_mount()
         //bolt holes
         for(i=[0:1])
         {
-            translate([0,-20-i*10,0])
+            translate([2,-20-i*10,0])
                 rotate([0,-blade_rake,0])
                     cylinder(r=1.5,h=50,center=true,$fn=12);
         }
@@ -184,44 +184,56 @@ module blade_mount()
 
 }
 
-color("green")
-    rotate([90,0,90])
-        spindle();
-echo($t*360);
-rotate([$t*360,0,0])
+module show_all()
 {
+  color("green")
+      rotate([90,0,90])
+          spindle();
+  echo($t*360);
+  rotate([$t*360,0,0])
+  {
 
-magnets();
-color("blue")
-    translate([length/2+10,0,0])
+  magnets();
+  color("blue")
+      translate([length/2+10,0,0])
+          rotate([0,90,0])
+              blade_holder();
+
+  //show the ally tube
+  if(draw_ally)
+    color("red")
         rotate([0,90,0])
-            blade_holder();
+            cylinder(r=shaft_diameter/2,h=length*1.5,center=true);
 
-//show the ally tube
-if(draw_ally)
-  color("red")
-      rotate([0,90,0])
-          cylinder(r=shaft_diameter/2,h=length*1.5,center=true);
+  //translate([-100,0,0])
+  color("green")
+      rotate([90,0,90])
+          spindle();
+  }
 
-//translate([-100,0,0])
-color("green")
-    rotate([90,0,90])
-        spindle();
+  //static stuff
+  motorbase(width,length);
+  color("grey")
+   {
+      rotate([90,0,0])
+          translate([0,0,-width/2])
+              winding(width/2,magnet_length,winding_height);
+      rotate([-90,0,0])
+          translate([0,0,-width/2])
+              winding(width/2,magnet_length,winding_height);
+  }
 }
 
-//static stuff
- motorbase(width,length);
-color("grey")
- {
-    rotate([90,0,0])
-        translate([0,0,-width/2])
-            winding(width/2,magnet_length,winding_height);
-    rotate([-90,0,0])
-        translate([0,0,-width/2])
-            winding(width/2,magnet_length,winding_height);
-}
+//build everything in it's place
+show_all();
+
+//or for printing, uncomment the part you want
+*spindle();
+*blade_holder();
 //winding mount
-* winding(width/2,magnet_length,winding_height);
+*winding(width/2,magnet_length,winding_height);
+*motorbase(width,length);
+
 //test hole for the spring fitting
 *difference()
 {
