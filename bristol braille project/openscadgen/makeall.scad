@@ -1,5 +1,9 @@
 include <stepper.scad>;
 include <globals.scad>;
+
+//how we'll export DXFs
+*projection(cut = true) stepper_mount();
+
 rotate([90,0,0])
 {
     stepper();
