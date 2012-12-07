@@ -7,19 +7,22 @@ needs digital-7 font installed: http://www.dafont.com/digital-7.font
 relies on inkscape to make the svg into an eps, and then pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
 
 """
+from ttfquery import ttfmetadata
 import argparse
-from PIL import Image, ImageDraw, ImageFont
 from pysvg.shape import *
 from pysvg import parser
 from pysvg.style import *
 from pysvg.structure import svg
 from pysvg.builders import *
 
+from ttfquery import describe, glyphquery
+from ttfquery._scriptregistry import registry
+
 pix_to_mm = 3.77
 
 def get_style():
     style=StyleBuilder()
-    style.setFontFamily(fontfamily=args.fontfamily)
+    style.setFontFamily(fontfamily=args.font)
     style.setFontSize(fontsize) 
     style.setFilling("black")
     return style.getStyle()
@@ -30,23 +33,36 @@ def write_label(svg):
       print "text too big"
       exit(1)
     x=(width-textWidth)/2
-    y=(height-textHeight)/2+textHeight
-    #print x,y
+    y=height/2+textHeight/2
     y=y+args.y_offset
     t=text(args.text,x+margin,y+margin)
     t.set_style(get_style())
     svg.addElement(t)
 
+    r=rect(x+margin,y+margin-textHeight,textWidth,textHeight)
+    r.set_style(get_style)
+    svg.addElement(r)
+
+
 #takes a font size and returns mm it is
 def get_font_size(fontsize):
-  font = ImageFont.truetype(args.font,int(fontsize*pix_to_mm)) #fontsize)
-  im = Image.new('RGBA', (400,200),"yellow")
-  draw = ImageDraw.Draw(im)
-  w, h = font.getsize(args.text)
-  draw.text(((400-w)/2,(200-h)/2), args.text, fill="black",font=font)
-#  im.save("hello.png", "PNG")
-  #print w/pix_to_mm,h/pix_to_mm
-  return w/pix_to_mm,h/pix_to_mm
+  fonts = registry.matchName( args.font)
+  if len(fonts)>1:
+    print "more than 1 font by that name, aborting"
+    exit(1)
+
+  font_file =registry.fontFile(fonts[0])
+  print "font found at", font_file
+  font = describe.openFont(font_file)
+
+  width = 0
+  for char in args.text:
+    if char == ' ':
+      char = "space"
+    width += glyphquery.width(font,char)
+
+  scaling=200 #no idea what this is
+  return(width/scaling,glyphquery.lineHeight(font)/scaling)
 
 def square(svg):
   x=margin
@@ -82,8 +98,8 @@ if __name__ == '__main__':
   argparser.add_argument('--text',
       action='store', dest='text', default="no label",
       help="text to print")
-  argparser.add_argument('--fontname',
-      action='store', dest='fontfamily', default="Digital-7",
+  argparser.add_argument('--font',
+      action='store', dest='font', default="Stencil Gothic JL",
       help="font name")
   argparser.add_argument('--y_offset',
       action='store', dest='y_offset', type=int, default=0,
@@ -94,17 +110,12 @@ if __name__ == '__main__':
   argparser.add_argument('--fontsize',
       action='store', type=int, dest='fontsize', default=None,
       help="override font")
-  argparser.add_argument('--font',
-      action='store', dest='font', default=None,
-      help="specify where the font is installed")
   argparser.add_argument('--noremove',
       action='store_const', const=False, dest='remove', default=True,
       help="don't remove temporary files")
 
   args = argparser.parse_args()
-  if args.font == None:
-    print "supply the path to the font given. needed to calculate text size"
-    exit(1)
+
   if args.size == 0:
     height=23
     width=75
@@ -117,6 +128,7 @@ if __name__ == '__main__':
   if args.fontsize:
     fontsize = args.fontsize
 
+  args.text = str.upper(args.text)
   margin = 5
   pagewidth=width+2*margin
   pageheight=height+2*margin
