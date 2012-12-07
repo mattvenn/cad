@@ -1,10 +1,15 @@
 #!/usr/bin/python
 """
 another good font?
-http://www.fontsaddict.com/download/silexstencil-basic.otf
 program to make laser cutterable labels for bristol hackspace storage boxes.
-needs digital-7 font installed: http://www.dafont.com/digital-7.font
-relies on inkscape to make the svg into an eps, and then pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
+
+for font width/height uses
+* http://sourceforge.net/projects/fonttools/?source=dlp and 
+* http://ttfquery.sourceforge.net/ttfquery.html#module-ttfquery.findsystem
+
+for svg -> DXF uses:
+* inkscape to make the svg into an eps,
+* pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
 
 """
 from ttfquery import ttfmetadata
