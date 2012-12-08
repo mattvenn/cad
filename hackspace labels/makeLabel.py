@@ -12,6 +12,7 @@ for svg -> DXF uses:
 * pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
 
 """
+import os
 from ttfquery import ttfmetadata
 import argparse
 from pysvg.shape import *
@@ -32,28 +33,30 @@ def get_style():
     style.setFilling("black")
     return style.getStyle()
 
-def write_label(svg):
-    (textWidth,textHeight)=get_font_size(fontsize)
+def write_label(svg,labeltext):
+    (textWidth,textHeight)=get_font_size(fontsize,labeltext)
     if textWidth > width or textHeight > height:
       print "text too big"
       exit(1)
     x=(width-textWidth)/2
     y=height/2+textHeight/2
     y=y+args.y_offset
-    t=text(args.text,x+margin,y+margin)
+    t=text(labeltext,x+margin,y+margin)
     t.set_style(get_style())
     svg.addElement(t)
 
-    r=rect(x+margin,y+margin-textHeight,textWidth,textHeight)
-    r.set_style(get_style)
-    svg.addElement(r)
+#    r=rect(x+margin,y+margin-textHeight,textWidth,textHeight)
+#    r.set_style(get_style)
+#    svg.addElement(r)
 
 
 #takes a font size and returns mm it is
-def get_font_size(fontsize):
+def get_font_size(fontsize,text):
   fonts = registry.matchName( args.font)
   if len(fonts)>1:
     print "more than 1 font by that name, aborting"
+    for font in fonts:
+        print font
     exit(1)
 
   font_file =registry.fontFile(fonts[0])
@@ -61,7 +64,7 @@ def get_font_size(fontsize):
   font = describe.openFont(font_file)
 
   width = 0
-  for char in args.text:
+  for char in text:
     if char == ' ':
       char = "space"
     width += glyphquery.width(font,char)
@@ -85,6 +88,7 @@ def square(svg):
   p.set_style(style)
   dwg.addElement(p)
 
+    
 def setup():
   widthmm = "%fmm" % pagewidth
   heightmm = "%fmm" % pageheight
@@ -98,10 +102,10 @@ if __name__ == '__main__':
   argparser = argparse.ArgumentParser(
       description="generates a laser cutterable label")
   argparser.add_argument('--file',
-      action='store', dest='file', default="label.dxf",
-      help="dxf file to create")
+      action='store', dest='file', default="list.csv",
+      help="file to generate labels from")
   argparser.add_argument('--text',
-      action='store', dest='text', default="no label",
+      action='store', dest='text', default=None,
       help="text to print")
   argparser.add_argument('--font',
       action='store', dest='font', default="Stencil Gothic JL",
@@ -121,6 +125,7 @@ if __name__ == '__main__':
 
   args = argparser.parse_args()
 
+  #defaults
   if args.size == 0:
     height=23
     width=75
@@ -130,23 +135,48 @@ if __name__ == '__main__':
     width=104
     fontsize=15
 
+  margin = 5
+
+  #allow override of fontsize
   if args.fontsize:
     fontsize = args.fontsize
 
-  args.text = str.upper(args.text)
-  margin = 5
-  pagewidth=width+2*margin
-  pageheight=height+2*margin
-  
-  dwg = setup()
-  square(dwg)
-  write_label(dwg)
-  dwg.save("label.svg")
 
-  import os
-  #magic!
-  os.system("inkscape -E label.eps label.svg") 
-  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' label.eps " + args.file)
+  #if only one label:
+  if args.text:    
+    filename = args.text.replace(" ","")
+    args.text = str.upper(args.text)
+    pagewidth=width+2*margin
+    pageheight=height+2*margin
+    dwg = setup()
+    square(dwg)
+    write_label(dwg,args.text)
+    dwg.save(filename + ".svg")
+  #make a sheet
+  elif args.file:
+    filename="sheet"
+    pagewidth=10*width+2*margin
+    pageheight=10*height+2*margin
+    dwg = setup()
+    labels=[]
+    count=0
+    list=open(args.file)
+
+    for line in list:
+      line=line.rstrip()
+      if count!=0:
+        (size,label)=line.split(",")
+        labels.append((size,label))
+        square(dwg)
+        write_label(dwg,label)
+      count+=1
+    print labels,
+  dwg.save(filename + ".svg")
+  exit(1) 
+  
+  #export magic!
+  os.system("inkscape -E %s.eps %s.svg" % (filename,filename)) 
+  os.system("pstoedit -dt -f dxf:'-polyaslines -mm' %s.eps %s.dxf" % (filename,filename))
   #get rid of old temp files
   if args.remove:
     os.system("rm label.svg")
