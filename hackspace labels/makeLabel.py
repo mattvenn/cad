@@ -33,13 +33,13 @@ def get_style():
     style.setFilling("black")
     return style.getStyle()
 
-def write_label(svg,labeltext):
+def write_label(svg,labeltext,x=0,y=0):
     (textWidth,textHeight)=get_font_size(fontsize,labeltext)
     if textWidth > width or textHeight > height:
       print "text too big"
       exit(1)
-    x=(width-textWidth)/2
-    y=height/2+textHeight/2
+    x+=(width-textWidth)/2
+    y+=height/2+textHeight/2
     y=y+args.y_offset
     t=text(labeltext,x+margin,y+margin)
     t.set_style(get_style())
@@ -60,22 +60,23 @@ def get_font_size(fontsize,text):
     exit(1)
 
   font_file =registry.fontFile(fonts[0])
-  print "font found at", font_file
+  if args.debug:
+    print "font found at", font_file
   font = describe.openFont(font_file)
-
+  #import pdb; pdb.set_trace()
   width = 0
   for char in text:
-    if char == ' ':
-      char = "space"
-    width += glyphquery.width(font,char)
+    width += glyphquery.width(font,glyphquery.glyphName(font,char))
 
-  scaling=200 #no idea what this is
-  return(width/scaling,glyphquery.lineHeight(font)/scaling)
+  scaling=2000/fontsize #no idea what this is
+  if args.debug:
+    print "label width x height calculated to be %dx%d" % (width/scaling,glyphquery.charHeight(font)/scaling)
+  return(width/scaling,glyphquery.charHeight(font)/scaling)
 
-def square(svg):
-  x=margin
-  y=margin
+def square(svg,x=0,y=0):
 
+  x+=margin
+  y+=margin
   points = []
   #inkscape needs this to be able to export to dxf properly. Crap.
   style="stroke:#000000;stroke-opacity:1;fill:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
@@ -110,15 +111,21 @@ if __name__ == '__main__':
   argparser.add_argument('--font',
       action='store', dest='font', default="Stencil Gothic JL",
       help="font name")
+  argparser.add_argument('--columns',
+      action='store', dest='columns', type=int, default=3,
+      help="for sheet printing, number of columns")
   argparser.add_argument('--y_offset',
       action='store', dest='y_offset', type=int, default=0,
-      help="move y about")
+      help="positive numbers move text down")
   argparser.add_argument('--size',
       action='store', dest='size', type=int, default=0,
       help="size, 0=small box, 1=big box")
   argparser.add_argument('--fontsize',
       action='store', type=int, dest='fontsize', default=None,
       help="override font")
+  argparser.add_argument('--debug',
+      action='store_const', const=True, dest='debug', default=False,
+      help="print debugging info")
   argparser.add_argument('--noremove',
       action='store_const', const=False, dest='remove', default=True,
       help="don't remove temporary files")
@@ -150,27 +157,35 @@ if __name__ == '__main__':
     pageheight=height+2*margin
     dwg = setup()
     square(dwg)
-    write_label(dwg,args.text)
+    write_label(dwg,args.text,)
     dwg.save(filename + ".svg")
   #make a sheet
   elif args.file:
     filename="sheet"
-    pagewidth=10*width+2*margin
-    pageheight=10*height+2*margin
-    dwg = setup()
     labels=[]
     count=0
     list=open(args.file)
+    labels=list.read().splitlines()
 
-    for line in list:
-      line=line.rstrip()
-      if count!=0:
-        (size,label)=line.split(",")
-        labels.append((size,label))
-        square(dwg)
-        write_label(dwg,label)
-      count+=1
-    print labels,
+    import math
+    rows = int(math.ceil(float(len(labels))/args.columns))
+    print "printing %d labels as a %dx%d sheet" % (len(labels),args.columns,rows)
+
+    pagewidth=args.columns*(width+2*margin)
+    pageheight=rows*(height+2*margin)
+    dwg = setup()
+
+    count=0
+    for i in range(0,args.columns):
+        for j in range(0,rows):
+            if count>=len(labels):
+                break;
+            x=i*(width+2*margin)
+            y=j*(height+2*margin)
+            square(dwg,x,y)
+            write_label(dwg,labels[count],x,y)
+            count+=1
+
   dwg.save(filename + ".svg")
   exit(1) 
   
