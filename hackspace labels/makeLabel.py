@@ -5,7 +5,7 @@ program to make laser cutterable labels for bristol hackspace storage boxes.
 
 for font width/height uses
 * http://sourceforge.net/projects/fonttools/?source=dlp and 
-* http://ttfquery.sourceforge.net/ttfquery.html#module-ttfquery.findsystem
+* http://pypi.python.org/pypi/TTFQuery
 
 for svg -> DXF uses:
 * inkscape to make the svg into an eps,
@@ -115,12 +115,13 @@ def setup():
 if __name__ == '__main__':
   argparser = argparse.ArgumentParser(
       description="generates a laser cutterable label")
-  argparser.add_argument('--file',
-      action='store', dest='file', default="list.csv",
-      help="file to generate labels from")
-  argparser.add_argument('--text',
+  group = argparser.add_mutually_exclusive_group(required=True)
+  group.add_argument('--text',
       action='store', dest='text', default=None,
       help="text to print")
+  group.add_argument('--file',
+      action='store', dest='file',
+      help="file to generate labels from")
   argparser.add_argument('--font',
       action='store', dest='font', default="Stencil Gothic JL",
       help="font name")
@@ -205,15 +206,16 @@ if __name__ == '__main__':
             write_label(dwg,labels[count],x,y)
             count+=1
 
-  dwg.save(filename + ".svg")
-  exit(1) 
-  
+    dwg.save(filename + ".svg")
+
   #export magic!
   os.system("inkscape -E %s.eps %s.svg" % (filename,filename)) 
   os.system("pstoedit -dt -f dxf:'-polyaslines -mm' %s.eps %s.dxf" % (filename,filename))
+  print "written label to %s.dxf" % filename
   #get rid of old temp files
   if args.remove:
-    os.system("rm label.svg")
-    os.system("rm label.eps")
+    os.system("rm %s.svg" % filename)
+    os.system("rm %s.eps" % filename)
 
-  print "laser cutter settings. power at 1 turn, 50mm per second"
+  if args.debug:
+    print "laser cutter settings. power at 1 turn, 50mm per second"
