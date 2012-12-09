@@ -13,18 +13,20 @@ for svg -> DXF uses:
 
 """
 import os
-from ttfquery import ttfmetadata
+import math
 import argparse
+
+#font stuff
+from ttfquery import ttfmetadata
+from ttfquery import describe, glyphquery
+from ttfquery._scriptregistry import registry
+
+#svg stuff
 from pysvg.shape import *
 from pysvg import parser
 from pysvg.style import *
 from pysvg.structure import svg
 from pysvg.builders import *
-
-from ttfquery import describe, glyphquery
-from ttfquery._scriptregistry import registry
-
-pix_to_mm = 3.77
 
 def get_style():
     style=StyleBuilder()
@@ -34,6 +36,10 @@ def get_style():
     return style.getStyle()
 
 def write_label(svg,labeltext,x=0,y=0):
+
+    if args.toupper:
+        labeltext = str.upper(labeltext)
+
     (textWidth,textHeight)=get_font_size(fontsize,labeltext)
     if textWidth > width or textHeight > height:
       print "text too big"
@@ -50,9 +56,10 @@ def write_label(svg,labeltext,x=0,y=0):
 #    svg.addElement(r)
 
 
-#takes a font size and returns mm it is
-def get_font_size(fontsize,text):
-  fonts = registry.matchName( args.font)
+def find_font():
+  #load fonts
+  registry.scan()
+  fonts = registry.matchName(args.font)
   if len(fonts)>1:
     print "more than 1 font by that name, aborting"
     for font in fonts:
@@ -62,15 +69,20 @@ def get_font_size(fontsize,text):
   font_file =registry.fontFile(fonts[0])
   if args.debug:
     print "font found at", font_file
+
   font = describe.openFont(font_file)
-  #import pdb; pdb.set_trace()
+  return font
+
+#takes a font size and returns mm it is
+def get_font_size(fontsize,text):
+
   width = 0
   for char in text:
     width += glyphquery.width(font,glyphquery.glyphName(font,char))
 
   scaling=2000/fontsize #no idea what this is
   if args.debug:
-    print "label width x height calculated to be %dx%d" % (width/scaling,glyphquery.charHeight(font)/scaling)
+    print "label '%s' calculated to be %dx%d" % (text,width/scaling,glyphquery.charHeight(font)/scaling)
   return(width/scaling,glyphquery.charHeight(font)/scaling)
 
 def square(svg,x=0,y=0):
@@ -93,6 +105,7 @@ def square(svg,x=0,y=0):
 def setup():
   widthmm = "%fmm" % pagewidth
   heightmm = "%fmm" % pageheight
+  print "page size %dmm x %dmm" % (pagewidth,pageheight)
 
   dwg = svg(width=widthmm,height=heightmm)
   dwg.set_viewBox("0 0 %s %s" % (pagewidth, pageheight))
@@ -123,6 +136,9 @@ if __name__ == '__main__':
   argparser.add_argument('--fontsize',
       action='store', type=int, dest='fontsize', default=None,
       help="override font")
+  argparser.add_argument('--toupper',
+      action='store_const', const=True, dest='toupper', default=False,
+      help="convert labels to upper case")
   argparser.add_argument('--debug',
       action='store_const', const=True, dest='debug', default=False,
       help="print debugging info")
@@ -140,19 +156,23 @@ if __name__ == '__main__':
   elif args.size == 1:
     height=35
     width=104
-    fontsize=15
-
-  margin = 5
+    fontsize=14
 
   #allow override of fontsize
   if args.fontsize:
     fontsize = args.fontsize
 
+  margin = 5
+
+  if args.debug:
+    print "label size %dx%dmm, fontsize %d" % (height,width,fontsize)
+
+
+  font=find_font()
 
   #if only one label:
   if args.text:    
     filename = args.text.replace(" ","")
-    args.text = str.upper(args.text)
     pagewidth=width+2*margin
     pageheight=height+2*margin
     dwg = setup()
@@ -167,7 +187,6 @@ if __name__ == '__main__':
     list=open(args.file)
     labels=list.read().splitlines()
 
-    import math
     rows = int(math.ceil(float(len(labels))/args.columns))
     print "printing %d labels as a %dx%d sheet" % (len(labels),args.columns,rows)
 
@@ -176,8 +195,8 @@ if __name__ == '__main__':
     dwg = setup()
 
     count=0
-    for i in range(0,args.columns):
-        for j in range(0,rows):
+    for j in range(0,rows):
+        for i in range(0,args.columns):
             if count>=len(labels):
                 break;
             x=i*(width+2*margin)
