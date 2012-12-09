@@ -35,6 +35,7 @@ def write_label(svg,labeltext,x=0,y=0):
     x+=(width-textWidth)/2
     y+=height/2+textHeight/2
     y=y+args.y_offset
+    x=x+args.x_offset
     t=text(labeltext,x+margin,y+margin)
     t.set_style(get_style())
     svg.addElement(t)
@@ -133,6 +134,9 @@ if __name__ == '__main__':
   argparser.add_argument('--columns',
       action='store', dest='columns', type=int, default=3,
       help="for sheet printing, number of columns")
+  argparser.add_argument('--x_offset',
+      action='store', dest='x_offset', type=int, default=0,
+      help="positive numbers move text right")
   argparser.add_argument('--y_offset',
       action='store', dest='y_offset', type=int, default=0,
       help="positive numbers move text down")
