@@ -1,17 +1,5 @@
 #!/usr/bin/python
-"""
-another good font?
-program to make laser cutterable labels for bristol hackspace storage boxes.
 
-for font width/height uses
-* http://sourceforge.net/projects/fonttools/?source=dlp and 
-* http://pypi.python.org/pypi/TTFQuery
-
-for svg -> DXF uses:
-* inkscape to make the svg into an eps,
-* pstoedit to turn the file into a dxf. The magic argument to include is -mm, which gets the scale right.
-
-"""
 import os
 import math
 import argparse
@@ -114,7 +102,24 @@ def setup():
 
 if __name__ == '__main__':
   argparser = argparse.ArgumentParser(
-      description="generates a laser cutterable label")
+      formatter_class=argparse.RawDescriptionHelpFormatter,
+      description='''program to make laser cuterable labels for bristol hackspace storage boxes.
+
+    defaults sizes are for louvred plastic boxes, override with the --width and --height arguments
+
+    process a newline separated file in one go with --file argument
+
+    requirements
+    ------------
+
+    * a good laser cutable font. I recommend this one 'Stencil Gothic JL'
+    * an old version of pysvg: http://code.google.com/p/pysvg/downloads/detail?name=pysvg-0.2.1.zip&can=2&q=
+    * some python modules that can query ttf fonts:
+        * http://pypi.python.org/pypi/TTFQuery
+        * http://sourceforge.net/projects/fonttools/?source=dlp
+    * an up to date version of pstoedit http://www.pstoedit.net/
+    * inkscape''')
+
   group = argparser.add_mutually_exclusive_group(required=True)
   group.add_argument('--text',
       action='store', dest='text', default=None,
@@ -124,7 +129,7 @@ if __name__ == '__main__':
       help="file to generate labels from")
   argparser.add_argument('--font',
       action='store', dest='font', default="Stencil Gothic JL",
-      help="font name")
+      help="font to use")
   argparser.add_argument('--columns',
       action='store', dest='columns', type=int, default=3,
       help="for sheet printing, number of columns")
@@ -133,10 +138,16 @@ if __name__ == '__main__':
       help="positive numbers move text down")
   argparser.add_argument('--size',
       action='store', dest='size', type=int, default=0,
-      help="size, 0=small box, 1=big box")
+      help="size of label, 0=small box, 1=big box. Override with --width and --height")
+  argparser.add_argument('--width',
+      action='store', dest='width', type=int,
+      help="override width of label")
+  argparser.add_argument('--height',
+      action='store', dest='height', type=int,
+      help="override height of label")
   argparser.add_argument('--fontsize',
       action='store', type=int, dest='fontsize', default=None,
-      help="override font")
+      help="override default fontsize")
   argparser.add_argument('--toupper',
       action='store_const', const=True, dest='toupper', default=False,
       help="convert labels to upper case")
@@ -145,7 +156,7 @@ if __name__ == '__main__':
       help="print debugging info")
   argparser.add_argument('--noremove',
       action='store_const', const=False, dest='remove', default=True,
-      help="don't remove temporary files")
+      help="don't remove temporary svg and eps files")
 
   args = argparser.parse_args()
 
@@ -159,9 +170,13 @@ if __name__ == '__main__':
     width=104
     fontsize=14
 
-  #allow override of fontsize
+  #allow override of defaults
   if args.fontsize:
     fontsize = args.fontsize
+  if args.width:
+    width = args.width
+  if args.height:
+    width = args.height
 
   margin = 5
 
