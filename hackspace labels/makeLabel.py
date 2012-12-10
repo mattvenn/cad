@@ -16,34 +16,49 @@ from pysvg.style import *
 from pysvg.structure import svg
 from pysvg.builders import *
 
-def get_style():
+def get_font_style(fontsize):
     style=StyleBuilder()
     style.setFontFamily(fontfamily=args.font)
     style.setFontSize(fontsize) 
     style.setFilling("black")
     return style.getStyle()
 
-def write_label(svg,labeltext,x=0,y=0):
+def get_line_style():
+    style=StyleBuilder()
+    style.setFilling("none")
+    style.setStroke("black")
+    style.setStrokeWidth("0.1")
+    return style.getStyle()
 
+def write_label(svg,labeltext,x=0,y=0):
     if args.toupper:
         labeltext = str.upper(labeltext)
+    #if autofontsize, work out max fontsize that will fit
+    if args.autofontsize:
+      autofontsize = 1
+      textWidth=0
+      textHeight=0
+      while textWidth+label_margin < width and textHeight+label_margin < height:
+        (textWidth,textHeight)=get_font_size(autofontsize,labeltext)
+        autofontsize+=1
+      autofontsize-=1
+      global fontsize
+      fontsize=autofontsize
+    #otherwise just check the default font size will fit
+    else:
+      (textWidth,textHeight)=get_font_size(fontsize,labeltext)
+      if textWidth+label_margin > width or textHeight+label_margin > height:
+        print "text too big, try a smaller font"
+        exit(1)
 
-    (textWidth,textHeight)=get_font_size(fontsize,labeltext)
-    if textWidth > width or textHeight > height:
-      print "text too big"
-      exit(1)
+    #positioning
     x+=(width-textWidth)/2
     y+=height/2+textHeight/2
     y=y+args.y_offset
     x=x+args.x_offset
     t=text(labeltext,x+margin,y+margin)
-    t.set_style(get_style())
+    t.set_style(get_font_style(fontsize))
     svg.addElement(t)
-
-#    r=rect(x+margin,y+margin-textHeight,textWidth,textHeight)
-#    r.set_style(get_style)
-#    svg.addElement(r)
-
 
 def find_font():
   #load fonts
@@ -79,15 +94,13 @@ def square(svg,x=0,y=0):
   x+=margin
   y+=margin
   points = []
-  #inkscape needs this to be able to export to dxf properly. Crap.
-  style="stroke:#000000;stroke-opacity:1;fill:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
 
   p = path("M%d,%d" % (x,y))
   p.appendLineToPath(x,y+height,False)
   p.appendLineToPath(x+width,y+height,False)
   p.appendLineToPath(x+width,y,False)
   p.appendLineToPath(x,y,False)
-  p.set_style(style)
+  p.set_style(get_line_style())
   dwg.addElement(p)
 
     
@@ -149,9 +162,13 @@ if __name__ == '__main__':
   argparser.add_argument('--height',
       action='store', dest='height', type=int,
       help="override height of label")
-  argparser.add_argument('--fontsize',
+  group = argparser.add_mutually_exclusive_group()
+  group.add_argument('--fontsize',
       action='store', type=int, dest='fontsize', default=None,
       help="override default fontsize")
+  group.add_argument('--autofontsize',
+      action='store_const', const=True, dest='autofontsize', default=False,
+      help="work out maximum font size for the label")
   argparser.add_argument('--toupper',
       action='store_const', const=True, dest='toupper', default=False,
       help="convert labels to upper case")
@@ -182,7 +199,10 @@ if __name__ == '__main__':
   if args.height:
     width = args.height
 
+  #margin from the page's width to the outside of the label
   margin = 5
+  #twice the margin from the outer edge of the label to the closest text
+  label_margin = 10
 
   if args.debug:
     print "label size %dx%dmm, fontsize %d" % (height,width,fontsize)
