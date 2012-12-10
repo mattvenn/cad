@@ -43,7 +43,38 @@ module side()
   }
 }
 
+//holds the rotors in place and provides homing
 module comb()
+{
+  union()
+  {
+    //main part
+    difference()
+    {
+      cube([comb_width,comb_length,thickness],center=true); 
+      //holes for the rotors
+      for(x=[0:num_solenoids-1])
+      {
+        translate([-comb_width/2+min_spacing+rotor_thickness+x*pitch,0,0])
+          cube([rotor_thickness,rotor_diameter+min_spacing,thickness*2],center=true);
+      }
+      //locators 1.1 for good boolean
+      translate([0,-comb_length/2+thickness/2,0])
+          cube([comb_width/3,thickness*1.1,thickness*2],center=true);
+      translate([0,+comb_length/2-thickness/2,0])
+          cube([comb_width/3,thickness*1.1,thickness*2],center=true);
+
+    }
+    //stop blocks for the rotors
+    for(x=[0:num_solenoids-1])
+    {
+      translate([-comb_width/2+min_spacing+rotor_thickness+x*pitch+rotor_thickness/4,rotor_diameter/2+rotor_thickness/4,0])
+        cube([rotor_thickness/2,rotor_thickness/2,thickness],center=true);
+    }
+  }
+}
+//holds the sliders
+module slider_holder()
 {
   
  difference()

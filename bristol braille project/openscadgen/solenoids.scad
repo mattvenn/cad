@@ -15,10 +15,10 @@ module solenoid_hole()
   trough_length=solenoid_plunger_length+min_spacing;
   color("darkblue")
   {
-    //*2 to get a clean boolean
-    cube([solenoid_width,solenoid_length*2,solenoid_height],center=true);
+    //*1.1 to get a clean boolean
+    cube([solenoid_width,solenoid_length*1.1,solenoid_height],center=true);
     translate([0,0,solenoid_height/2+(trough_length)/2])
-      cube([trough_width,trough_length*2,solenoid_length,],center=true);
+      cube([trough_width,solenoid_length*1.1,trough_length],center=true);
   }
 }
 

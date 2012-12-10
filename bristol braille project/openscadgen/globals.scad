@@ -7,6 +7,9 @@ slider_solenoid_z_spacing = 2;
 min_spacing=2;
 edge_margin = 15;
 spindle_radius = 1.5;
+rotor_thickness=2;
+comb_length=40;
+rotor_diameter=8.8; //rotor diamter
 
 
 //solenoids
@@ -31,11 +34,14 @@ solenoid_total_x = solenoid_columns*(solenoid_x_spacing+solenoid_width)-solenoid
 slider_width=2;
 slider_length=solenoid_total_y;
 slider_height=10;
-slider_move_length=4;
-slider_move_height=4;
+slider_move_length=2;
+slider_move_height=2;
 
 //base
 bolt_radius=2.0;
 base_width=solenoid_total_x+2*edge_margin;
 base_length=solenoid_total_y+2*edge_margin;
-base_height=solenoid_length+slider_height+min_spacing+slider_move_height+min_spacing+min_spacing;
+base_height=solenoid_length+slider_height+min_spacing+slider_move_height+min_spacing+min_spacing+10;
+
+//comb
+comb_width=num_solenoids*pitch+rotor_thickness+min_spacing*2;

@@ -3,7 +3,10 @@ include <stepper.scad>;
 include <sliders.scad>;
 include <solenoids.scad>;
 include <base.scad>;
+include <rotors.scad>;
 
+
+//sliders and slider rods
 slider_z=solenoid_width/2+slider_height/2+slider_solenoid_z_spacing;
 translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
   sliders();
@@ -13,7 +16,20 @@ module made_slider_rods()
   translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,slider_z])
     slider_rods();
 }
-*solenoids()solenoid();
+
+//rotors and rod
+rotor_rod_z=slider_z+slider_height+slider_move_height;
+rotor_rod_y=slider_move_length+solenoid_total_y/2-solenoid_min_y_spacing;
+translate([0,rotor_rod_y,rotor_rod_z])
+{
+  rotors();
+  
+  translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,0])
+    rotor_rod();
+}
+
+//solenoids
+solenoids()solenoid();
 
 //base
 base_z=-solenoid_length/2+thickness/2;
@@ -28,18 +44,20 @@ module made_base()
     translate([base_width/2-solenoid_width/2-edge_margin,base_y,base_z])
       base();
     solenoids()solenoid_hole();
-    combs();
+    slider_holders();
   }
 }
+
 made_side();
-* made_lid();
+*made_lid();
+
 module made_lid()
 {
   difference()
   {
     translate([base_width/2-solenoid_width/2-edge_margin,base_y,base_z+base_height-thickness])
       base();
-    combs();
+    slider_holders();
     made_side();
   }
 
@@ -56,36 +74,45 @@ module made_side()
     translate([base_x+base_width-thickness,base_y,base_z+base_height/2-thickness/2])
       side();
     }
-  combs();
+  slider_holders();
   made_slider_rods();
   }
 }
-combs();
-module combs()
+
+made_comb();
+module made_comb()
+{
+  color("blue")
+    translate([comb_width/2-min_spacing-rotor_thickness,rotor_rod_y,rotor_rod_z+spindle_radius*2])
+      comb();
+}
+//slider holders
+slider_holders();
+module slider_holders()
 {
  difference()
   {
     union()
     {
-    //most +ve y comb
-    translate([-solenoid_width/2-edge_margin+base_width/2,base_y+base_length/2-solenoid_height-edge_margin,base_z+base_height/2-thickness/2])
+    //most +ve y slider_holder
+    translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y+comb_length/2-thickness/2,base_z+base_height/2-thickness/2])
       rotate([90,0,0])
-        comb();
-    //close to origin comb
-    translate([-solenoid_width/2-edge_margin+base_width/2,base_y,base_z+base_height/2-thickness/2])
+        slider_holder();
+    //close to origin slider_holder
+    translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y-comb_length/2+thickness/2,base_z+base_height/2-thickness/2])
       rotate([90,0,0])
-        comb();
+        slider_holder();
     }
-    solenoids()solenoid();
-union()
-{
+    solenoids()solenoid_hole();
+    made_comb();
+    union()
+    {
     translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
       sliders_boolean();
     translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_move_height])
       sliders_boolean();
       }
     }
-  
 }
 
 //how we'll export DXFs

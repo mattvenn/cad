@@ -23,7 +23,7 @@ module slider()
         slot();
   }
 } 
-//for cutting out of the comb
+//for cutting out of the slider holder
 module slider_boolean()
 {
   color("red")
