@@ -2,15 +2,17 @@
 //important stuff
 thickness=3; //material thickness
 pitch = 3.25; 
-letters = 4;
+letters = 1;
 slider_solenoid_z_spacing = 2;
 min_spacing=2;
 edge_margin = 15;
 spindle_radius = 1.5;
 rotor_thickness=2;
 comb_length=40;
+pin_radius=1;
+pin_length=20;
 rotor_diameter=8.8; //rotor diamter
-
+smooth=10; //global smooth for small cylinders
 
 //solenoids
 solenoid_length = 12.6;
@@ -36,12 +38,16 @@ slider_length=solenoid_total_y;
 slider_height=10;
 slider_move_length=2;
 slider_move_height=2;
+pin_slider_move_height=2;
 
 //base
 bolt_radius=2.0;
 base_width=solenoid_total_x+2*edge_margin;
 base_length=solenoid_total_y+2*edge_margin;
-base_height=solenoid_length+slider_height+min_spacing+slider_move_height+min_spacing+min_spacing+10;
+base_height=solenoid_length+slider_height+min_spacing+slider_move_height+min_spacing+min_spacing+pin_length;
 
 //comb
 comb_width=num_solenoids*pitch+rotor_thickness+min_spacing*2;
+
+//pin slider
+pin_slider_width=base_width+thickness*2;

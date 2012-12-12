@@ -9,10 +9,13 @@ module rotor()
 
 module rotors()
 {
+  color("purple")
+  {
   for(x=[0:num_solenoids-1])
   {
     translate([x*pitch,0,0])
       rotor();
+  }
   }
 }
 

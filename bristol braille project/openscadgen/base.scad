@@ -73,6 +73,27 @@ module comb()
     }
   }
 }
+
+
+module pin_slider()
+{
+  union()
+  {
+    //main part
+    difference()
+    {
+      cube([pin_slider_width,comb_length-2*thickness,thickness],center=true); 
+
+      //locators 1.1 for good boolean
+      translate([-pin_slider_width/2+thickness,0])
+          cube([thickness*2,comb_length/3,thickness*2],center=true);
+      translate([+pin_slider_width/2-thickness,0])
+          cube([thickness*2,comb_length/3,thickness*2],center=true);
+
+    }
+  }
+}
+
 //holds the sliders
 module slider_holder()
 {

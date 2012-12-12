@@ -4,6 +4,7 @@ include <sliders.scad>;
 include <solenoids.scad>;
 include <base.scad>;
 include <rotors.scad>;
+include <pins.scad>;
 
 
 //sliders and slider rods
@@ -28,6 +29,14 @@ translate([0,rotor_rod_y,rotor_rod_z])
     rotor_rod();
 }
 
+//pins
+made_pins();
+module made_pins()
+{
+  translate([0,rotor_rod_y,rotor_rod_z+rotor_diameter/2+pin_length/2])
+    pins();
+}
+
 //solenoids
 solenoids()solenoid();
 
@@ -48,8 +57,7 @@ module made_base()
   }
 }
 
-made_side();
-*made_lid();
+made_lid();
 
 module made_lid()
 {
@@ -59,23 +67,47 @@ module made_lid()
       base();
     slider_holders();
     made_side();
+    made_pins();
   }
 
 }
+*made_side();
 module made_side()
 {
 
   difference()
   {
-    union()
-    {
     translate([base_x,base_y,base_z+base_height/2-thickness/2])
       side();
+    made_pin_slider(); 
+    //allow for movement of the pin slider
+      translate([0,0,pin_slider_move_height])
+        made_pin_slider();
+    slider_holders();
+    made_slider_rods();
+  }
+  difference()
+  {
     translate([base_x+base_width-thickness,base_y,base_z+base_height/2-thickness/2])
       side();
-    }
-  slider_holders();
-  made_slider_rods();
+    made_pin_slider(); 
+    //allow for movement of the pin slider
+      translate([0,0,pin_slider_move_height])
+        made_pin_slider();
+    slider_holders();
+    made_slider_rods();
+  }
+}
+
+made_pin_slider();
+module made_pin_slider()
+{
+  color("gray")
+  difference()
+  {
+    translate([base_x+pin_slider_width/2-thickness/2-thickness,rotor_rod_y,rotor_rod_z+pin_length/2])
+      pin_slider();
+      made_pins();
   }
 }
 
