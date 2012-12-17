@@ -13,7 +13,7 @@ module slider()
       rotate([0,0,180])
       rotate([90,0,0])
       rotate([0,90,0])
-        linear_extrude(height=slider_width) import("nod.dxf");
+        linear_extrude(height=slider_width) import("depdxf/nod.dxf");
     }
     translate([0,-slider_length/4,min_spacing])
       rotate([0,90,0])

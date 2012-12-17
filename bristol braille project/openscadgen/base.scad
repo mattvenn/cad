@@ -77,8 +77,6 @@ module comb()
 
 module pin_slider()
 {
-  union()
-  {
     //main part
     difference()
     {
@@ -91,7 +89,6 @@ module pin_slider()
           cube([thickness*2,comb_length/3,thickness*2],center=true);
 
     }
-  }
 }
 
 //holds the sliders

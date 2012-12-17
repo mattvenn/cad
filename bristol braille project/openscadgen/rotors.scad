@@ -4,7 +4,7 @@ module rotor()
 {
   translate([-rotor_thickness/2,0,0])
     rotate([0,90,0])
-      linear_extrude(height=rotor_thickness) import("rotor.dxf");
+      linear_extrude(height=rotor_thickness) import("depdxf/rotor.dxf");
 }
 
 module rotors()

@@ -1,3 +1,4 @@
+include <build_conf.scad>;
 include <globals.scad>;
 include <stepper.scad>;
 include <sliders.scad>;
@@ -7,45 +8,70 @@ include <rotors.scad>;
 include <pins.scad>;
 
 
-//sliders and slider rods
+/*************************************************************
+sliders and slider rods
+*/
 slider_z=solenoid_width/2+slider_height/2+slider_solenoid_z_spacing;
-translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
-  sliders();
-made_slider_rods();
+if(build_sliders)
+{
+    translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
+      sliders();
+}
+if(build_slider_rods)
+{
+    made_slider_rods();
+}
 module made_slider_rods()
 {
   translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,slider_z])
     slider_rods();
 }
 
-//rotors and rod
+/*************************************************************
+rotors
+*/
 rotor_rod_z=slider_z+slider_height+slider_move_height;
 rotor_rod_y=slider_move_length+solenoid_total_y/2-solenoid_min_y_spacing;
-translate([0,rotor_rod_y,rotor_rod_z])
-{
-  rotors();
-  
-  translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,0])
-    rotor_rod();
-}
 
-//pins
-made_pins();
+if(build_rotors)
+{
+    //rotors and rod
+    translate([0,rotor_rod_y,rotor_rod_z])
+    {
+      rotors();
+      
+      translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,0])
+        rotor_rod();
+    }
+}
+/*************************************************************
+pins
+*/
+if(build_pins)
+    made_pins();
 module made_pins()
 {
   translate([0,rotor_rod_y,rotor_rod_z+rotor_diameter/2+pin_length/2])
     pins();
 }
 
-//solenoids
-solenoids()solenoid();
+/*************************************************************
+solenoid
+*/
+if(build_solenoids)
+    solenoids()solenoid();
 
-//base
+/*************************************************************
+base
+*/
 base_z=-solenoid_length/2+thickness/2;
 base_y=base_length/2-edge_margin-solenoid_height;
 base_x=-solenoid_width/2-edge_margin+thickness/2;
-made_base();
-*projection(cut = false) made_base();
+if(build_base)
+    made_base();
+if(export_base)
+    projection()made_base();
+
 module made_base()
 {
   difference()
@@ -53,102 +79,157 @@ module made_base()
     translate([base_width/2-solenoid_width/2-edge_margin,base_y,base_z])
       base();
     solenoids()solenoid_hole();
-    slider_holders();
+    made_slider_holder(1,false);
+    made_slider_holder(2,false);
   }
 }
 
-made_lid();
-
+/*************************************************************
+lid
+*/
+if(build_lid)
+    made_lid();
+if(export_lid)
+    projection()made_lid();
 module made_lid()
 {
   difference()
   {
     translate([base_width/2-solenoid_width/2-edge_margin,base_y,base_z+base_height-thickness])
       base();
-    slider_holders();
-    made_side();
-    made_pins();
+   made_slider_holder(1,false);
+   made_slider_holder(2,false);
+   made_side(1);
+   made_side(2);
+   made_pins();
   }
 
 }
-*made_side();
-module made_side()
+
+/*************************************************************
+sides
+*/
+if(build_sides)
 {
-
+    made_side(1,true);
+    made_side(2,true);
+}
+if(export_side)
+    projection()rotate([0,90,0])made_side(1,true);
+module made_side(num,boolean)
+{
   difference()
   {
-    translate([base_x,base_y,base_z+base_height/2-thickness/2])
-      side();
-    made_pin_slider(); 
-    //allow for movement of the pin slider
-      translate([0,0,pin_slider_move_height])
-        made_pin_slider();
-    slider_holders();
+    if(num==1)
+    {
+        translate([base_x+base_width-thickness,base_y,base_z+base_height/2-thickness/2])
+          side();
+    }
+    if(num==2)
+    {
+        translate([base_x,base_y,base_z+base_height/2-thickness/2])
+          side();
+    }
+    if(boolean)
+    {
+    made_slider_holder(1,false);
+    made_slider_holder(2,false);
     made_slider_rods();
-  }
-  difference()
-  {
-    translate([base_x+base_width-thickness,base_y,base_z+base_height/2-thickness/2])
-      side();
-    made_pin_slider(); 
-    //allow for movement of the pin slider
-      translate([0,0,pin_slider_move_height])
-        made_pin_slider();
-    slider_holders();
-    made_slider_rods();
+    union()
+    {
+    translate([pin_slider_x,pin_slider_y,pin_slider_z])
+      pin_slider();
+    translate([pin_slider_x,pin_slider_y,pin_slider_z+pin_slider_move_height])
+      pin_slider();
+    }
+    }
   }
 }
 
-made_pin_slider();
+/*************************************************************
+pin slider
+*/
+if(build_pin_slider)
+    made_pin_slider();
+if(export_pin_slider)
+    projection()made_pin_slider();
+
+pin_slider_x=base_x+pin_slider_width/2-thickness/2-thickness;
+pin_slider_y=rotor_rod_y;
+pin_slider_z=rotor_rod_z+pin_length/2;
 module made_pin_slider()
 {
   color("gray")
   difference()
   {
-    translate([base_x+pin_slider_width/2-thickness/2-thickness,rotor_rod_y,rotor_rod_z+pin_length/2])
+    translate([pin_slider_x,pin_slider_y,pin_slider_z])
       pin_slider();
       made_pins();
   }
 }
 
-made_comb();
+/*************************************************************
+comb
+*/
+if(build_comb)
+    made_comb();
+if(export_comb)
+    projection()made_comb();
 module made_comb()
 {
   color("blue")
     translate([comb_width/2-min_spacing-rotor_thickness,rotor_rod_y,rotor_rod_z+spindle_radius*2])
       comb();
 }
-//slider holders
-slider_holders();
-module slider_holders()
+/*************************************************************
+slider holders
+*/
+if(export_slider_holder)
+{
+    projection()
+        rotate([90,0,0])
+            made_slider_holder(build_slider_num,true);
+}
+else if(build_slider_holders)
+{
+    made_slider_holder(1,true);
+    made_slider_holder(2,true);
+}
+
+module made_slider_holder(num,boolean)
 {
  difference()
   {
-    union()
+    if(num==1)
     {
-    //most +ve y slider_holder
-    translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y+comb_length/2-thickness/2,base_z+base_height/2-thickness/2])
-      rotate([90,0,0])
-        slider_holder();
-    //close to origin slider_holder
-    translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y-comb_length/2+thickness/2,base_z+base_height/2-thickness/2])
-      rotate([90,0,0])
-        slider_holder();
+        //most +ve y slider_holder
+        translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y+comb_length/2-thickness/2,base_z+base_height/2-thickness/2])
+          rotate([90,0,0])
+            slider_holder();
     }
-    solenoids()solenoid_hole();
-    made_comb();
-    union()
+    else if(num==2)
     {
-    translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
-      sliders_boolean();
-    translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_move_height])
-      sliders_boolean();
-      }
+        //close to origin slider_holder
+        translate([-solenoid_width/2-edge_margin+base_width/2,rotor_rod_y-comb_length/2+thickness/2,base_z+base_height/2-thickness/2])
+          rotate([90,0,0])
+            slider_holder();
     }
+    if(boolean)
+    {
+        solenoids()solenoid_hole();
+        made_comb();
+        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
+          sliders_boolean();
+        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_move_height])
+          sliders_boolean();
+    }
+  }
 }
 
-//how we'll export DXFs
-*projection(cut = true) stepper_mount();
+/*************************************************************
+stepper
+*/
+
 *rotate([90,0,0])
 {
     stepper();
