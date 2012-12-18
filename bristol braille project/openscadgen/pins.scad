@@ -16,12 +16,12 @@ module pins()
   }
   for(x=[0:num_solenoids-1])
   {
-    translate([x*pitch,pitch,0])
+    translate([x*pitch,y_pitch,0])
       pin();
   }
   for(x=[0:num_solenoids-1])
   {
-    translate([x*pitch,-pitch,0])
+    translate([x*pitch,-y_pitch,0])
       pin();
   }
   }

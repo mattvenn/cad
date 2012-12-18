@@ -2,6 +2,7 @@
 //important stuff
 thickness=3.2; //material thickness
 pitch = 3.25; 
+y_pitch = 2.5;
 letters = 2;
 min_spacing=2;
 slider_solenoid_z_spacing = min_spacing;
@@ -33,6 +34,7 @@ solenoid_total_y = solenoid_rows*(solenoid_min_y_spacing);
 //solenoid_total_x = pitch*(solenoid_rows-1); // +solenoid_columns*(solenoid_length+pitch);
 solenoid_x_spacing = solenoid_rows*pitch-solenoid_width;
 solenoid_total_x = solenoid_columns*(solenoid_x_spacing+solenoid_width)-solenoid_x_spacing+(solenoid_rows-1)*pitch; //num_solenoids*pitch;
+plunger_hole_distance=4.3; //distance from the top of the solenoid to the center of the plunger hole, when fully retracted
 
 //sliders
 slider_width=2;
@@ -40,12 +42,13 @@ slider_length=solenoid_total_y;
 slider_height=10;
 slider_move_length=2;
 slider_move_height=2;
-pin_slider_move_height=2;
+slider_pin_offset=plunger_hole_distance+slider_move_length; //distance we want the slider pin
 
 //base
 base_width=solenoid_total_x+2*edge_margin;
 base_length=solenoid_total_y+2*edge_margin;
 base_height=solenoid_length+slider_height+min_spacing+slider_move_height+slider_solenoid_z_spacing+min_spacing+pin_length;
+pin_slider_move_height=2;
 
 //comb
 comb_width=num_solenoids*pitch+rotor_thickness+min_spacing*2;

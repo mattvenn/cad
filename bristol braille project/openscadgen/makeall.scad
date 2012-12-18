@@ -1,6 +1,6 @@
 //main bits
-export_slider_holder=true;
-build_slider_num=1;
+//export_slider_holder=true;
+//build_slider_num=1;
 //build_comb=true;
 //build_slider_holders=true;
 //build_base=true;
@@ -10,14 +10,13 @@ build_slider_num=1;
 //build_pin_slider=true;
 
 //optional extras
-/*
-build_solenoids=true;
-build_sliders=true; //too thin gap between solenoid and slider.
-build_rotors=true;
-build_rotor_rod=true;
-build_pins=true;
-build_slider_rods=true;
-*/
+//build_solenoids=true;
+//build_sliders=true; //too thin gap between solenoid and slider.
+export_sliders=true;
+//build_rotors=true;
+//build_rotor_rod=true;
+//build_pins=true;
+//build_slider_rods=true;
 include <globals.scad>;
 include <stepper.scad>;
 include <sliders.scad>;
@@ -25,6 +24,7 @@ include <solenoids.scad>;
 include <base.scad>;
 include <rotors.scad>;
 include <pins.scad>;
+
 
 /*print some variables*/
 echo("solenoid_min_y_spacing");
@@ -34,11 +34,17 @@ echo(solenoid_min_y_spacing);
 sliders and slider rods
 */
 slider_z=solenoid_length/2+slider_height/2+slider_solenoid_z_spacing;
+slider_y=slider_length/2-solenoid_min_y_spacing+edge_margin;
 if(build_sliders)
 {
-    translate([0,slider_length/2-solenoid_min_y_spacing+edge_margin,slider_z])
+    translate([0,slider_y,slider_z])
       sliders();
 }
+if(export_sliders)
+{
+   projection()sliders(true);
+}
+
 if(build_slider_rods)
 {
     made_slider_rods();

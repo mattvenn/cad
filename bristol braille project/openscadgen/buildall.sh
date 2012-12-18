@@ -8,3 +8,4 @@ openscad makeall.scad -D 'export_comb=true' -x $dir/comb.dxf
 openscad makeall.scad -D 'export_lid=true' -x $dir/lid.dxf
 openscad makeall.scad -D 'export_side=true' -x $dir/side.dxf
 openscad makeall.scad -D 'export_pin_slider=true' -x $dir/pin_slider.dxf
+openscad makeall.scad -D 'export_sliders=true' -x $dir/sliders.dxf
