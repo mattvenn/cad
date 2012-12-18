@@ -1,4 +1,23 @@
-include <build_conf.scad>;
+//main bits
+export_slider_holder=true;
+build_slider_num=1;
+//build_comb=true;
+//build_slider_holders=true;
+//build_base=true;
+//build_lid=true;
+//build_sides=true; 
+//build_comb=true;
+//build_pin_slider=true;
+
+//optional extras
+/*
+build_solenoids=true;
+build_sliders=true; //too thin gap between solenoid and slider.
+build_rotors=true;
+build_rotor_rod=true;
+build_pins=true;
+build_slider_rods=true;
+*/
 include <globals.scad>;
 include <stepper.scad>;
 include <sliders.scad>;
@@ -7,14 +26,17 @@ include <base.scad>;
 include <rotors.scad>;
 include <pins.scad>;
 
+/*print some variables*/
+echo("solenoid_min_y_spacing");
+echo(solenoid_min_y_spacing);
 
 /*************************************************************
 sliders and slider rods
 */
-slider_z=solenoid_width/2+slider_height/2+slider_solenoid_z_spacing;
+slider_z=solenoid_length/2+slider_height/2+slider_solenoid_z_spacing;
 if(build_sliders)
 {
-    translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
+    translate([0,slider_length/2-solenoid_min_y_spacing+edge_margin,slider_z])
       sliders();
 }
 if(build_slider_rods)
@@ -23,7 +45,7 @@ if(build_slider_rods)
 }
 module made_slider_rods()
 {
-  translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,slider_z])
+  translate([-solenoid_width/2-edge_margin-0.5*edge_margin,edge_margin,slider_z])
     slider_rods();
 }
 
@@ -31,18 +53,22 @@ module made_slider_rods()
 rotors
 */
 rotor_rod_z=slider_z+slider_height+slider_move_height;
-rotor_rod_y=slider_move_length+solenoid_total_y/2-solenoid_min_y_spacing;
+rotor_rod_y=comb_length/2-thickness/2+solenoid_min_y_spacing;//solenoid_min_y_spacing*2; //slider_move_length+solenoid_total_y/2-solenoid_min_y_spacing;
 
 if(build_rotors)
 {
-    //rotors and rod
+    //rotors 
     translate([0,rotor_rod_y,rotor_rod_z])
-    {
       rotors();
-      
+}
+if(build_rotor_rod)
+  made_rotor_rod();
+module made_rotor_rod()
+{
+    //rod
+    translate([0,rotor_rod_y,rotor_rod_z])
       translate([-solenoid_width/2-edge_margin-0.5*edge_margin,0,0])
         rotor_rod();
-    }
 }
 /*************************************************************
 pins
@@ -81,6 +107,8 @@ module made_base()
     solenoids()solenoid_hole();
     made_slider_holder(1,false);
     made_slider_holder(2,false);
+   made_side(1);
+   made_side(2);
   }
 }
 
@@ -135,6 +163,7 @@ module made_side(num,boolean)
     made_slider_holder(1,false);
     made_slider_holder(2,false);
     made_slider_rods();
+    made_rotor_rod();
     union()
     {
     translate([pin_slider_x,pin_slider_y,pin_slider_z])
@@ -196,6 +225,7 @@ else if(build_slider_holders)
     made_slider_holder(2,true);
 }
 
+//pass second argument=true to create slider holder with all the holes
 module made_slider_holder(num,boolean)
 {
  difference()

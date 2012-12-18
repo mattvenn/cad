@@ -51,7 +51,7 @@ module comb()
     //main part
     difference()
     {
-      cube([comb_width,comb_length,thickness],center=true); 
+      cube([comb_width,comb_length+0.1,thickness],center=true); 
       //holes for the rotors
       for(x=[0:num_solenoids-1])
       {
@@ -97,7 +97,7 @@ module slider_holder()
   
  difference()
  {
- cube([base_width,base_height+0.1,thickness],center=true);
+ cube([base_width+0.1,base_height+0.1,thickness],center=true);
   //base locators
   translate([0,-base_height/2-0.1+thickness/2,0])
     cube([base_width-edge_margin,thickness,thickness*2],center=true);

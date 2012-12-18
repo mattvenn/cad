@@ -12,13 +12,15 @@ module solenoid()
 module solenoid_hole()
 {
   trough_width=2*solenoid_plunger_radius+min_spacing;
-  trough_length=solenoid_plunger_length+min_spacing;
+  trough_length=solenoid_width*0.9;
+  trough_height=solenoid_plunger_length+min_spacing;
   color("darkblue")
   {
     //*1.1 to get a clean boolean
     cube([solenoid_width,solenoid_length*1.1,solenoid_height],center=true);
-    translate([0,0,solenoid_height/2+(trough_length)/2])
-      cube([trough_width,solenoid_length*1.1,trough_length],center=true);
+    //plunger space
+    translate([0,-trough_length/2-(solenoid_length*1.1/2-trough_length),trough_height/2+trough_height])
+      cube([trough_width,trough_length,trough_height],center=true);
   }
 }
 

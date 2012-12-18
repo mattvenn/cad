@@ -1,6 +1,6 @@
 include <globals.scad>;
 
-
+//TODO: add solenoid pins
 module slider()
 {
   color("red")
@@ -9,11 +9,12 @@ module slider()
     union()
     {
     cube([slider_width,slider_length,slider_height],center=true);
-    translate([+slider_width/2,0,slider_height/2])
+    translate([0,-slider_move_length/2,-slider_move_height/2]) //eyeballed
+    translate([+slider_width/2,0,slider_height/2+3.8]) //eyeballed
       rotate([0,0,180])
       rotate([90,0,0])
       rotate([0,90,0])
-        linear_extrude(height=slider_width) import("depdxf/nod.dxf");
+        linear_extrude(height=slider_width) import("depdxf/lock_pattern_dxf_lines.dxf");
     }
     translate([0,-slider_length/4,min_spacing])
       rotate([0,90,0])

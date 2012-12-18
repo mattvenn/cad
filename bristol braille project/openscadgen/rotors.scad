@@ -23,5 +23,5 @@ module rotor_rod()
 {
   smooth=20;
     rotate([0,90,0])
-      cylinder(r=spindle_radius,h=base_width+edge_margin,$fn=smooth);
+      cylinder(r=rotor_spindle_radius,h=base_width+edge_margin,$fn=smooth);
 }

@@ -1,5 +1,6 @@
 #!/bin/bash
 dir="builddxf"
+rm $dir/*dxf
 openscad makeall.scad -D 'export_slider_holder=true' -D 'build_slider_num=1' -x $dir/slider_holder_1.dxf
 openscad makeall.scad -D 'export_slider_holder=true' -D 'build_slider_num=2' -x $dir/slider_holder_2.dxf
 openscad makeall.scad -D 'export_base=true' -x $dir/base.dxf
