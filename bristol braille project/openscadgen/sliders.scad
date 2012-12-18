@@ -1,6 +1,5 @@
 include <globals.scad>;
 
-//TODO: add solenoid pins
 module slider()
 {
   difference()

@@ -1,18 +1,23 @@
+/* TODO
+
+can't be assembled now the sliders have the solenoid pins on them. do something with the slider holders?
+
+*/
 //main bits
 //export_slider_holder=true;
 //build_slider_num=1;
 //build_comb=true;
 //build_slider_holders=true;
-//build_base=true;
+build_base=true;
 //build_lid=true;
 //build_sides=true; 
 //build_comb=true;
 //build_pin_slider=true;
 
 //optional extras
-//build_solenoids=true;
-//build_sliders=true; //too thin gap between solenoid and slider.
-export_sliders=true;
+build_solenoids=true;
+build_sliders=true; 
+//export_sliders=true;
 //build_rotors=true;
 //build_rotor_rod=true;
 //build_pins=true;
