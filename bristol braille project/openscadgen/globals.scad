@@ -37,8 +37,10 @@ solenoid_total_x = solenoid_columns*(solenoid_x_spacing+solenoid_width)-solenoid
 plunger_hole_distance=4.3; //distance from the top of the solenoid to the center of the plunger hole, when fully retracted
 
 //sliders
+slider_y_offset=-10; //need to move the slider body a bit
 slider_width=2;
 slider_length=solenoid_total_y;
+slider_solenoid_pin_z_offset=9;
 slider_height=10;
 slider_move_length=2;
 slider_move_height=2;

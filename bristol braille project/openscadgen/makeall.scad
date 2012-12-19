@@ -7,7 +7,7 @@ can't be assembled now the sliders have the solenoid pins on them. do something 
 //export_slider_holder=true;
 //build_slider_num=1;
 //build_comb=true;
-//build_slider_holders=true;
+build_slider_holders=true;
 build_base=true;
 //build_lid=true;
 //build_sides=true; 
@@ -17,11 +17,10 @@ build_base=true;
 //optional extras
 build_solenoids=true;
 build_sliders=true; 
-//export_sliders=true;
-//build_rotors=true;
-//build_rotor_rod=true;
+build_rotors=true;
+build_rotor_rod=true;
 //build_pins=true;
-//build_slider_rods=true;
+build_slider_rods=true;
 include <globals.scad>;
 include <stepper.scad>;
 include <sliders.scad>;
@@ -261,7 +260,7 @@ module made_slider_holder(num,boolean)
         made_comb();
         translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
           sliders_boolean();
-        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_move_height])
+        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_solenoid_pin_z_offset])
           sliders_boolean();
     }
   }

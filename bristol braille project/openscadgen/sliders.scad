@@ -7,6 +7,7 @@ module slider()
     union()
     {
       //the main slider body
+      translate([0,slider_y_offset,0])
       cube([slider_width,slider_length,slider_height],center=true);
       //the lock
       translate([0,-slider_move_length/2,-slider_move_height/2]) //eyeballed
@@ -57,6 +58,7 @@ module solenoid_pin()
 module slider_boolean()
 {
   color("red")
+    translate([0,slider_y_offset,0])
     cube([slider_width,slider_length,slider_height],center=true);
 } 
 module slot()
@@ -64,9 +66,9 @@ module slot()
   smooth=20;
   hull()
   {
-  cylinder(r=spindle_radius,h=slider_width*2,center=true,$fn=smooth);
+  cylinder(r=spindle_radius,h=slider_width*1.5,center=true,$fn=smooth);
   translate([slider_move_height,-slider_move_length,0])
-    cylinder(r=spindle_radius,h=slider_width*2,center=true,$fn=smooth);
+    cylinder(r=spindle_radius,h=slider_width*1.5,center=true,$fn=smooth);
   }
 }
 
@@ -102,7 +104,7 @@ module sliders(project)
         translate([x*pitch,0,0])
         {
           slider();
-          translate([0,-slider_y-solenoid_height/2-slider_pin_offset+(x % solenoid_rows)*solenoid_min_y_spacing ,-9]) //eyeballed
+          translate([0,-slider_y-solenoid_height/2-slider_pin_offset+(x % solenoid_rows)*solenoid_min_y_spacing ,-slider_solenoid_pin_z_offset]) //eyeballed
             rotate([0,0,180])
             rotate([-90,0,0])
             rotate([0,90,0])
