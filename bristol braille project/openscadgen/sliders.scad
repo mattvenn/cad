@@ -7,11 +7,11 @@ module slider()
     union()
     {
       //the main slider body
-      translate([0,slider_y_offset,0])
+     translate([0,slider_y_offset,0])
       cube([slider_width,slider_length,slider_height],center=true);
       //the lock
       translate([0,-slider_move_length/2,-slider_move_height/2]) //eyeballed
-      translate([+slider_width/2,0,slider_height/2+3.8]) //eyeballed
+      translate([+slider_width/2,0,slider_height/2-0.4+2.1]) //eyeballed
         rotate([0,0,180])
         rotate([90,0,0])
         rotate([0,90,0])
@@ -31,7 +31,7 @@ solenoid_pin_base_length=5;
 solenoid_pin_base_width=5;
 solenoid_pin_top_width=1;
 solenoid_pin_shoulder_height=2;
-solenoid_pin_length=3;
+solenoid_pin_length=4.5;
 solenoid_pin_shoulder_width=(solenoid_pin_base_width-solenoid_pin_top_width)/2;
 module solenoid_pin()
 {
