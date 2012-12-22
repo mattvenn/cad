@@ -19,7 +19,7 @@ magnet_length=25.2;
 magnet_width=10;
 magnet_height=3;
 width=50;
-height=35;
+height=50;
 length=50;
 
 spindle_length=length-wall_thickness*2;
@@ -40,10 +40,27 @@ module box_base(width,length)
         cylinder(h=length*2,r=bearing_diameter/2,center=true);
     }
 }
-module box_front(width,height)
+module box_left_side(width,height)
 {
     color("red")
+    make_tab_slots([height,width,thickness],[0,1,0],thickness,bolt_radius)
+    make_tabs([height,width,thickness],[1,0,0],thickness,bolt_radius,bolt_length,nut_width,nut_height)
+    difference()
+    {
         cube([height,width,thickness],center=true);
+        cylinder(h=length*2,r=bearing_diameter/2,center=true);
+    }
+}
+module box_right_side(width,height)
+{
+    color("red")
+    make_tab_slots([height,width,thickness],[0,1,0],thickness,bolt_radius)
+    make_tabs([height,width,thickness],[1,0,0],thickness,bolt_radius,bolt_length,nut_width,nut_height)
+    difference()
+    {
+        cube([height,width,thickness],center=true);
+        cylinder(h=length*2,r=bearing_diameter/2,center=true);
+    }
 }
 /*
         //2 end bearings
@@ -224,7 +241,15 @@ module show_all()
   }
 
   //static stuff
-*  motorbase(width,length);
+  translate([0,0,-height/2-thickness/2])
+      box_base(width,length);
+    //sides
+    translate([-length/2-thickness/2,0,0])
+        rotate([0,90,0])
+            box_left_side(width,height);
+    translate([+length/2+thickness/2,0,0])
+        rotate([0,90,0])
+            box_right_side(width,height);
   color("grey")
    {
       rotate([90,0,0])
@@ -237,17 +262,14 @@ module show_all()
 }
 
 //build everything in it's place
-*show_all();
+show_all();
 
 //or for printing, uncomment the part you want
 *spindle();
 *blade_holder();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
-box_base(width,length);
-translate([-length/2+thickness/2,0,height/2+thickness/2])
-    rotate([0,90,0])
-        box_front(width,height);
+*box_base(width,length);
 
 //test hole for the spring fitting
 *difference()
