@@ -76,34 +76,44 @@ module make_tab_slots(size,tab_edge,thickness,bolt_radius)
     }
 }
 
-module make_tabs(size,tab_edge,thickness,bolt_radius,bolt_length,nut_width,nut_height)
+module make_tabs(size,tab_edge,thickness,bolt_radius,bolt_length,nut_width,nut_height,side=2)
 {
+    echo(str("side=",side));
     if(tab_edge[0]) // x
     assign(bolt_slot_length=bolt_length-thickness)
     difference()
     {
         child();
         //the slots for the bolt 
-        echo(bolt_slot_length);
+        if(side==2 || side==1)
         translate([size[0]/2-bolt_slot_length/2+0.1,0,0])
             cube([bolt_slot_length,bolt_radius*2,thickness*2],center=true);
+        if(side==2 || side==0)
         translate([-size[0]/2+bolt_slot_length/2-0.1,0,0])
             cube([bolt_slot_length,bolt_radius*2,thickness*2],center=true);
         //the slots for the captive nuts
+        if(side==2 || side==1)
         translate([size[0]/2-bolt_slot_length/2+0.1,0,0])
             cube([nut_height,nut_width,thickness*2],center=true);
+        if(side==2 || side==0)
         translate([-size[0]/2+bolt_slot_length/2-0.1,0,0])
             cube([nut_height,nut_width,thickness*2],center=true);
     }
     //the tabs
+    if(side==2 || side==1)
+    {
     translate([size[0]/2+thickness/2,size[1]/4,0])
         cube([thickness,size[1]/4,size[2]],center=true);
     translate([size[0]/2+thickness/2,-size[1]/4,0])
         cube([thickness,size[1]/4,size[2]],center=true);
+    }
+    if(side==2 || side==0)
+    {
     translate([-size[0]/2-thickness/2,size[1]/4,0])
         cube([thickness,size[1]/4,size[2]],center=true);
     translate([-size[0]/2-thickness/2,-size[1]/4,0])
         cube([thickness,size[1]/4,size[2]],center=true);
+    }
 }
 
 *translate([50,0,0])
