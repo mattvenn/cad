@@ -1,6 +1,14 @@
+include <tab_creator.scad>;
 open_top=true;
 draw_magnets=true;
 draw_ally=true;
+
+//for tab creation
+clearance=1.1;
+bolt_radius=1.5;
+bolt_length=15;
+nut_width=5;
+nut_height=2.5;
 
 wall_thickness=3;
 num_blades=3;
@@ -22,23 +30,25 @@ winding_clearance=4;
 winding_height=(width - magnet_holder_height - winding_clearance )/ 2;
 
 //needs a redesign to aviod mega sag
-module motorbase(width,length)
+module box_base(width,length)
 {
+    make_tab_slots([width,length,thickness],[1,0,0],wall_thickness,bolt_radius)
     difference()
     {
-        cube([length,width,height],center=true);
-        cube([length-wall_thickness*2,width-wall_thickness*2,height-wall_thickness*2],center=true);
-
-        if(open_top)
-        {
-            translate([0,0,width/2])
-                cube([length-wall_thickness*2,width-wall_thickness*2,width-wall_thickness*2],center=true);
-        }
+        cube([length,width,thickness],center=true);
+        //1 bottom bearing
+        cylinder(h=length*2,r=bearing_diameter/2,center=true);
+    }
+}
+module box_front(width,height)
+{
+    color("red")
+        cube([height,width,thickness],center=true);
+}
+/*
         //2 end bearings
         rotate([0,90,0])
             cylinder(h=length*2,r=bearing_diameter/2,center=true);
-        //1 bottom bearing
-        cylinder(h=length*2,r=bearing_diameter/2,center=true);
 
         //holes for the winding post
         rotate([90,0,0])
@@ -48,8 +58,7 @@ module motorbase(width,length)
             translate([0,0,-width/2+wall_thickness/2])
                 winding_base(width/2,magnet_length,wall_thickness*2);
         
-    }
-}
+            */
 
 //TODO: needs holes for the wires to come out, and for a motor shaft to assist winding
 //needs sloped edges
@@ -215,7 +224,7 @@ module show_all()
   }
 
   //static stuff
-  motorbase(width,length);
+*  motorbase(width,length);
   color("grey")
    {
       rotate([90,0,0])
@@ -228,14 +237,17 @@ module show_all()
 }
 
 //build everything in it's place
-show_all();
+*show_all();
 
 //or for printing, uncomment the part you want
 *spindle();
 *blade_holder();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
-*motorbase(width,length);
+box_base(width,length);
+translate([-length/2+thickness/2,0,height/2+thickness/2])
+    rotate([0,90,0])
+        box_front(width,height);
 
 //test hole for the spring fitting
 *difference()
