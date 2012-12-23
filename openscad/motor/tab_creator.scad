@@ -1,11 +1,40 @@
 thickness=3;
-clearance=1.1;
+//clearance=1.1;
 bolt_radius=1.5;
 bolt_length=15;
 nut_width=5;
 nut_height=2.5;
 size=[40,40,thickness];
 
+module vertical_tab_slots(size,thickness,bolt_radius)
+{
+        //two slots
+        translate([0,size[1]/4,0])
+            scale(clearance)
+                cube([thickness,size[1]/4,size[2]*2],center=true);
+        translate([0,-size[1]/4,0])
+            scale(clearance)
+                cube([thickness,size[1]/4,size[2]*2],center=true);
+        //hole
+        translate([0,0,0])
+            scale(clearance)
+                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
+}
+
+module horizontal_tab_slots(size,thickness,bolt_radius)
+{
+        //two slots
+        translate([size[1]/4,0,0])
+            scale(clearance)
+                cube([size[1]/4,thickness,size[2]*2],center=true);
+        translate([-size[1]/4,0,0])
+            scale(clearance)
+                cube([size[1]/4,thickness,size[2]*2],center=true);
+        //hole
+        translate([0,0,0])
+            scale(clearance)
+                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
+}
 module make_tab_slots(size,tab_edge,thickness,bolt_radius)
 {
     if(tab_edge[0]) // x
@@ -20,26 +49,13 @@ module make_tab_slots(size,tab_edge,thickness,bolt_radius)
             translate([-size[0]/2-thickness,0,0])
                 cube([thickness*2,size[1],thickness],center=true);
         }
-        //the slots
-        translate([size[0]/2+thickness/2,size[1]/4,0])
-            scale(clearance)
-                cube([thickness,size[1]/4,size[2]*2],center=true);
-        translate([size[0]/2+thickness/2,-size[1]/4,0])
-            scale(clearance)
-                cube([thickness,size[1]/4,size[2]*2],center=true);
-        translate([-size[0]/2-thickness/2,size[1]/4,0])
-            scale(clearance)
-                cube([thickness,size[1]/4,size[2]*2],center=true);
-        translate([-size[0]/2-thickness/2,-size[1]/4,0])
-            scale(clearance)
-                cube([thickness,size[1]/4,size[2]*2],center=true);
-        //the holes
-        translate([-size[0]/2-thickness/2,0,0])
-            scale(clearance)
-                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
+        //right
         translate([+size[0]/2+thickness/2,0,0])
-            scale(clearance)
-                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
+            vertical_tab_slots(size,thickness,bolt_radius);
+
+        //left
+        translate([-size[0]/2-thickness/2,0,0])
+            vertical_tab_slots(size,thickness,bolt_radius);
     }
     if(tab_edge[1]) // y
     difference()
@@ -54,25 +70,12 @@ module make_tab_slots(size,tab_edge,thickness,bolt_radius)
                 cube([size[1],thickness*2,thickness],center=true);
         }
         //the slots
-        translate([size[1]/4,size[0]/2+thickness/2,0])
-            scale(clearance)
-                cube([size[1]/4,thickness,size[2]*2],center=true);
-        translate([-size[1]/4,size[0]/2+thickness/2,0])
-            scale(clearance)
-                cube([size[1]/4,thickness,size[2]*2],center=true);
-        translate([size[1]/4,-size[0]/2-thickness/2,0])
-            scale(clearance)
-                cube([size[1]/4,thickness,size[2]*2],center=true);
-        translate([-size[1]/4,-size[0]/2-thickness/2,0])
-            scale(clearance)
-                cube([size[1]/4,thickness,size[2]*2],center=true);
-        //the holes
+        //top
+        translate([0,size[0]/2+thickness/2,0])
+            horizontal_tab_slots(size,thickness,bolt_radius);
+        //bottom
         translate([0,-size[0]/2-thickness/2,0])
-            scale(clearance)
-                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
-        translate([0,+size[0]/2+thickness/2,0])
-            scale(clearance)
-                cylinder(h=thickness*2,r=bolt_radius,center=true,$fn=20);
+            horizontal_tab_slots(size,thickness,bolt_radius);
     }
 }
 
