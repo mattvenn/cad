@@ -7,6 +7,7 @@ class Target:
     def __init__(self):
         self.dots = []
         self.windowed = False; #let user specify window to care about
+        self.threshold=150
         self.matching = False; #wait till user specifies area
         self.capture = cv.CaptureFromCAM(0)
         self.window_names = {
@@ -15,9 +16,15 @@ class Target:
           "difference" : "difference",
           };
         cv.NamedWindow(self.window_names["first"])
+        cv.NamedWindow(self.window_names["difference"])
         cv.NamedWindow(self.window_names["live"])
-        cv.SetMouseCallback(self.window_names["first"], self.first_frame_mouse)
-        cv.SetMouseCallback(self.window_names["live"], self.live_frame_mouse)
+        cv.CreateTrackbar("thresh", self.window_names["first"], 0, 255, self.update_threshold)
+        cv.SetMouseCallback(self.window_names["difference"], self.diff_mouse)
+        cv.SetMouseCallback(self.window_names["live"], self.live_mouse)
+
+    def update_threshold(self,threshold):
+      self.threshold=threshold
+      self.get_first_frame()
 
     def get_first_frame(self):
         #get first frame
@@ -29,11 +36,11 @@ class Target:
         first_frame = cv.CreateImage(frame_size, cv.IPL_DEPTH_8U, 1)
         cv.CvtColor(frame, first_frame, cv.CV_RGB2GRAY)
         # Convert the image to black and white.
-        cv.Threshold(first_frame, first_frame, 150, 255, cv.CV_THRESH_BINARY)
+        cv.Threshold(first_frame, first_frame, self.threshold, 255, cv.CV_THRESH_BINARY)
         cv.Smooth(first_frame, first_frame, cv.CV_GAUSSIAN, 3, 0)
         self.first_frame = first_frame
 
-    def first_frame_mouse(self,event, x, y, flags,user_data):
+    def diff_mouse(self,event, x, y, flags,user_data):
 #      print "got mouse: %d %d" % (x,y)
       if event == cv.CV_EVENT_LBUTTONDOWN:
         self.top_corner = (x,y)
@@ -44,7 +51,7 @@ class Target:
         self.new_height = abs(self.top_corner[1] - self.bottom_corner[1])
         print "cropping to %d %d" % (self.new_width,self.new_height)
       
-    def live_frame_mouse(self,event, x, y, flags,user_data):
+    def live_mouse(self,event, x, y, flags,user_data):
 #      print "got mouse: %d %d" % (x,y)
       if event == cv.CV_EVENT_LBUTTONDOWN:
         self.match_top_corner = (x,y)
@@ -73,7 +80,7 @@ class Target:
           frame = cv.QueryFrame(self.capture)
           grey_frame = cv.CreateImage(cv.GetSize(frame), cv.IPL_DEPTH_8U, 1)
           cv.CvtColor(frame, grey_frame, cv.CV_RGB2GRAY)
-          cv.Threshold(grey_frame, grey_frame, 150, 255, cv.CV_THRESH_BINARY)
+          cv.Threshold(grey_frame, grey_frame, self.threshold, 255, cv.CV_THRESH_BINARY)
           cv.Smooth(grey_frame, grey_frame, cv.CV_GAUSSIAN, 3, 0)
           
           difference = cv.CreateImage(cv.GetSize(frame), cv.IPL_DEPTH_8U, 1)
@@ -125,7 +132,9 @@ class Target:
           #show images
           cv.ShowImage(self.window_names["first"], self.first_frame)
           cv.ShowImage(self.window_names["live"], frame)
-          c = cv.WaitKey(7) % 100
+          cv.ShowImage(self.window_names["difference"], difference)
+
+          c = cv.WaitKey(17) % 100
           if c == 27:
               break
           if c == 89:
