@@ -171,10 +171,15 @@ if __name__=="__main__":
   
     last_pos=0
     for p in pos:
-      t.run()
+      print "advance..."
       advance(p-last_pos)
       last_pos = p
+      t.matching=False
+      for i in range(5):
+        t.run()
+      t.matching=True
+      t.run()
     
-    os.system("./feed.py --command f-%d" % (12.5*8) )
+    os.system("./feed.py --command f-%d" % (int(12.5*7)) )
     
 
