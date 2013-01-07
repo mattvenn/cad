@@ -17,10 +17,10 @@ class Target:
           };
         cv.NamedWindow(self.window_names["first"])
         cv.NamedWindow(self.window_names["difference"])
-        cv.NamedWindow(self.window_names["live"])
+#        cv.NamedWindow(self.window_names["live"])
         cv.CreateTrackbar("thresh", self.window_names["first"], 0, 255, self.update_threshold)
         cv.SetMouseCallback(self.window_names["difference"], self.diff_mouse)
-        cv.SetMouseCallback(self.window_names["live"], self.live_mouse)
+#        cv.SetMouseCallback(self.window_names["live"], self.live_mouse)
 
     def update_threshold(self,threshold):
       self.threshold=threshold
@@ -39,7 +39,7 @@ class Target:
         cv.Threshold(first_frame, first_frame, self.threshold, 255, cv.CV_THRESH_BINARY)
         cv.Smooth(first_frame, first_frame, cv.CV_GAUSSIAN, 3, 0)
         self.first_frame = first_frame
-
+    """
     def diff_mouse(self,event, x, y, flags,user_data):
 #      print "got mouse: %d %d" % (x,y)
       if event == cv.CV_EVENT_LBUTTONDOWN:
@@ -50,9 +50,10 @@ class Target:
         self.new_width = abs(self.top_corner[0] - self.bottom_corner[0])
         self.new_height = abs(self.top_corner[1] - self.bottom_corner[1])
         print "cropping to %d %d" % (self.new_width,self.new_height)
-      
-    def live_mouse(self,event, x, y, flags,user_data):
+    """    
+    def diff_mouse(self,event, x, y, flags,user_data):
 #      print "got mouse: %d %d" % (x,y)
+     # print cv.Get2D(self.difference, y, x)
       if event == cv.CV_EVENT_LBUTTONDOWN:
         self.match_top_corner = (x,y)
       if event == cv.CV_EVENT_LBUTTONUP:
@@ -64,12 +65,13 @@ class Target:
         print "matching to %d %d" % (self.match_width,self.match_height)
 
         #we have 3 dots and 2 spaces = 5
-        dot_width = self.match_width / 5
+        dot_width = int(self.match_width / 5)
         dot_height = self.match_height
         self.dot_width = dot_width
-        self.match_dist = self.dot_width / 2
+        self.dot_height=dot_height
+
         print "dots are %d x %d" % (dot_width, dot_height)
-        first_dot = ( self.match_top_corner[0] + dot_width / 2, self.match_top_corner[1] + dot_height / 2 )
+        first_dot = ( self.match_top_corner[0], self.match_top_corner[1] )
         for dot_num in range(3):
           dot = (first_dot[0]+dot_num*2*dot_width,first_dot[1])
           self.dots.append(dot)
@@ -85,8 +87,9 @@ class Target:
           
           difference = cv.CreateImage(cv.GetSize(frame), cv.IPL_DEPTH_8U, 1)
           cv.AbsDiff(grey_frame, self.first_frame, difference)
-
+          self.difference = difference
           #crop the image
+          """
           if self.windowed:
             #create new 
             contour_frame = cv.CreateImage( (self.new_width, self.new_height), cv.IPL_DEPTH_8U, 1)
@@ -101,7 +104,9 @@ class Target:
           else:
             contour_frame = cv.CloneImage(difference)
 
+          """
           if self.matching:
+            """
             storage = cv.CreateMemStorage(0)
   #          cv.ConvertScale(contour_frame, contour_frame, 1.0, 0.0)
             #this seems to destroy the difference frame
@@ -120,18 +125,30 @@ class Target:
                 points.append((x,y))
                 cv.Rectangle(frame, pt1, pt2, cv.CV_RGB(255,0,0), 1)
 
+            """
             dot_num = 0
+            dot_value=[]
+            temp = cv.CloneImage(difference)
             for dot in self.dots:
-              cv.Circle(frame, dot, self.dot_width/2, cv.CV_RGB(255, 0, 255), 2)
+              src_region = cv.GetSubRect(temp, (dot[0], dot[1], self.dot_width, self.dot_height) )
+              dot_value.append(cv.Avg(src_region)[0])
+              cv.Rectangle(difference, dot,(dot[0]+self.dot_width,dot[1]+self.dot_height), cv.CV_RGB(255, 0, 255), 2, 7)
+              #print "dot %d avg %3.1f" % (dot_num, cv.Avg(src_region)[0])
+              """
               for point in points:
                 if abs(point[0]-dot[0]) < self.match_dist and abs(point[1]-dot[1]) < self.match_dist:
                   print "match on dot %d" % dot_num
+              """
+              #print "%3.0f" % ( dot_value[dot_num] ) #'1' if dot_value[dot_num] > 100 else '0' ),
               dot_num += 1
             
+            for dot in dot_value:
+                print "%s" % ( '1' if dot > 100 else '0' ),
+            print "" 
 
           #show images
           cv.ShowImage(self.window_names["first"], self.first_frame)
-          cv.ShowImage(self.window_names["live"], frame)
+#          cv.ShowImage(self.window_names["live"], frame)
           cv.ShowImage(self.window_names["difference"], difference)
 
           c = cv.WaitKey(17) % 100
