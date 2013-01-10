@@ -8,7 +8,7 @@ clearance=1.01;
 bolt_radius=1.5;
 bolt_length=12;
 winding_bolt_length=10;
-nut_width=5;
+nut_width=6;
 nut_height=2.5;
 wall_thickness=3;
 num_blades=3;
@@ -109,27 +109,36 @@ module winding_base(width,length,height)
         }
 }
 
-module magnet_holder()
+module bush_captive_nut(bush_length)
 {
-    bush_length = (length-magnet_length)/2+magnet_length*0.1;
-    difference()
-    {
+	difference()
+	{
         translate([0,0,bush_length/2])
             cylinder(r=magnet_holder_r,h=bush_length,center=true,$fn=smooth);
         translate([0,0,bush_length/2])
             cylinder(r=shaft_diameter/2,h=bush_length*2,center=true,$fn=smooth);
-        //magnet holes
-        translate([0,0,height/2])
-            rotate([0,90,0])
-                magnets();
         //slot for a captive nut
-        translate([(magnet_holder_r+shaft_diameter/2)/2,0,3*bush_length/4])
+        translate([(magnet_holder_r+shaft_diameter/2)/2-nut_height/2+1,0,3*bush_length/4])
             rotate([0,90,0])
                 cube([bush_length,nut_width,nut_height],center=true);
         //hole for a bolt
         translate([magnet_holder_r/2+0.1,0,bush_length/2])
             rotate([0,90,0])
                 cylinder(r=bolt_radius,h=magnet_holder_r,$fn=20,center=true);
+	}
+
+}
+module magnet_holder()
+{
+    bush_length = (length-magnet_length)/2+magnet_length*0.1;
+	echo(str("bush length", bush_length));
+    difference()
+    {
+	bush_captive_nut(bush_length);
+        //magnet holes
+        translate([0,0,height/2])
+            rotate([0,90,0])
+                magnets();
     }
 }
 module magnets()
@@ -150,34 +159,28 @@ module tail()
 }
 module blade_holder()
 {
-    difference()
-    {
+            bush_captive_nut(10); 
         union()
         {
-            cylinder(r=shaft_diameter/2+wall_thickness,h=10);
             for(i=[0:num_blades-1])
             {
-                rotate([0,0,i*360/num_blades])
+                rotate([0,0,i*360/num_blades+40])
                     translate([0,0,0])
                         blade_mount();
             }
         }
-        translate([0,0,-2])
-            cylinder(r=shaft_diameter/2,h=20);
-    }
-        
 }
 
 module blade_mount()
 {
     base_thickness=2;
-    blade_holder_length=40;
+    blade_holder_length=25;
     blade_holder_width=10;
     holder_height=tan(blade_rake)*blade_holder_width;
     //echo(holder_height);
             difference()
             {
-            translate([-blade_holder_width/2,0,0])
+            translate([-blade_holder_width/2,-8,0])
             rotate([90,0,0])
             {
                 linear_extrude(height=blade_holder_length)
@@ -187,7 +190,7 @@ module blade_mount()
         //bolt holes
         for(i=[0:1])
         {
-            translate([2,-20-i*10,0])
+            translate([2,-17-i*10,0])
                 rotate([0,-blade_rake,0])
                     cylinder(r=1.5,h=50,center=true,$fn=12);
         }
@@ -324,10 +327,10 @@ module show_all()
 }
 
 //build everything in it's place
-show_all();
+*show_all();
 //or for printing, uncomment the part you want
 *magnet_holder();
-*blade_holder();
+blade_holder();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
 *box_base(width,length);
