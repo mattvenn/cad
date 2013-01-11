@@ -19,6 +19,7 @@ wall_thickness=3;
 num_blades=3;
 blade_rake=20;
 bearing_diameter=22;
+bearing_sleeve_r=bearing_diameter/2+min_thickness;
 bearing_height=8;
 shaft_diameter=8;
 magnet_length=25.2;
@@ -57,7 +58,7 @@ module box_base(width,length)
     {
         cube([length,width,wall_thickness],center=true);
         //1 bottom bearing
-        cylinder(h=length*2,r=bearing_diameter/2,center=true);
+        cylinder(h=length*2,r=bearing_sleeve_r,center=true);
     }
 }
 module box_front(width,height)
@@ -68,7 +69,7 @@ module box_front(width,height)
     difference()
     {
         cube([height,width,wall_thickness],center=true);
-        cylinder(h=length*2,r=bearing_diameter/2,center=true);
+        cylinder(h=length*2,r=bearing_sleeve_r,center=true);
     }
 }
 
@@ -269,6 +270,24 @@ module bearing()
         cylinder(r=shaft_diameter/2,h=bearing_height*2,center=true);
     }
 }
+
+//how well will this print with the overhang?
+module bearing_mount()
+{
+    difference()
+    {
+      union()
+        {
+        translate([0,0,bearing_height/4])
+        //1mm overhang
+        cylinder(r=bearing_diameter/2+min_thickness+1,h=min_thickness/2,center=true);
+        cylinder(r=bearing_sleeve_r,h=bearing_height/2,center=true);
+        }
+        translate([0,0,bearing_height/2])
+        cylinder(r=bearing_diameter/2,h=bearing_height,center=true);
+        cylinder(r=shaft_diameter,h=bearing_height,center=true);
+    }
+}
 module show_all()
 {
   color("green")
@@ -294,6 +313,16 @@ module show_all()
           rotate([0,0,0])
             bearing();
             }
+     //bearing mounts/sleeves
+      translate([length/2+bearing_height/2,0,0])
+          rotate([0,90,0])
+            bearing_mount();
+      translate([-length/2-bearing_height/2,0,0])
+          rotate([0,90,180])
+            bearing_mount();
+      translate([0,0,-height/2-bearing_height/2])
+          rotate([0,180,0])
+            bearing_mount();
 
   //show the ally tube
   if(draw_ally)
@@ -373,6 +402,7 @@ module show_all()
 //build everything in it's place
 //draw_lid=true;
 show_all();
+*bearing_mount();
 //or for printing, uncomment the part you want
 *magnet_holder();
 *blade_holder();
