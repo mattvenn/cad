@@ -1,9 +1,14 @@
+/*
+todo:
+    bearing mountings
+*/
 include <tab_creator.scad>;
-//draw_lid=true;
+draw_lid=true;
 draw_magnets=true;
 draw_ally=true;
 smooth=40;
 //for tab creation
+min_thickness=2;
 clearance=1.01;
 bolt_radius=1.5;
 bolt_length=12;
@@ -22,6 +27,7 @@ width=50;
 height=50;
 length=50;
 tail_length=length;
+tail_bolt_hole_length = tail_length/2;
 tail_rod_length=4*length;
 
 magnet_holder_length=length-wall_thickness*2;
@@ -33,15 +39,24 @@ winding_height=(width - magnet_holder_r*2 - winding_clearance )/ 2;
 winding_width=width/2;
 winding_length=magnet_length;
 
-module box_base(width,length,bearing)
+module box_lid(width,length)
+{
+    make_tab_slots([width,length,wall_thickness],[1,0,0],wall_thickness,bolt_radius)
+    difference()
+    {
+        cube([length,width,wall_thickness],center=true);
+        rotate([90,90,0])
+            tail_bolt_holes(tail_bolt_hole_length);
+    }
+}
+module box_base(width,length)
 {
     make_tab_slots([width,length,wall_thickness],[1,0,0],wall_thickness,bolt_radius)
     difference()
     {
         cube([length,width,wall_thickness],center=true);
         //1 bottom bearing
-        if(bearing)
-            cylinder(h=length*2,r=bearing_diameter/2,center=true);
+        cylinder(h=length*2,r=bearing_diameter/2,center=true);
     }
 }
 module box_front(width,height)
@@ -200,14 +215,18 @@ module blade_mount()
 module tail_adapter()
 {
     length=tail_length/2;
-    translate([0,0,shaft_diameter*0.7/2])
+    adapter_height=shaft_diameter-0.5+min_thickness; //subtract 0.5 to make a tight fit when bolted
+
+    translate([0,0,adapter_height/2])
     rotate([0,-90,0])
     difference()
     {
-        cube([shaft_diameter*0.7,length,shaft_diameter*2+bolt_radius*2],center=true);
-        translate([shaft_diameter*0.7/2,0,0])
+        cube([adapter_height,length,shaft_diameter*2+bolt_radius*2],center=true);
+        translate([min_thickness/2,0,0])
             rotate([90,0,0])
                 cylinder(r=shaft_diameter/2,h=length*2,center=true,$fn=smooth);
+        translate([shaft_diameter/2+min_thickness,0,0])
+        cube([adapter_height,length*2,shaft_diameter],center=true);
         //bolt holes
         tail_bolt_holes(length);
 
@@ -260,21 +279,17 @@ module show_all()
             cylinder(r=shaft_diameter/2,h=length*1.5,center=true);
   if(draw_ally)
     color("red")
-        translate([-tail_rod_length/2+length/2+wall_thickness*2,-width/2+shaft_diameter,-height/2+shaft_diameter])
+        translate([-tail_rod_length/2+length/2+wall_thickness*2,0,+height/2+shaft_diameter/2+wall_thickness])
         rotate([0,90,0])
             cylinder(r=shaft_diameter/2,h=tail_rod_length,center=true);
 
     //tail adapter
-    //one half
     color("blue")
-    translate([-tail_rod_length+tail_length/4+length/2+wall_thickness*2,-width/2+shaft_diameter/2*0.7,-height/2+shaft_diameter])
+    translate([-tail_rod_length+tail_length/4+length/2+wall_thickness*2,-shaft_diameter,height/2+shaft_diameter])
         rotate([0,90,90])
             tail_adapter();
-    //the other half
-    translate([-tail_rod_length+tail_length/4+length/2+wall_thickness*2,-width/2+shaft_diameter+shaft_diameter-shaft_diameter/2*0.7,-height/2+shaft_diameter])
-        rotate([0,-90,90])
-            tail_adapter();
-    translate([-tail_rod_length+tail_length/4+length/2+wall_thickness*2,-width/2+shaft_diameter+shaft_diameter-shaft_diameter/2*0.7,-height/2+shaft_diameter])
+    //fin
+    translate([-tail_rod_length+tail_length/4+length/2+wall_thickness*2,+shaft_diameter/2,+height/2+shaft_diameter])
     rotate([90,0,0])
     tail_fin();
 
@@ -291,11 +306,20 @@ module show_all()
   
   //lid
   if(draw_lid)
+  {
       translate([0,0,+height/2+wall_thickness/2])
-          box_base(width,length,false);
+          box_lid(width,length);
+        color("blue")
+
+    //lid tail adapter
+//        translate([-tail_rod_length/2+length/2+wall_thickness*2,-width/2+shaft_diameter+wall_thickness,+height/2+shaft_diameter/2+wall_thickness])
+        translate([0,0,+height/2+shaft_diameter+wall_thickness+min_thickness])
+            rotate([0,180,90])
+                tail_adapter();
+  }
    //base
   translate([0,0,-height/2-wall_thickness/2])
-      box_base(width,length,true);
+      box_base(width,length);
     //front and back
     translate([-length/2-wall_thickness/2,0,0])
         rotate([0,90,0])
@@ -331,6 +355,8 @@ show_all();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
 *box_base(width,length);
+*box_lid(width,length);
+*tail_adapter();
 
 //test hole for the spring fitting
 *difference()
