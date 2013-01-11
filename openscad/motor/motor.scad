@@ -1,9 +1,9 @@
 /*
 todo:
     bearing mountings
+    make it easier to build by not demanding exact fit inside. So... use the bush with captive nut to stop sliding against back bearing, and flip the plade mount to stop on the front. Then both magnet holders can be made thinner and will be adustable. 
 */
 include <tab_creator.scad>;
-draw_lid=true;
 draw_magnets=true;
 draw_ally=true;
 smooth=40;
@@ -19,6 +19,7 @@ wall_thickness=3;
 num_blades=3;
 blade_rake=20;
 bearing_diameter=22;
+bearing_height=8;
 shaft_diameter=8;
 magnet_length=25.2;
 magnet_width=10;
@@ -259,6 +260,15 @@ module tail_bolt_hole()
     rotate([0,90,0])
         cylinder(r=bolt_radius,h=shaft_diameter*2,center=true,$fn=10);
 }
+
+module bearing()
+{
+    difference()
+    {
+        cylinder(r=bearing_diameter/2,h=bearing_height,center=true);
+        cylinder(r=shaft_diameter/2,h=bearing_height*2,center=true);
+    }
+}
 module show_all()
 {
   color("green")
@@ -268,9 +278,22 @@ module show_all()
 
   magnets();
   color("blue")
-      translate([length/2+10,0,0])
-          rotate([0,90,0])
+      translate([length/2+15,0,0])
+          rotate([0,90,180])
               blade_holder();
+    //the 3 bearings
+    color("green")
+    {
+      translate([length/2+bearing_height/2,0,0])
+          rotate([0,90,180])
+            bearing();
+      translate([-length/2-bearing_height/2,0,0])
+          rotate([0,90,180])
+            bearing();
+      translate([0,0,-height/2-bearing_height/2])
+          rotate([0,0,0])
+            bearing();
+            }
 
   //show the ally tube
   if(draw_ally)
@@ -348,6 +371,7 @@ module show_all()
 }
 
 //build everything in it's place
+//draw_lid=true;
 show_all();
 //or for printing, uncomment the part you want
 *magnet_holder();
