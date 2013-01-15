@@ -10,7 +10,7 @@ bolt_length=12;
 winding_bolt_length=10;
 nut_width=5;
 nut_height=2.5;
-wall_thickness=3;
+wall_thickness=3.25;
 num_blades=3;
 blade_rake=20;
 bearing_diameter=22;
@@ -324,13 +324,14 @@ module show_all()
 }
 
 //build everything in it's place
-show_all();
+*show_all();
 //or for printing, uncomment the part you want
 *magnet_holder();
 *blade_holder();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
-*box_base(width,length);
+projection(cut=true)
+  box_front(width,length,true);
 
 //test hole for the spring fitting
 *difference()
