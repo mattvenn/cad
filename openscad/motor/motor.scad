@@ -37,7 +37,7 @@ tail_rod_length=4*length;
 
 magnet_holder_length=length-wall_thickness*2;
 magnet_spacing=shaft_diameter+wall_thickness+2*magnet_height; //how far the magnets should be from the shaft
-magnet_holder_r = 11; //eyeballed
+magnet_holder_r = 12; //eyeballed
 
 winding_clearance=1; //eyeballed
 winding_height=(width - magnet_holder_r*2 - winding_clearance )/ 2;
@@ -133,9 +133,9 @@ module bush_captive_nut(bush_length,spacer=false)
         translate([0,0,bush_length/2])
             cylinder(r=shaft_diameter/2,h=bush_length*2,center=true);
         //slot for a captive nut
-        translate([(magnet_holder_r+shaft_diameter/2)/2-nut_height/2+1,0,3*bush_length/4])
+        translate([(magnet_holder_r+shaft_diameter/2)/2-nut_height/2+1,0,bush_length/2])
             rotate([0,90,0])
-                cube([bush_length,nut_width,nut_height],center=true);
+                cube([bush_length*2,nut_width,nut_height],center=true);
         //hole for a bolt
         translate([magnet_holder_r/2+0.1,0,bush_length/2])
             rotate([0,90,0])
@@ -409,12 +409,12 @@ module show_all()
 }
 
 //build everything in it's place
-show_all();
+*show_all();
 //draw_lid=true;
 *end_stop();
 *bearing_mount();
 //or for printing, uncomment the part you want
-*magnet_holder();
+magnet_holder();
 *blade_holder();
 //winding mount
 *winding(width/2,magnet_length,winding_height);
