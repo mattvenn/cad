@@ -1,7 +1,11 @@
 /*
 todo:
-    bearing mountings
-    make it easier to build by not demanding exact fit inside. So... use the bush with captive nut to stop sliding against back bearing, and flip the plade mount to stop on the front. Then both magnet holders can be made thinner and will be adustable. 
+
+Q how well will bearingmount print with the overhang? 
+A overhang is ok, but top is too fragile. How sort?
+
+get rid of at least 1 captive nut on the magnet holder? maybe best to keep both in case one gets clogged
+
 */
 $fa=5;
 $fs=1;
@@ -10,18 +14,19 @@ draw_magnets=true;
 draw_ally=true;
 //for tab creation
 min_thickness=2;
-clearance=1.01;
+clearance=1.02;
 bolt_radius=1.5;
 bolt_length=12;
 winding_bolt_length=10;
 nut_width=6;
 nut_height=2.5;
-wall_thickness=3;
+wall_thickness=3.25;
 num_blades=3;
 blade_rake=20;
 bush_length = min_thickness*2+bolt_radius*2;
 bearing_diameter=22;
 bearing_sleeve_r=bearing_diameter/2+min_thickness;
+echo( str("bearing sleeve d=" , bearing_sleeve_r*2));
 bearing_inner_sleeve_r=11/2;
 bearing_height=8;
 shaft_diameter=8;
@@ -61,7 +66,7 @@ module box_base(width,length)
     {
         cube([length,width,wall_thickness],center=true);
         //1 bottom bearing
-        cylinder(h=length*2,r=bearing_sleeve_r,center=true);
+        cylinder(h=length*2,r=bearing_sleeve_r*clearance,center=true);
     }
 }
 module box_front(width,height)
@@ -72,7 +77,7 @@ module box_front(width,height)
     difference()
     {
         cube([height,width,wall_thickness],center=true);
-        cylinder(h=length*2,r=bearing_sleeve_r,center=true);
+        cylinder(h=length*2,r=bearing_sleeve_r*clearance,center=true);
     }
 }
 
@@ -270,17 +275,17 @@ module bearing()
     }
 }
 
-//how well will this print with the overhang?
 module bearing_mount()
 {
     difference()
     {
       union()
         {
-        translate([0,0,bearing_height/4])
-        //1mm overhang
-        cylinder(r=bearing_diameter/2+min_thickness+1,h=min_thickness/2,center=true);
-        cylinder(r=bearing_sleeve_r,h=bearing_height/2,center=true);
+          translate([0,0,bearing_height/4])
+          //1mm overhang for rim
+            cylinder(r=bearing_diameter/2+min_thickness+1,h=min_thickness/2,center=true);
+          //the sleeve
+          cylinder(r=bearing_sleeve_r,h=bearing_height/2,center=true);
         }
         translate([0,0,bearing_height/2])
         cylinder(r=bearing_diameter/2,h=bearing_height,center=true);
@@ -414,11 +419,25 @@ module show_all()
 *end_stop();
 *bearing_mount();
 //or for printing, uncomment the part you want
-magnet_holder();
+*magnet_holder();
 *blade_holder();
 //winding mount
-*winding(width/2,magnet_length,winding_height);
-*box_base(width,length);
+*projection(cut=true)
+  winding(width/2,magnet_length,winding_height);
+
+*projection(cut=true)
+  box_base(width,length,true);
+
+//test hole
+*projection(cut=true)
+        cylinder(h=length*2,r=bearing_sleeve_r*clearance,center=true);
+
+projection(cut=true)
+  box_front(width,height);
+
+*projection(cut=true)
+  box_side(width,height);
+
 *box_lid(width,length);
 *tail_adapter();
 
