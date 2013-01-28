@@ -1,14 +1,19 @@
 /* TODO
 
-can't be assembled now the sliders have the solenoid pins on them. do something with the slider holders?
+- FIXED by increasing size of hole for the slider and descreasing height of lock. 
+  can't be assembled now the sliders have the solenoid pins on them. do something with the slider holders?
+
+- comb is still just a guess, needs sizing
+- extra slider holders would be good at the ends to deal with the acetyl bending
+- springs for the sliders
 
 */
 //main bits
 //export_slider_holder=true;
 //build_slider_num=1;
 //build_comb=true;
-build_slider_holders=true;
-build_base=true;
+//build_slider_holders=true;
+//build_base=true;
 //build_lid=true;
 //build_sides=true; 
 //build_comb=true;
@@ -41,6 +46,8 @@ slider_z=solenoid_length/2+slider_height/2+slider_solenoid_z_spacing;
 slider_y=slider_length/2-solenoid_min_y_spacing+edge_margin;
 if(build_sliders)
 {
+    //render() //why?
+//    translate([0,slider_move_length/2,slider_move_height/2])
     translate([0,slider_y,slider_z])
       sliders();
 }
@@ -62,7 +69,7 @@ module made_slider_rods()
 /*************************************************************
 rotors
 */
-rotor_rod_z=slider_z+slider_height+slider_move_height;
+rotor_rod_z=slider_z+slider_height/2+rotor_diameter/2+slider_move_height/2;
 rotor_rod_y=comb_length/2-thickness/2+solenoid_min_y_spacing;//solenoid_min_y_spacing*2; //slider_move_length+solenoid_total_y/2-solenoid_min_y_spacing;
 
 if(build_rotors)
@@ -211,6 +218,7 @@ module made_pin_slider()
 comb
 */
 if(build_comb)
+    render()
     made_comb();
 if(export_comb)
     projection()made_comb();
@@ -231,7 +239,9 @@ if(export_slider_holder)
 }
 else if(build_slider_holders)
 {
+    render() //why?
     made_slider_holder(1,true);
+    render() //why?
     made_slider_holder(2,true);
 }
 
@@ -260,7 +270,8 @@ module made_slider_holder(num,boolean)
         made_comb();
         translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z])
           sliders_boolean();
-        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_solenoid_pin_z_offset])
+          //add some room to get the sliders in
+        translate([0,solenoid_total_y/2-solenoid_min_y_spacing,slider_z+slider_lock_height*1.3])
           sliders_boolean();
     }
   }
