@@ -1,11 +1,11 @@
-
+$fn=80;
 module example001()
 {
 	difference()
 	{
 	base();
 	slot();
-	locate();
+    locate();
 	vents();
 	}	
 }
@@ -15,7 +15,7 @@ module vents()
 	for( y = [ - 10 : 5 : 10 ] )
 	{
 	translate([y,10,0])
-		cylinder(10,1.5,1.5);
+		cylinder(15,1.5,1.5,$fn=12,center=true);
 	}
 }
 module slot()
@@ -29,16 +29,19 @@ module slot()
 module locate()
 {
 	translate([-60/2,0,0])
-		cylinder(10,1.5,1.5);
+		cylinder(12,1.5,1.5,$fn=12,center=true);
 }
 module base()
 {
+    union()
+    {
 	cylinder(3.8, 60/2,60/2 );
-	translate([0,0,3.8])
+	translate([0,0,3.8+(10-3.8)/2])
 	difference() {
-		cylinder(10-3.8,50/2,50/2);
-		cylinder(10-3.8,40/2,43/2);		
-}
+		cylinder(10-3.8,50/2,50/2,center=true);
+		cylinder(10-3.8+1,40/2,43/2,center=true);		 //+1 to make it bigger
+    }
+    }
 }
 example001();
 
