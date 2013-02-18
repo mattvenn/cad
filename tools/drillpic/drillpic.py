@@ -38,6 +38,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--gcode', default="drill.ngc", help='gcode file to write', type=argparse.FileType('w'))
     parser.add_argument('--image', action='store', dest='image_file', help="image", required = True)
+    parser.add_argument('--width', action='store', dest='width', type=int, default=100, help="width in mm")
     parser.add_argument('--xdiv', action='store', dest='xdiv', type=int, default=5, help="xdiv")
     parser.add_argument('--ydiv', action='store', dest='ydiv', type=int, default=5, help="ydiv")
     parser.add_argument('--safez', action='store', dest='safez', type=float, default=5, help="z safety")
@@ -61,6 +62,7 @@ if __name__ == '__main__':
 
     src = Image.open(args.image_file)
     src = src.convert('L')
+    resize = float(args.width) / src.size[0]
     drill = Image.new('L',src.size)
     draw = ImageDraw.Draw(drill)
     skip_count = 0
@@ -103,15 +105,15 @@ if __name__ == '__main__':
             #if peck
             if args.peck:
                 gcode.append( 'G83 X%.4f Y%.4f Z%.4f Q%.4f R%.4f' %( 
-                    box[0],
-                    box[1],
+                    box[0] * resize,
+                    box[1] * resize,
                     -z,
                     float(peck),
                     float(args.safez)))
             else:
                 gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( 
-                    box[0],
-                    box[1],
+                    box[0] * resize,
+                    box[1] * resize,
                     -z,
                     float(args.safez)))
 
