@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--peck', action='store', dest='peck', type=float, default=0, help="peck")
     parser.add_argument('--feedspeed', action='store', dest='feedspeed', type=float, default=200, help="feedspeed mm/min")
     parser.add_argument('--depth', action='store', dest='z', type=float, default=5, help="z depth")
-    parser.add_argument('--offset', action='store', dest='offset', type=float, default=2, help="offset z by this much")
+    parser.add_argument('--offset', action='store', dest='offset', type=float, default=0, help="offset z by this much")
     parser.add_argument('--flip', action='store_const', dest='flip', const=True, default=False, help="flip the image, making black white and vice versa")
     parser.add_argument('--square', action='store_const', dest='square', const=True, default=False, help="make the drilling happen on a square grid, disregard y")
     parser.add_argument('--openscad', action='store_const', dest='openscad', const=True, default=False, help="make an openscad that represents the drawing")
