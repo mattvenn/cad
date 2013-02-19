@@ -1,5 +1,12 @@
 #!/usr/bin/python
 """
+todo:
+* image is flipped both x & y
+- done: the png demo image should draw circles
+* allow define a tool radius instead of xdiv
+
+
+Gcode for peck drilling:
 G83 Z Q P R I K J F X* Y*
 Z= Bottom of hole
 Q= Peck amount 
@@ -77,6 +84,8 @@ if __name__ == '__main__':
 
     if args.square:
        args.ydiv = y / (x / args.xdiv ) 
+    cell_width = x/args.xdiv
+    cell_height = y/args.ydiv
 
     for i in range(args.xdiv):
         for j in range(args.ydiv):
@@ -93,7 +102,9 @@ if __name__ == '__main__':
             #print z
 
             #draw a representative image
-            draw.rectangle(box, fill=main_color)
+            #draw.rectangle(box, fill=main_color)
+            circle_r = (cell_width/2)/255.0 * main_color
+            draw.ellipse((i*cell_width+circle_r,j*cell_height+circle_r,i*cell_width+cell_width-circle_r,j*cell_height+cell_width-circle_r), fill=255)
 
             if z <= 0:
                 skip_count += 1
