@@ -22,13 +22,33 @@ slot_shift = 5;
 cam_y = 25 + slot_shift;
 servo_h = 25;
 servo_y = servo_h+cam_y; 
-gondola();
-translate([0,0,thickness*2]) rotate([0,0,45])hanger();
-translate([0,0,thickness*3]) rotate([0,0,-180-45])hanger();
-cam_angle = $t * -90;
-translate([servo_x,cam_y,thickness/2+servo_w/2]) rotate([90,cam_angle,0]) cam();
-color("gray") alignds420(position=[servo_x,servo_y,thickness/2+6],rotation=[0,-90,90]);
+pen_holder_height = 100;
 
+
+acrylic() gondola();
+acrylic() translate([0,0,thickness*2]) rotate([0,0,45])hanger();
+acrylic() translate([0,0,thickness*3]) rotate([0,0,-180-45])hanger();
+acrylic() pen_holder();
+cam_angle = $t * -90;
+acrylic() translate([servo_x,cam_y,thickness/2+servo_w/2]) rotate([90,cam_angle,0]) cam();
+color("blue") alignds420(position=[servo_x,servo_y,thickness/2+6],rotation=[0,-90,90]);
+
+module acrylic()
+{
+    color("grey",0.8)
+        child();
+}
+
+module pen_holder()
+{
+    translate([0,0,pen_holder_height/2])
+        difference()
+        {
+            cylinder(r=pen_hole_r,h=pen_holder_height,center=true);
+            cylinder(r=pen_hole_r-thickness,h=pen_holder_height*1.5,center=true);
+        }
+    
+}
 module plate()
 {
   difference()
