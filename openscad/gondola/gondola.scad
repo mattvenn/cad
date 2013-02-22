@@ -1,3 +1,11 @@
+/*todo
+
+  servo measurements a bit small, increased by 0.2. not tested
+  servo wire hole too small
+  servo mount slot too small - check cnc - esp drill diameter
+  how mount pcb without screws in back?
+
+*/
 $fa = 4; //min angle: make large circles smoother
 $fs=0.5; //min fragment size, make small circles smoother
 include <servos.scad>
