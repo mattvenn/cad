@@ -1,31 +1,36 @@
-$fs=0.5;
-include </home/matthew/work/cad/MCAD/servos.scad>
-outer_r = 60;
-pen_hole_r = 12;
+$fa = 4; //min angle: make large circles smoother
+$fs=0.5; //min fragment size, make small circles smoother
+include <servos.scad>
 
-thickness = 3;
+//measured
+thickness = 2.73;
 drill_r = 1;
 pcb_dist=42;
-bolt_r = 1.5;
+bolt_r = 1.6;
+pen_holder_r = 30/2;
 clearance=0.2;
 
-servo_dim = [12, 25,19.5];
+servo_dim = [12.5, 25,19.5];
 servo_w = servo_dim[0];
 servo_h = servo_dim[1];
-servo_r = 2;
+servo_r = 4.8/2; //axle of the motor
+servo_cam_to_holder = 11.2; //distance between one face of the cam and the back shoulder of the servo
 
-//calculated
-hanger_r = pen_hole_r + 5;
 
 //made up
 leaf_width = 20; //width of the leaf spring
 servo_x = 5.5;
 slot_shift = 5;
 cam_y = 25 + slot_shift;
-servo_y = servo_h+cam_y; 
 pen_holder_height = 100;
+outer_r = 60;
 
+//calculated
+hanger_r = pen_holder_r + 5;
+servo_y = servo_h+cam_y; 
+pen_hole_r = 25/2; //acrylic pipe is 30mm D, which I'll turn down to get a nice fit
 
+//the bits
 acrylic() gondola();
 acrylic() translate([0,0,thickness*2]) rotate([0,0,45])hanger();
 acrylic() translate([0,0,thickness*3]) rotate([0,0,-180-45])hanger();
@@ -35,6 +40,10 @@ acrylic() translate([servo_x,cam_y,thickness/2+servo_w/2]) rotate([90,cam_angle,
 color("blue") servo();
 acrylic() servo_mount();
 
+* projection() gondola();
+* projection() rotate([90,0,0]) servo_mount();
+* projection() hanger();
+
 module acrylic()
 {
     color("grey",0.8)
@@ -43,7 +52,7 @@ module acrylic()
 module servo_mount_diff()
 {
     h = servo_w+2*thickness;
-    translate([0,cam_y+10,h/2-thickness/2])
+    translate([0,cam_y+thickness+servo_cam_to_holder,h/2-thickness/2])
         rotate([90,0,0])
             minkowski()
             {
@@ -155,7 +164,7 @@ module hanger()
           cylinder(r=hanger_r/3,h=thickness,center=true);
         cylinder(r=hanger_r,h=thickness,center=true);
       }
-      cylinder(r=pen_hole_r+clearance,h=thickness*2,center=true);
+      cylinder(r=pen_holder_r+clearance,h=thickness*2,center=true);
         translate([outer_r/2,0,0])
           cylinder(r=bolt_r+clearance,h=thickness*2,center=true);
     }
