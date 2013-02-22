@@ -4,11 +4,11 @@ include <servos.scad>
 
 //measured
 thickness = 2.73;
-drill_r = 1;
 pcb_dist=42;
 bolt_r = 1.6;
 pen_holder_r = 30/2;
 clearance=0.2;
+drill_r = 1+clearance;
 
 servo_dim = [12.5, 25,19.5];
 servo_w = servo_dim[0];
@@ -31,19 +31,20 @@ servo_y = servo_h+cam_y;
 pen_hole_r = 25/2; //acrylic pipe is 30mm D, which I'll turn down to get a nice fit
 
 //the bits
+/*
 acrylic() gondola();
 acrylic() translate([0,0,thickness*2]) rotate([0,0,45])hanger();
 acrylic() translate([0,0,thickness*3]) rotate([0,0,-180-45])hanger();
 acrylic() pen_holder();
 cam_angle = $t * -90;
 acrylic() translate([servo_x,cam_y,thickness/2+servo_w/2]) rotate([90,cam_angle,0]) cam();
-color("blue") servo();
 acrylic() servo_mount();
+color("blue") servo();
+*/
 
-* projection() gondola();
+ projection() gondola();
 * projection() rotate([90,0,0]) servo_mount();
 * projection() hanger();
-
 module acrylic()
 {
     color("grey",0.8)
@@ -74,6 +75,7 @@ module servo_mount()
 module servo()
 {
     alignds420(position=[servo_x,servo_y,thickness/2+6],rotation=[0,-90,90]);
+    translate([servo_w-drill_r,servo_y-servo_dim[0]/2,thickness/2+6])rotate([0,-90,90])cylinder(r=drill_r+clearance,h=20,center=true);
 }
 module pen_holder()
 {
