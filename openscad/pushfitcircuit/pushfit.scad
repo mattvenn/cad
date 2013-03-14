@@ -1,9 +1,10 @@
 $fa=1;
 $fs=0.3;
 
-tape_reel_r = 76 / 2;
+tape_reel_r = 77 / 2;
 tape_reel_h = 30;
 thickness=3;
+clearance = 0.1; //laser clearance
 
 //push fit dimensions
 push_width=10;
@@ -28,18 +29,32 @@ module push_buttons()
     translate([-tape_reel_r+push_width,20,0])
     push();
 }
-projection()
+*projection()
 {
-translate([push_width,0,0]) push(0.1);
-translate([push_width*3,0,0]) push(0.2);
-translate([push_width*5,0,0]) push(0.3);
-translate([push_width*7,0,0]) push(0.4);
+translate([push_width,0,0]) push();
+translate([push_width*3,0,0]) push();
+translate([push_width*5,0,0]) push();
+translate([push_width*7,0,0]) push();
 }
+projection() 
+test_board();
 //projection()
-//push_buttons();
+*push_buttons();
 //projection()
-//led_board();
+*led_board();
 
+module test_board()
+{
+    for(i=[0:4])
+    {
+        translate([i*15,0,0])
+        difference()
+        {
+            cube([20,20,thickness],center=true);
+            push_hole();
+        }
+    }
+}
 module double_wire(wire_r=thin_wire_r,space=double_wire_space)
 {
     translate([0,space/2,0])
@@ -83,12 +98,11 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module push(bump_offset=0.4)
+module push(bump_offset=0.3,bump_width=1)
 {
 
-    push_top_clip_h = 2;
+    push_top_clip_h = 3;
     slot_width = 1;
-    bump_r = 1.0;
     difference()
     {
     union()
@@ -97,9 +111,16 @@ module push(bump_offset=0.4)
     translate([0,push_top_height/2+thickness/2,0])
         cube([push_width,thickness*1.5,thickness],center=true);
     translate([0,push_top_height/2+thickness-bump_offset+push_top_clip_h/2,0])
-    //blip on the end
-    roundedBox([push_width*1.1,push_top_clip_h,thickness],bump_r,true);
+    //bumps on the end
+    hull()
+    {
+    translate([0,-push_top_clip_h/2,0])
+    cube([push_width+bump_width,0.1,thickness],center=true);
+    translate([0,push_top_clip_h/2,0])
+    cube([push_width*0.9,0.1,thickness],center=true);
     }
+    }
+    //the slot
     translate([0,thickness/2+thickness/2+bump_offset,0])
         hull()
         {
@@ -132,7 +153,7 @@ module opush(slope=slope)
 
 module push_hole()
 {
-    cube([push_width,thickness,thickness*2],center=true);
+    cube([push_width-clearance,thickness-clearance,thickness*2],center=true);
     hull()
     {
         translate([0,thickness/2+thin_wire_r,0])
