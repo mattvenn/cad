@@ -28,10 +28,17 @@ module push_buttons()
     translate([-tape_reel_r+push_width,20,0])
     push();
 }
+projection()
+{
+translate([push_width,0,0]) push(0.1);
+translate([push_width*3,0,0]) push(0.2);
+translate([push_width*5,0,0]) push(0.3);
+translate([push_width*7,0,0]) push(0.4);
+}
 //projection()
-push_buttons();
+//push_buttons();
 //projection()
-led_board();
+//led_board();
 
 module double_wire(wire_r=thin_wire_r,space=double_wire_space)
 {
@@ -76,7 +83,35 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module push(slope=slope)
+module push(bump_offset=0.2)
+{
+
+    push_top_clip_h = 2;
+    slot_width = 1;
+    bump_r = 1.0;
+    difference()
+    {
+    union()
+    {
+    roundedBox([push_width*1.5,push_top_height,thickness],1,true);
+    translate([0,push_top_height/2+thickness/2,0])
+        cube([push_width,thickness*1.5,thickness],center=true);
+    translate([0,push_top_height/2+thickness-bump_offset+push_top_clip_h/2,0])
+    //blip on the end
+    roundedBox([push_width*1.1,push_top_clip_h,thickness],bump_r,true);
+    }
+    translate([0,thickness/2+thickness/2+bump_offset,0])
+        hull()
+        {
+            wire_hole(thin_wire_r);
+            translate([0,thickness*2,0])
+            wire_hole(double_wire_r);
+        }
+    }
+
+}
+
+module opush(slope=slope)
 {
     difference()
     {
