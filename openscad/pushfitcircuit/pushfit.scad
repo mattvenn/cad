@@ -83,7 +83,7 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module push(bump_offset=0.2)
+module push(bump_offset=0.4)
 {
 
     push_top_clip_h = 2;
