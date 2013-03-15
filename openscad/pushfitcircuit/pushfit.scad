@@ -26,6 +26,9 @@ include </home/matthew/work/cad/MCAD/boxes.scad>;
 include </home/matthew/work/cad/MCAD/fonts.scad>;
 
 
+build_all();
+//test_plugs();
+
 module plugs()
 {
     translate([tape_reel_r-plug_width,22,0])
@@ -34,27 +37,27 @@ module plugs()
     plug();
 }
 
-*projection()
-for(i=[0:5])
+module test_plugs()
 {
-    translate([plug_width*2*i,0,0]) 
-        plug(
-            plug_articulation=1.5,
-            plug_clip_width=0.5+i*0.2,
-            plug_spacing=thickness
-            );
+    //projection()
+    for(i=[0:5])
+    {
+        echo( 0.5+i*0.2);
+        translate([plug_width*2*i,0,0]) 
+            plug(
+                plug_articulation=1.5,
+                plug_clip_width=0.5+i*0.2,
+                plug_spacing=thickness
+                );
+    }
+    projection() translate([0,20,0]) test_board();
 }
 
-projection() translate([0,20,0]) test_board();
-
-//projection()
-//projection()
-
-/*{
+module build_all()
+{
     plugs();
     led_board();
 }
-*/
 
 module test_board()
 {
@@ -115,7 +118,7 @@ module board()
 //slot_offset: moves the end of the slot away from the top
 //plug_spacing: how close the ends of the clip are to the top of the plug
 //articulation: how big the articulation point is
-module plug( plug_top_height=5, plug_clip_height=5, plug_slot_offset=0.5, plug_clip_width=2, plug_spacing=thickness-0.2, plug_articulation=2.5,)
+module plug( plug_top_height=5, plug_clip_height=5, plug_slot_offset=0.5, plug_clip_width=1.2, plug_spacing=thickness-0.2, plug_articulation=1.5,)
 {
     difference()
     {
