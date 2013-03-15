@@ -8,7 +8,7 @@ $fs=0.6;
 tape_reel_r = 77 / 2;
 tape_reel_h = 30;
 thickness=3;
-clearance = 0.1; //laser clearance
+clearance = 0.0; //laser clearance
 
 //plug fit dimensions
 plug_width=10;
@@ -38,7 +38,11 @@ module plugs()
 for(i=[0:5])
 {
     translate([plug_width*2*i,0,0]) 
-        plug(plug_articulation=1+0.5*i);
+        plug(
+            plug_articulation=1.5,
+            plug_clip_width=0.5+i*0.2,
+            plug_spacing=thickness
+            );
 }
 
 projection() translate([0,20,0]) test_board();
