@@ -31,9 +31,9 @@ double_wire_space = 5;
 
 module plugs()
 {
-    translate([tape_reel_r-plug_width,20,0])
+    translate([tape_reel_r-plug_width,22,0])
     plug();
-    translate([-tape_reel_r+plug_width,20,0])
+    translate([-tape_reel_r+plug_width,22,0])
     plug();
 }
 *projection()
@@ -114,14 +114,15 @@ module plug()
         union()
         {
         //top
+        translate([0,-plug_top_height/2,0])
         roundedBox([plug_width*1.5,plug_top_height,thickness],1,true);
 
         //middle
-        translate([0,plug_top_height/2+thickness/2,0])
+        translate([0,thickness/2,0])
             cube([plug_width,thickness,thickness],center=true);
 
         //clip
-        translate([0,plug_top_height/2+plug_spacing,0])
+        translate([0,plug_spacing,0])
         hull()
             {
                 cube([plug_clip_width,0.1,thickness],center=true);
@@ -131,7 +132,7 @@ module plug()
         }
 
     //the bottom slot
-    translate([0,plug_top_height/2+plug_slot_offset+thin_wire_r,0])
+    translate([0,plug_slot_offset+thin_wire_r,0])
         hull()
         {
             wire_hole(thin_wire_r);
@@ -139,7 +140,7 @@ module plug()
             wire_hole(double_wire_r);
         }
     //the top slot
-    translate([0,plug_top_height/2+plug_slot_offset-plug_articulation-thin_wire_r,0])
+    translate([0,plug_slot_offset-plug_articulation-thin_wire_r,0])
         hull()
         {
             wire_hole(thin_wire_r);
