@@ -11,10 +11,12 @@ clearance = 0.1; //laser clearance
 
 //plug fit dimensions
 plug_width=10;
+plug_clip_width=plug_width+2;
 plug_top_height=5;
 plug_clip_height=5;
-plug_spacing=thickness-0.3; //how close the ends of the clip are to the top of the plug
-slope = 0.12; //this is half the offset between top and bottom of the slope
+plug_slot_offset=0.5; //moves the end of the slot away from the top
+plug_spacing=thickness-0.2; //how close the ends of the clip are to the top of the plug
+plug_articulation=2; //how big the articulation point is
 
 //wire dimensions
 thin_wire_r = 1.1/2;
@@ -105,36 +107,43 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module plug(bump_width=1.15)
+module plug()
 {
-    slot_offset=0.5;
     difference()
     {
-    union()
-    {
-    //top
-    roundedBox([plug_width*1.5,plug_top_height,thickness],1,true);
-
-    //middle
-    translate([0,plug_top_height/2+thickness/2,0])
-        cube([plug_width,thickness,thickness],center=true);
-
-    //clip
-    translate([0,plug_top_height/2+plug_spacing,0])
-    hull()
+        union()
         {
-            cube([plug_width+bump_width,0.1,thickness],center=true);
-            translate([0,plug_clip_height,0])
-            cube([plug_width*0.9,0.1,thickness],center=true);
-        }
-    }
+        //top
+        roundedBox([plug_width*1.5,plug_top_height,thickness],1,true);
 
-    //the slot
-    translate([0,plug_top_height/2+slot_offset,0])
+        //middle
+        translate([0,plug_top_height/2+thickness/2,0])
+            cube([plug_width,thickness,thickness],center=true);
+
+        //clip
+        translate([0,plug_top_height/2+plug_spacing,0])
+        hull()
+            {
+                cube([plug_clip_width,0.1,thickness],center=true);
+                translate([0,plug_clip_height,0])
+                cube([plug_width-clearance,0.1,thickness],center=true);
+            }
+        }
+
+    //the bottom slot
+    translate([0,plug_top_height/2+plug_slot_offset+thin_wire_r,0])
         hull()
         {
             wire_hole(thin_wire_r);
             translate([0,plug_spacing+plug_clip_height,0])
+            wire_hole(double_wire_r);
+        }
+    //the top slot
+    translate([0,plug_top_height/2+plug_slot_offset-plug_articulation-thin_wire_r,0])
+        hull()
+        {
+            wire_hole(thin_wire_r);
+            translate([0,-plug_top_height,0])
             wire_hole(double_wire_r);
         }
     }
