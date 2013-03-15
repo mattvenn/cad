@@ -1,5 +1,8 @@
-$fa=1;
-$fs=0.3;
+/*
+needs a different, easier, more reliable push()
+*/
+//$fa=15;
+$fs=0.6;
 
 tape_reel_r = 77 / 2;
 tape_reel_h = 30;
@@ -9,6 +12,8 @@ clearance = 0.1; //laser clearance
 //push fit dimensions
 push_width=10;
 push_top_height=5;
+push_clip_height=5;
+push_top_space=thickness-0.3; //how close the ends of the clip are to the top of the plug
 slope = 0.12; //this is half the offset between top and bottom of the slope
 
 //wire dimensions
@@ -31,21 +36,23 @@ module push_buttons()
 }
 *projection()
 {
-translate([push_width,0,0]) push();
-translate([push_width*3,0,0]) push();
-translate([push_width*5,0,0]) push();
-translate([push_width*7,0,0]) push();
+    translate([0,0,0]) push();
+    translate([push_width*2,0,0]) push();
+    *translate([push_width*5,0,0]) push();
+    *translate([push_width*7,0,0]) push();
 }
-projection() 
-test_board();
+*projection() translate([0,20,0]) test_board();
+
 //projection()
-*push_buttons();
 //projection()
-*led_board();
+{
+    push_buttons();
+    led_board();
+}
 
 module test_board()
 {
-    for(i=[0:4])
+    for(i=[0:1])
     {
         translate([i*15,0,0])
         difference()
@@ -98,56 +105,38 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module push(bump_offset=0.3,bump_width=1)
+module push(bump_width=1.15)
 {
-
-    push_top_clip_h = 3;
-    slot_width = 1;
+    slot_offset=0.5;
     difference()
     {
     union()
     {
+    //top
     roundedBox([push_width*1.5,push_top_height,thickness],1,true);
+
+    //middle
     translate([0,push_top_height/2+thickness/2,0])
-        cube([push_width,thickness*1.5,thickness],center=true);
-    translate([0,push_top_height/2+thickness-bump_offset+push_top_clip_h/2,0])
-    //bumps on the end
+        cube([push_width,thickness,thickness],center=true);
+
+    //clip
+    translate([0,push_top_height/2+push_top_space,0])
     hull()
-    {
-    translate([0,-push_top_clip_h/2,0])
-    cube([push_width+bump_width,0.1,thickness],center=true);
-    translate([0,push_top_clip_h/2,0])
-    cube([push_width*0.9,0.1,thickness],center=true);
+        {
+            cube([push_width+bump_width,0.1,thickness],center=true);
+            translate([0,push_clip_height,0])
+            cube([push_width*0.9,0.1,thickness],center=true);
+        }
     }
-    }
+
     //the slot
-    translate([0,thickness/2+thickness/2+bump_offset,0])
+    translate([0,push_top_height/2+slot_offset,0])
         hull()
         {
             wire_hole(thin_wire_r);
-            translate([0,thickness*2,0])
+            translate([0,push_top_space+push_clip_height,0])
             wire_hole(double_wire_r);
         }
-    }
-
-}
-
-module opush(slope=slope)
-{
-    difference()
-    {
-        union()
-        {
-            roundedBox([push_width*1.5,push_top_height,thickness],1,true);
-            hull()
-            {
-                cube([push_width*(1+slope),push_top_height,thickness],center=true);
-                translate([0,thickness*2,0])
-                cube([push_width*(1-slope),5,thickness],center=true);
-            }
-        }
-        translate([0,push_top_height/2+thickness,0])
-        cylinder(r=double_wire_r,h=thickness*2,center=true);
     }
 }
 
