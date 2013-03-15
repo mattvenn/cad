@@ -4,6 +4,7 @@ needs a different, easier, more reliable plug()
 //$fa=15;
 $fs=0.6;
 
+//fundamentals
 tape_reel_r = 77 / 2;
 tape_reel_h = 30;
 thickness=3;
@@ -11,23 +12,19 @@ clearance = 0.1; //laser clearance
 
 //plug fit dimensions
 plug_width=10;
-plug_clip_width=plug_width+2;
-plug_top_height=5;
-plug_clip_height=5;
-plug_slot_offset=0.5; //moves the end of the slot away from the top
-plug_spacing=thickness-0.2; //how close the ends of the clip are to the top of the plug
-plug_articulation=2; //how big the articulation point is
 
 //wire dimensions
 thin_wire_r = 1.1/2;
 double_wire_r = 1.6/2;
 mobile_wire_r = 3/2;
 
-
-include </home/matthew/work/cad/MCAD/boxes.scad>;
-
+//layout spacing
 resistor_space = 20;
 double_wire_space = 5;
+
+include </home/matthew/work/cad/MCAD/boxes.scad>;
+include </home/matthew/work/cad/MCAD/fonts.scad>;
+
 
 module plugs()
 {
@@ -36,25 +33,28 @@ module plugs()
     translate([-tape_reel_r+plug_width,22,0])
     plug();
 }
+
 *projection()
+for(i=[0:5])
 {
-    translate([0,0,0]) plug();
-    translate([plug_width*2,0,0]) plug();
-    *translate([plug_width*5,0,0]) plug();
-    *translate([plug_width*7,0,0]) plug();
+    translate([plug_width*2*i,0,0]) 
+        plug(plug_articulation=1+0.5*i);
 }
-*projection() translate([0,20,0]) test_board();
+
+projection() translate([0,20,0]) test_board();
 
 //projection()
 //projection()
-{
+
+/*{
     plugs();
     led_board();
 }
+*/
 
 module test_board()
 {
-    for(i=[0:1])
+    for(i=[0:5])
     {
         translate([i*15,0,0])
         difference()
@@ -107,7 +107,11 @@ module board()
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
-module plug()
+
+//slot_offset: moves the end of the slot away from the top
+//plug_spacing: how close the ends of the clip are to the top of the plug
+//articulation: how big the articulation point is
+module plug( plug_top_height=5, plug_clip_height=5, plug_slot_offset=0.5, plug_clip_width=2, plug_spacing=thickness-0.2, plug_articulation=2.5,)
 {
     difference()
     {
@@ -125,7 +129,7 @@ module plug()
         translate([0,plug_spacing,0])
         hull()
             {
-                cube([plug_clip_width,0.1,thickness],center=true);
+                cube([plug_width+plug_clip_width,0.1,thickness],center=true);
                 translate([0,plug_clip_height,0])
                 cube([plug_width-clearance,0.1,thickness],center=true);
             }
