@@ -5,7 +5,7 @@ needs a different, easier, more reliable plug()
 $fs=0.6;
 
 //fundamentals
-tape_reel_r = 77 / 2;
+tape_reel_r = 78 / 2;
 tape_reel_h = 30;
 thickness=3;
 clearance = 0.0; //laser clearance
@@ -25,7 +25,7 @@ double_wire_space = 5;
 include </home/matthew/work/cad/MCAD/boxes.scad>;
 include </home/matthew/work/cad/MCAD/fonts.scad>;
 
-
+projection()
 build_all();
 //test_plugs();
 
