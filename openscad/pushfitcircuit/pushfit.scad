@@ -1,5 +1,6 @@
 /*
-needs a different, easier, more reliable plug()
+mattvenn.net 2013
+push fit wooden circuit boards for kids
 */
 //$fa=15;
 $fs=0.6;
