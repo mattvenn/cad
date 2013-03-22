@@ -41,7 +41,7 @@ def get_region_box(img,x,y):
     return box
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="make a gcode file from a pic")
+    parser = argparse.ArgumentParser(description="make a gcode file from a pic. white regions go deepest")
 
     parser.add_argument('--gcode', default="drill.ngc", help='gcode file to write', type=argparse.FileType('w'))
     parser.add_argument('--image', action='store', dest='image_file', help="image", required = True)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     src = Image.open(args.image_file)
     src = src.convert('L')
     resize = float(args.width) / src.size[0]
-    drill = Image.new('L',src.size)
+    drill = Image.new('L',src.size,255)
     draw = ImageDraw.Draw(drill)
     skip_count = 0
 #    im.show()
@@ -92,7 +92,9 @@ if __name__ == '__main__':
             box = get_region_box(src,i,j)
             region = src.crop(box)
             main_color = get_main_color(region)
+            #this makes white the deepest
             z = float(args.z / 255.0) * main_color
+            #makes black the deepest
             if args.flip:
                 z = args.z - z
             if args.offset:
@@ -104,7 +106,7 @@ if __name__ == '__main__':
             #draw a representative image
             #draw.rectangle(box, fill=main_color)
             circle_r = (cell_width/2)/255.0 * main_color
-            draw.ellipse((i*cell_width+circle_r,j*cell_height+circle_r,i*cell_width+cell_width-circle_r,j*cell_height+cell_width-circle_r), fill=255)
+            draw.ellipse((i*cell_width+circle_r,j*cell_height+circle_r,i*cell_width+cell_width-circle_r,j*cell_height+cell_width-circle_r), fill=0)
 
             if z <= 0:
                 skip_count += 1
