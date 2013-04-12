@@ -12,6 +12,8 @@ stepper_bush_radius=22.1/2;
 stepper_bush_length=4;
 bolt_distance=31.0/2;
 
+//to make things nice to handle
+round_radius = 2;
 stepper_width=40;
 stepper_height=40;
 stepper_length=40;
