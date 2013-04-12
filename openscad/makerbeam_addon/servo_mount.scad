@@ -2,7 +2,7 @@ include <globals.scad>;
 include <utils.scad>;
 include </home/mattvenn/cad/MCAD/shapes.scad>;
 
-projection()servo_mount();
+projection () servo_mount();
 module servo_mount()
 {
     mount_w=4*makerbeam_w;
@@ -29,10 +29,6 @@ module servo_mount()
     }
     //servo cutout
     cube([servo_length,servo_width,thickness*2],center=true);
-
-    //wire hole
-    translate([servo_length/2,0,0])
-        cube([2,3,thickness*2],center=true);
 
     //mount holes
     translate([servo_hole_space/2,0,0])
