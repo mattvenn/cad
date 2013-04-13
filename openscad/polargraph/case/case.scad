@@ -1,8 +1,8 @@
 include <stepper.scad>
 include <globals.scad>
 use <../gondola/gondola.scad>
-width  = 500;
-height = 500;
+width  = 600;
+height = 600;
 depth = 60;
 side_thickness = 10;
 back_thickness = 5;
@@ -18,7 +18,7 @@ translate([+width/2,0,0]) rotate([0,90,0]) wood() side();
 //top
 translate([0,-depth/2+side_thickness/2,height/2-depth/2]) rotate([90,0,0]) wood() side();
 //bottom
-translate([0,+depth/2-side_thickness/2,,-height/2+depth/2]) rotate([90,0,0]) wood() side();
+translate([0,0,-height/2+side_thickness/2]) rotate([0,0,0]) wood() side();
 wood() rotate([back_angle,0,0]) back();
 
 translate([stepper_sep/2,0,-height/2+stepper_width/2])rotate([0,90,0])stepper();
