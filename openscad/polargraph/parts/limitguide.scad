@@ -14,7 +14,7 @@ todo:
 pinch_height = 60;
 guide_hole_r = 1;
 pinch_x = 6; //x offset for the pinch
-pillar_height = 8.15; //standard spacers with a bit more to make a tight fit
+pillar_height = 10.15; //standard spacers with a bit more to make a tight fit
 hole_clearance = 5; //min distance a hole will be made from an edge
 //switch datasheet: http://www.newark.com/pdfs/datasheets/Honeywell_Sensing/V15.pdf
     switch_hole_x = 10.3; //distance between holes
@@ -25,7 +25,9 @@ hole_clearance = 5; //min distance a hole will be made from an edge
     switch_thickness = 10.3; //thickkness of switch
     switch_offset_z = pillar_height; //height above the surface we want the switch
     spring_start_y = 8.1; //y distance between bottom hole and spring starting
-    
+
+screw_length = switch_thickness + pillar_height + thickness + m3_nut_depth;
+echo( screw_length );
 //middle part of the guide height
 guide_height = switch_offset_z;
 //top of the guide width
