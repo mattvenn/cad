@@ -1,109 +1,39 @@
 include <../case/stepper.scad>
 include <../case/globals.scad>
 include </home/mattvenn/cad/MCAD/shapes.scad>
-include <../tab_creator.scad>
 
-/*
-todo:
-    wire is backing up onto the edge of the spindle:
-        either need smaller spindles
-        or space the microswitch further out
-*/
+edge_clearance = 3;
 
-//pinch height is distance between where the wire is pinched for limits, and the shaft of the motor
-pinch_height = 60;
-guide_hole_r = 1;
-pinch_x = 6; //x offset for the pinch
-pillar_height = 10.15; //standard spacers with a bit more to make a tight fit
-hole_clearance = 5; //min distance a hole will be made from an edge
 //switch datasheet: http://www.newark.com/pdfs/datasheets/Honeywell_Sensing/V15.pdf
-    switch_hole_x = 10.3; //distance between holes
-    switch_hole_y = 22.2; //distance between holes
-    switch_offset_x = 20.6; //opearating position - distance between top left hole and when the switch turns on, from website: http://sensing.honeywell.com/product%20page?pr_id=45588
-    switch_offset_y = switch_hole_y - 20.6; //y distance from edge of roller to left hole , this from datasheet
-    switch_hole_offset_x = 2.8; //x distance from the edge of the switch to the center of the mounting hole
-    switch_thickness = 10.3; //thickkness of switch
-    switch_offset_z = pillar_height; //height above the surface we want the switch
-    spring_start_y = 8.1; //y distance between bottom hole and spring starting
+switch_hole_x = 10.3; //distance between holes
+switch_hole_y = 22.2; //distance between holes
+switch_offset_x = 20.6; //opearating position - distance between top left hole and when the switch turns on, from website: http://sensing.honeywell.com/product%20page?pr_id=45588
+switch_offset_y = switch_hole_y - 20.6; //y distance from edge of roller to left hole , this from datasheet
+switch_length = 29;
 
-screw_length = switch_thickness + pillar_height + thickness + m3_nut_depth;
-echo( screw_length );
-//middle part of the guide height
-guide_height = switch_offset_z;
-//top of the guide width
-guide_width = stepper_width/2 + switch_offset_x - (pinch_x+switch_hole_x+switch_hole_offset_x);
-mount_length = stepper_height / 2 + pinch_height + hole_clearance;
-pinch_y = -mount_length/2+stepper_width/2+pinch_height;
-guide_y = pinch_y + switch_offset_y - switch_hole_y + spring_start_y - thickness/2;
+//calculated
+width = switch_offset_x + edge_clearance * 2;
+height = switch_length;
 
-//made_guide_plate(false);
-//made_plate();
-projection()guide_plate();
-//projection() made_plate();
+//projection()
+mount_plate();
 
-
-//mount plate
-module made_guide_plate(boolean)
-{
-translate([0,mount_length/2-stepper_width/2+guide_y,guide_height/2+thickness/2])
-    rotate([90,0,0])
-        guide_plate(boolean);
-}
-
-module made_plate()
-{
-//mount plate
-difference()
-{
-    translate([0,mount_length/2-stepper_width/2,0])
-        mount_plate();
-
-    //stepper hole
-    translate([0,0,-stepper_height/2-thickness/2])
-        stepper();
-
-    //guide plate hole
-    made_guide_plate(true);
-}
-}
 module mount_plate()
 {
     difference()
     {
-    roundedBox(stepper_width,mount_length,thickness,round_radius);
+    roundedBox(width,height,thickness,round_radius);
     //hole for mounting the roller
-    translate([pinch_x+m3_bolt_r,pinch_y,0])
+    translate([width/2-edge_clearance,height/2-edge_clearance-m3_bolt_r,0])
+    {
         cylinder(r=m3_bolt_r,h=thickness*2,center=true);
-    translate([pinch_x-m3_bolt_r-switch_offset_x,pinch_y+switch_offset_y,0])
-        switch_holes();
+        //switch mount holes
+        translate([-switch_offset_x,switch_offset_y,0])
+            switch_holes();
     }
-}
-module guide_plate(boolean)
-{
-    difference()
-    {
-    union()
-    {
-    //main part
-    cube([stepper_width,guide_height,thickness],center=true);
-
-    //extra bit that has the hole
-    translate([(stepper_width-guide_width)/2,guide_height/2+switch_thickness/2,0])
-    cube([guide_width,switch_thickness,thickness],center=true);
-
-    //the slot
-    translate([0,-guide_height/2-thickness/2,0])
-    if( boolean )
-        cube([stepper_width*0.8,2*thickness,thickness],center=true);
-    else
-        cube([stepper_width*0.8,thickness,thickness],center=true);
+    translate([5,-height/2-edge_clearance*2-m3_bolt_r*2,-thickness])
+        cube([width,height,thickness*2]);
     }
-    //guide hole
-    //shuld be switch_offset_z + switch_thickness above the 0
-    translate([pinch_x,switch_offset_z/2+switch_thickness/2,0])
-    cylinder(r=guide_hole_r,h=thickness*2,center=true);
-    }
-
 }
 //draws from top left hole
 module switch_holes()
