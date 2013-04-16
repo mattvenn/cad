@@ -7,8 +7,9 @@ fin_length = 8;
 fin_width = 3;
 num_fins = 20;
 top_plate_r = 10;
-opto_mount_space = 20;
-opto_mount_holes() mount_plate();
+opto_mount_space = 25;
+
+projection() opto_mount_holes() mount_plate();
 module opto_mount_holes()
 {
     difference()
