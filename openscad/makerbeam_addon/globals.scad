@@ -4,6 +4,7 @@ $fs=0.8;
 
 //material thickness
 thickness=3.2; 
+b_clearance = 0.1;
 
 //bolts
 m3_nut_flats = 5.9;	// normal M3 hex nut exact width = 5.5
@@ -12,9 +13,9 @@ bolt_r=1.55;
 
 //servo
 servo_length = 23;
-servo_width = 12.7;
+servo_width = 12.5;
 servo_hole_space = 28;
-servo_bolt_r = 0.7;
+servo_bolt_r = 1.75/2; //enough for a self tapper through the servo's top
 
 //stepper
 stepper_shaft_radius=5/2;
