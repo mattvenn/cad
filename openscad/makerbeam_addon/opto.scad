@@ -1,24 +1,37 @@
 include <globals.scad>;
 include <shaft_mount.scad>;
 
-shaft_r = 3/1.5;
+shaft_r = 3/2;
 
 fin_length = 8;
 fin_width = 3;
 num_fins = 20;
 top_plate_r = 10;
+opto_mount_space = 20;
+opto_mount_holes() mount_plate();
+module opto_mount_holes()
+{
+    difference()
+    {
+        child();
+        translate([opto_mount_space/2,0,0])
+            cylinder(r=bolt_r,h=thickness*2,center=true);
+        translate([-opto_mount_space/2,0,0])
+            cylinder(r=bolt_r,h=thickness*2,center=true);
+    }
+}
 
 //top
-//projection()
+*projection()
 {
 top_plate(shaft_r);
 
 //middle
-translate([top_plate_r*2+5,0,0])
-middle_holes(shaft_r) cylinder(r=top_plate_r,h=thickness,center=true);
+*translate([top_plate_r*2+5,0,0])
+    middle_holes(shaft_r) cylinder(r=top_plate_r,h=thickness,center=true);
 
 translate([top_plate_r*4+10,0,0])
-top_plate(shaft_r);
+    top_plate(shaft_r);
 
 translate([top_plate_r*6+15+fin_length,0,0])
 {
