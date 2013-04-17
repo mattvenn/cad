@@ -10,12 +10,12 @@
 +  round the top of the leaf spring so it doesn't dig 
 
 */
-$fa = 4; //min angle: make large circles smoother
+$fa = 1; //min angle: make large circles smoother
 $fs=0.5; //min fragment size, make small circles smoother
 include <servos.scad>
 include <../case/globals.scad>
 
-made_gondola();
+//made_gondola();
 //measured
 pcb_dist=42;
 bolt_r = 2.5/2; //for tapping
@@ -59,6 +59,7 @@ acrylic() servo_mount();
 *projection() gondola();
 *projection() rotate([90,0,0]) servo_mount();
 *hanger();
+projection()hanger_washer();
 module acrylic()
 {
     color("grey",0.8)
@@ -206,6 +207,15 @@ module hanger()
     }
 }
 
+module hanger_washer()
+{
+difference()
+{
+
+        cylinder(r=hanger_r,h=thickness,center=true);
+      cylinder(r=pen_holder_r+clearance,h=thickness*2,center=true);
+      }
+}
 module cam()
 {
   radius = servo_w/2+thickness;
