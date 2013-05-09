@@ -1,9 +1,10 @@
 $fa = 5;
 $fs = 1;
-hub_r = 11 /2;
+kerf = 0.3;
+hub_r = 11 /2 - kerf;
 sprockets = 6;
-sprocket_w = 2.3;
-sprocket_h = 2.3;
+sprocket_w = 2.3 - kerf;
+sprocket_h = 2.3 - kerf;
 wheel_r = 50;
 thickness = 5;
 
