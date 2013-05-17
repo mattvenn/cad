@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('--feedspeed', action='store', dest='feedspeed', type=float, default=200, help="feedspeed mm/min")
     parser.add_argument('--depth', action='store', dest='z', type=float, default=5, help="z depth")
     parser.add_argument('--offset', action='store', dest='offset', type=float, default=0, help="offset z by this much")
-    parser.add_argument('--flip', action='store_const', dest='flip', const=True, default=False, help="flip the image, making black white and vice versa")
+    parser.add_argument('--invert', action='store_const', dest='invert', const=True, default=False, help="invert the image, making black white and vice versa")
     parser.add_argument('--square', action='store_const', dest='square', const=True, default=False, help="make the drilling happen on a square grid, disregard y")
     parser.add_argument('--openscad', action='store_const', dest='openscad', const=True, default=False, help="make an openscad that represents the drawing")
     args = parser.parse_args()
@@ -70,8 +70,15 @@ if __name__ == '__main__':
     src = Image.open(args.image_file)
     src = src.convert('L')
     resize = float(args.width) / src.size[0]
-    drill = Image.new('L',src.size)
+    if args.invert:
+        circle_colour = 0
+        bg_colour = 255
+    else:
+        circle_colour = 255
+        bg_colour = 0
+    drill = Image.new('L',src.size,bg_colour)
     draw = ImageDraw.Draw(drill)
+
     skip_count = 0
 #    im.show()
     (x,y) = src.size
@@ -93,22 +100,19 @@ if __name__ == '__main__':
             region = src.crop(box)
             main_color = get_main_color(region)
             z = float(args.z / 255.0) * main_color
-            if args.flip:
+            if args.invert:
                 z = args.z - z
             if args.offset:
                 z = z + args.offset
 
-            
-            #print z
-
-            #draw a representative image
-            #draw.rectangle(box, fill=main_color)
-            circle_r = (cell_width/2)/255.0 * main_color
-            draw.ellipse((i*cell_width+circle_r,j*cell_height+circle_r,i*cell_width+cell_width-circle_r,j*cell_height+cell_width-circle_r), fill=255)
 
             if z <= 0:
                 skip_count += 1
                 continue
+
+            #draw a representative image
+            circle_r = (cell_width/2)/255.0 * main_color
+            draw.ellipse((i*cell_width+circle_r,j*cell_height+circle_r,i*cell_width+cell_width-circle_r,j*cell_height+cell_width-circle_r), fill=circle_colour)
 
             if args.openscad:
                 openscad.append("translate([%d,%d,%d])" % (box[0],box[1],cube_height-z))
