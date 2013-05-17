@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--width', action='store', dest='width', type=int, default=100, help="width in mm")
     parser.add_argument('--xdiv', action='store', dest='xdiv', type=int, default=5, help="xdiv")
     parser.add_argument('--ydiv', action='store', dest='ydiv', type=int, default=5, help="ydiv")
-    parser.add_argument('--safez', action='store', dest='safez', type=float, default=5, help="z safety")
+    parser.add_argument('--safez', action='store', dest='safez', type=float, default=1, help="z safety")
     parser.add_argument('--peck', action='store', dest='peck', type=float, default=0, help="peck")
     parser.add_argument('--feedspeed', action='store', dest='feedspeed', type=float, default=200, help="feedspeed mm/min")
     parser.add_argument('--depth', action='store', dest='z', type=float, default=5, help="z depth")
