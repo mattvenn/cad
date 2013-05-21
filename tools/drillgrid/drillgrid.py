@@ -11,7 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('--gcode', default="drill.ngc", help='gcode file to write', type=argparse.FileType('w'))
     parser.add_argument('--x', action='store', type=int, dest='x', help="number of x holes", required = True)
     parser.add_argument('--y', action='store', type=int, dest='y', required = True, help="number of y holes")
-    parser.add_argument('--xspace', action='store', dest='xpace', type=int, default=5, help="xdiv")
+    parser.add_argument('--xspace', action='store', dest='xspace', type=int, default=5, help="xdiv")
     parser.add_argument('--yspace', action='store', dest='yspace', type=int, default=5, help="ydiv")
     parser.add_argument('--safez', action='store', dest='safez', type=float, default=1, help="z safety")
     parser.add_argument('--feedspeed', action='store', dest='feedspeed', type=float, default=200, help="feedspeed mm/min")
@@ -31,13 +31,13 @@ if __name__ == '__main__':
             #if peck
             if args.peck:
                 gcode.append( 'G83 X%.4f Y%.4f Z%.4f Q%.4f R%.4f' %( 
-                    i,j,-z,
+                    i*args.xspace,j*args.yspace,-z,
                     float(peck),
                     float(args.safez)))
             else:
             """
             gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( 
-                i,j,-z,
+                i*args.xspace,j*args.yspace,-z,
                 args.safez))
 
     gcode.append( 'M5 M9 M2' )
