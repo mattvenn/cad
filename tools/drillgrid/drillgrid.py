@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--xspace', action='store', dest='xspace', type=int, default=5, help="xdiv")
     parser.add_argument('--yspace', action='store', dest='yspace', type=int, default=5, help="ydiv")
     parser.add_argument('--safez', action='store', dest='safez', type=float, default=1, help="z safety")
+    parser.add_argument('--peck', action='store', dest='peck', type=float, default=0, help="peck")
     parser.add_argument('--feedspeed', action='store', dest='feedspeed', type=float, default=200, help="feedspeed mm/min")
     parser.add_argument('--depth', action='store', dest='z', type=float, default=3, help="z depth")
     args = parser.parse_args()
@@ -27,18 +28,16 @@ if __name__ == '__main__':
     for i in range(args.x):
         for j in range(args.y):
             z=args.z
-            """
             #if peck
             if args.peck:
                 gcode.append( 'G83 X%.4f Y%.4f Z%.4f Q%.4f R%.4f' %( 
                     i*args.xspace,j*args.yspace,-z,
-                    float(peck),
+                    float(args.peck),
                     float(args.safez)))
             else:
-            """
-            gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( 
-                i*args.xspace,j*args.yspace,-z,
-                args.safez))
+                gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( 
+                    i*args.xspace,j*args.yspace,-z,
+                    args.safez))
 
     gcode.append( 'M5 M9 M2' )
 
