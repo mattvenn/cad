@@ -11,7 +11,7 @@ m3_bolt_r = 1.55;
 round_radius = 2;
 
 //acrylic
-thickness = 2.73;
+thickness = 3.1; //2.73;
 
 //stepper
 stepper_width=40;
