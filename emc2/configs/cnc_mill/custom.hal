@@ -1,0 +1,26 @@
+# Include your customized HAL commands here
+# This file will not be overwritten when you run stepconf again
+#load the debounce. One set of three channels. 
+loadrt debounce cfg=3
+
+#add the debounce to a thread, so that it gets run
+#this is running in the fast base-thread
+#you could use the servo thread. I am not sure which would be best. 
+addf debounce.0 base-thread
+
+#Unlink the parport pins and limit inputs for rewiring
+delsig home-x
+delsig home-y
+delsig home-z
+
+net x-raw parport.0.pin-10-in => debounce.0.0.in
+net y-raw parport.0.pin-11-in => debounce.0.1.in
+net z-raw parport.0.pin-12-in => debounce.0.2.in
+
+net x-filt debounce.0.0.out =>  axis.0.home-sw-in 
+net y-filt debounce.0.1.out =>  axis.1.home-sw-in
+net z-filt debounce.0.2.out =>  axis.2.home-sw-in
+
+#It's important to actually activate the debounce
+#20 base-threads is about 0.4mS. The typical machine doesn't move far in that time. 
+setp debounce.0.delay 20
