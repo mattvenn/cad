@@ -382,28 +382,19 @@ class face:
 
 def conffile(opt,config_file):
     c = ConfigParser.ConfigParser()
-    try:
-        os.stat(config_file)
-        # read the configs
-        c.readfp(open(config_file))
-        items = c.options('default')
-        # scan through the options
-        for i in items:
-            value = c.get('default',i)
-            # cast as float if you can
-            try:
-                value = float(value)
-            except:
-                pass
-            vars(opt)[i] = value 
-    except:
-        # no config file, strip out defaults and write to config.
-        print 'no such config , populating default '
-        c.add_section('default')
-        k = vars(opt).keys()
-        for i in k:
-            c.set('default',i,vars(opt)[i])
-        c.write(open(config_file,'w'))
+    os.stat(config_file)
+    # read the configs
+    c.readfp(open(config_file))
+    items = c.options('default')
+    # scan through the options
+    for i in items:
+        value = c.get('default',i)
+        # cast as float if you can
+        try:
+            value = float(value)
+        except:
+            pass
+        vars(opt)[i] = value 
         
 def parse(parser):
     # define the command line variables
