@@ -1,0 +1,70 @@
+;PYCAM-META-DATA: Filename: /home/matt/cad/cvm/h3000/mount.dxf
+;PYCAM-META-DATA: Timestamp: 2013-09-17 18:26:24.385323
+;PYCAM-META-DATA: Version: 0.5.1
+;Estimated machine time: 3 minutes
+G40 (disable tool radius compensation)
+G49 (disable tool length compensation)
+G80 (cancel modal motion)
+G54 (select coordinate system 1)
+G90 (disable incremental moves)
+G21 (metric)
+G61 (exact path mode)
+F1000.00000
+S1000.00000
+;PYCAM_TOOLPATH_SETTINGS: START
+;[Bounds]
+;maxz = 0.0
+;maxx = 385.65
+;maxy = 21.77
+;minx = -34.15
+;miny = -1.07
+;minz = -6.0
+;
+;[Tool]
+;torus_radius = 0.25
+;speed = 1000.0
+;shape = CylindricalCutter
+;tool_radius = 1.0
+;feedrate = 1000.0
+;
+;[Process]
+;engrave_offset = 1.0
+;step_down = 1.5
+;generator = EngraveCutter
+;postprocessor = SimpleCutter
+;milling_style = conventional
+;material_allowance = 0.0
+;pocketing_type = none
+;path_direction = x
+;
+;PYCAM_TOOLPATH_SETTINGS: END
+T1 M6
+G0 Z1.5000
+M3 (start spindle)
+G04 P3 (wait for 3 seconds)
+ X352.5000 Y-1.0000
+G1 Z-1.5000
+ Y21.7000
+ X-1.0000
+ Y-1.0000
+ X352.5000
+ Z-3.0000
+ Y21.7000
+ X-1.0000
+ Y-1.0000
+ X352.5000
+ Z-4.5000
+ Y21.7000
+ X-1.0000
+ Y-1.0000
+ X352.5000
+ Z-5.5000
+ Y21.7000
+ X-1.0000
+ Y-1.0000
+ X352.5000
+G0 Z1.5000
+M5 (stop spindle)
+G04 P3 (wait for 3 seconds)
+G0 Z1.5000
+M2 (end program)
