@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Name=launch cnc_mill
+Exec=emc emc2/configs/cnc_mill/cnc_mill.ini
+Type=Application
+Comment=Desktop Launcher for EMC config made by Stepconf
+Name[en_GB]=cnc mill B
+Icon=/usr/share/emc/emc2icon.png

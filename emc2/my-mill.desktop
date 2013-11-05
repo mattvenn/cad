@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Name=launch my-mill
+Exec=emc emc2/configs/my-mill/my-mill.ini
+Type=Application
+Comment=Desktop Launcher for EMC config made by Stepconf
+Icon=/usr/share/emc/emc2icon.png
+Name[en_GB]=cnc router A
