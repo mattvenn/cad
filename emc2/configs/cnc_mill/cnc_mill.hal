@@ -19,8 +19,8 @@ net spindle-cmd <= motion.spindle-speed-out
 net spindle-on <= motion.spindle-on
 
 net xenable => parport.0.pin-01-out
-setp parport.0.pin-03-out-invert 1
-net ydir => parport.0.pin-03-out
+setp parport.0.pin-04-out-invert 1
+net ydir => parport.0.pin-04-out
 net xdir => parport.0.pin-05-out
 net xstep => parport.0.pin-06-out
 setp parport.0.pin-07-out-invert 1
