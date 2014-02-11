@@ -8,7 +8,7 @@ $fs=0.6;
 //fundamentals
 tape_reel_r = 78 / 2;
 tape_reel_h = 30;
-thickness=3;
+thickness=3.03;
 clearance = 0.0; //laser clearance
 
 //plug fit dimensions
@@ -25,8 +25,10 @@ double_wire_space = 5;
 
 include </home/matthew/work/cad/MCAD/boxes.scad>;
 include </home/matthew/work/cad/MCAD/fonts.scad>;
+solder = true;
+height = 100;
 
-projection()
+//projection()
 build_all();
 //test_plugs();
 
@@ -56,7 +58,8 @@ module test_plugs()
 
 module build_all()
 {
-    plugs();
+    if( ! solder)
+        plugs();
     led_board();
 }
 
@@ -86,13 +89,24 @@ module led_board()
     difference()
     {
         board();
-        plug_hole();
-        translate([0,resistor_space,0])
-            plug_hole();
-        translate([plug_width,resistor_space,0])
-            double_wire();
-        translate([-plug_width,resistor_space,0])
-            double_wire();
+
+        //all the holes
+        translate([0,height -1.5* resistor_space,0])
+        {
+            if(! solder)
+                plug_hole();
+            else
+                wire_hole();
+            translate([0,resistor_space,0])
+                if(! solder)
+                    plug_hole();
+                else
+                    wire_hole();
+            translate([plug_width,resistor_space,0])
+                double_wire();
+            translate([-plug_width,resistor_space,0])
+                double_wire();
+        }
         for(i=[0:2])
         {
             translate([i*mobile_wire_r*4+plug_width*1.5,-tape_reel_h/4,0])
@@ -110,8 +124,8 @@ module board()
 {
     union()
     {
-        translate([0,resistor_space/2,0])
-        roundedBox([plug_width*3,resistor_space*2,thickness],4,true);
+        translate([0,height/2,0])
+        roundedBox([plug_width*3,height,thickness],4,true);
         roundedBox([tape_reel_r*2,tape_reel_h,thickness],4,true);
     }
 }
