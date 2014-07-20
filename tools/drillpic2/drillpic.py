@@ -130,6 +130,7 @@ def export():
                 gcode.append('G01 X%.4f Y%.4f Z%.4f' % (x,y,-z))
             last_x = x
 
+    gcode.append( 'G00 X0 Y0 Z%.4f' % float(safez))
     gcode.append( 'M5 M9 M2' )
     #export to file
     with open('gcode.ngc','w') as fh:
