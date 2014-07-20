@@ -10,6 +10,7 @@ from PIL import ImageDraw
 import math
 import Tkinter
 import pickle
+import numpy as np
 
 tk = Tkinter.Tk()
 
@@ -19,7 +20,7 @@ img_width = background_img.size[0]
 img_height = background_img.size[1]
 
 def mm2px(mm):
-    return int((float(img_width)/real_width.get()) * mm)
+    return ((float(img_width)/real_width.get()) * mm)
 def px2mm(px):
     return (float(real_width.get())/img_width) * px
 
@@ -27,6 +28,10 @@ def px2mm(px):
 def avg_region(image,x,y,width):
     x = int(x)
     y = int(y) 
+    width = int(width)
+    #with very small x step, can end up with 0 widths, so:
+    if width == 0:
+        width = 1
     box = ( x-width, y-width, x+width, y+width)
     region = image.crop(box)
     colors = region.getcolors(region.size[0]*region.size[1])
@@ -70,8 +75,8 @@ def update(*args):
     last_y = -1
     last_r = 0
     tan_angle = math.tan((2*math.pi/360)*drill_angle.get())
-    for c in range(0,num_lines.get()):
-        for x in range(0,image.size[0],x_step):
+    for c in np.arange(0,num_lines.get()):
+        for x in np.arange(0,image.size[0],x_step):
             #the main bit
             y = amp.get() * math.sin(x*freq.get()/img_width) + x * pitch.get() + c * y_step + offset.get() + img_height/2 - y_step * num_lines.get() / 2
             avg_color = avg_region(background_img,x,y,x_step/2)
@@ -92,7 +97,7 @@ def update(*args):
                     draw.polygon([(last_x, last_y-last_r_pix), (x, y-r_pix), (x, y+r_pix), (last_x,last_y+last_r_pix)],0)
 
             #save the points for the gcode
-            points.append((px2mm(x),px2mm(y),z))
+            points.append((px2mm(x),px2mm(img_height-y),z))
 
             #history for the line drawing
             last_x = x
@@ -119,7 +124,8 @@ def export():
             #g81 is a simple drill
             gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( x, y, -z, float(safez)))
     else:
-        last_x = 0
+        #ensure the first cut we move to the position before lowering tool
+        last_x = 10000
         for (x,y,z) in points:
             if x < last_x:
                 #lift first
@@ -130,7 +136,8 @@ def export():
                 gcode.append('G01 X%.4f Y%.4f Z%.4f' % (x,y,-z))
             last_x = x
 
-    gcode.append( 'G00 X0 Y0 Z%.4f' % float(safez))
+    gcode.append('G01 Z%.4f' % float(safez))
+    gcode.append( 'G00 X0 Y0')
     gcode.append( 'M5 M9 M2' )
     #export to file
     with open('gcode.ngc','w') as fh:
@@ -188,7 +195,7 @@ c_lockxy = Tkinter.Checkbutton(text='lock x&y', variable=lockxy,command=update)
 c_amp =   Tkinter.Scale(label='amp',from_=0, to=45, orient=Tkinter.VERTICAL,variable=amp,command=update)
 c_freq =  Tkinter.Scale(label='freq',from_=0, to=20, resolution=0.1, orient=Tkinter.VERTICAL,variable=freq,command=update)
 c_pitch = Tkinter.Scale(label='pitch',from_=-1, to=1, resolution=0.1, orient=Tkinter.VERTICAL,variable=pitch,command=update)
-c_xstep = Tkinter.Scale(label='x step',from_=1, to=10, resolution=0.1, orient=Tkinter.VERTICAL,variable=xstep,command=update)
+c_xstep = Tkinter.Scale(label='x step',from_=0.1, to=10, resolution=0.1, orient=Tkinter.VERTICAL,variable=xstep,command=update)
 c_ystep = Tkinter.Scale(label='y step', from_=1, to=10, resolution=0.1, orient=Tkinter.VERTICAL,variable=ystep,command=update)
 c_num_lines = Tkinter.Scale(label='num lines', from_=1, to=100, resolution=1, orient=Tkinter.VERTICAL,variable=num_lines,command=update)
 c_z_range = Tkinter.Scale(label='z range', from_=0, to=5, resolution=0.01, orient=Tkinter.VERTICAL,variable=z_range,command=update)
