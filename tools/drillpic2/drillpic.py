@@ -32,7 +32,18 @@ def avg_region(image,x,y,width):
     #with very small x step, can end up with 0 widths, so:
     if width == 0:
         width = 1
-    box = ( x-width, y-width, x+width, y+width)
+    #bit of a hack this stuff, we should make sure we're averging the same size area for all segments
+    (L,R,T,B) = ( x-width, y-width, x+width, y+width)
+    if L < 0:
+        L = 0
+    if R > img_width:
+        R = img_width
+    if T > img_height:
+        T = img_height
+    if T < 0:
+        T = 0
+    box = (L,R,T,B)
+
     region = image.crop(box)
     colors = region.getcolors(region.size[0]*region.size[1])
     max_occurence, most_present = 0, 0
@@ -80,6 +91,7 @@ def update(*args):
             #the main bit
             y = amp.get() * math.sin(x*freq.get()/img_width) + x * pitch.get() + c * y_step + offset.get() + img_height/2 - y_step * num_lines.get() / 2
             avg_color = avg_region(background_img,x,y,x_step/2)
+
             if invert.get():
                 avg_color = 255 - avg_color
             #avg color is from 0 to 255, we have to map this to z depth
@@ -112,17 +124,17 @@ def update(*args):
 def export():
     gcode = []
     #header
-    safez = 5
-    feedspeed = 10
+    safez = 3
+    feedspeed = 400
     gcode.append( 'G17 G21 G90 G64 P0.003 M3 S3000 M7')
-    gcode.append( 'G00 X0 Y0 Z%.4f' % float(safez) )
+    gcode.append( 'G00 Z%.4f F%d' % (float(safez), feedspeed) )
 
     #points
     points = update()
     if drill.get():
         for (x,y,z) in points:
             #g81 is a simple drill
-            gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f' %( x, y, -z, float(safez)))
+            gcode.append( 'G81 X%.4f Y%.4f Z%.4f R%.4f F%d' %( x, y, -z, float(safez), feedspeed))
     else:
         #ensure the first cut we move to the position before lowering tool
         last_x = 10000
