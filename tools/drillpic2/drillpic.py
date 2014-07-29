@@ -15,9 +15,10 @@ import numpy as np
 tk = Tkinter.Tk()
 
 #the background image
-background_img = Image.open("face.jpg").convert('L')
+background_img = Image.open("image.png").convert('L')
 img_width = background_img.size[0]
 img_height = background_img.size[1]
+print(img_width,img_height)
 
 def mm2px(mm):
     return ((float(img_width)/real_width.get()) * mm)
@@ -33,16 +34,16 @@ def avg_region(image,x,y,width):
     if width == 0:
         width = 1
     #bit of a hack this stuff, we should make sure we're averging the same size area for all segments
-    (L,R,T,B) = ( x-width, y-width, x+width, y+width)
-    if L < 0:
-        L = 0
-    if R > img_width:
-        R = img_width
-    if T > img_height:
-        T = img_height
-    if T < 0:
-        T = 0
-    box = (L,R,T,B)
+    (TL_x,TL_y,BR_x,BR_y) = ( x-width, y-width, x+width, y+width)
+    if TL_x < 0:
+        TL_x = 0
+    if BR_x > img_width:
+        BR_x = img_width
+    if BR_y > img_height:
+        BR_y = img_height
+    if BR_y < 0:
+        BR_y = 0
+    box = (TL_x,TL_y,BR_x,BR_y)
 
     region = image.crop(box)
     colors = region.getcolors(region.size[0]*region.size[1])
@@ -50,6 +51,7 @@ def avg_region(image,x,y,width):
     for c in colors:
         if c[0] > max_occurence:
             (max_occurence, most_present) = c
+
     return most_present
 
 
