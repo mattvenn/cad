@@ -8,6 +8,16 @@ loadrt hal_parport cfg="0x378 out  "
 setp parport.0.reset-time 5000
 loadrt stepgen step_type=0,0,0
 
+loadrt pwmgen output_type=0
+addf pwmgen.update servo-thread
+addf pwmgen.make-pulses base-thread
+net spindle-speed-cmd motion.spindle-speed-out => pwmgen.0.value
+net spindle-on motion.spindle-on => pwmgen.0.enable parport.0.pin-08-out
+#net spindle-enable => parport.0.pin-08-out
+net spindle-pwm pwmgen.0.pwm => parport.0.pin-09-out
+# Set the spindle's top speed in RPM
+setp pwmgen.0.scale 1800
+
 addf parport.0.read base-thread
 addf stepgen.make-pulses base-thread
 addf parport.0.write base-thread
@@ -17,7 +27,6 @@ addf stepgen.capture-position servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf stepgen.update-freq servo-thread
-net spindle-cmd <= motion.spindle-speed-out
 
 net estop-out => parport.0.pin-01-out
 net ystep => parport.0.pin-02-out
