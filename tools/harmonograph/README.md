@@ -17,3 +17,7 @@ This is an attempt to make a computer program that produces similiar patterns wi
     * Linux - sudo pip install PIL
     * [Mac](http://stackoverflow.com/questions/9070074/how-to-install-pil-on-mac-os-x-10-7-2-lion)
     * [Windows](http://stackoverflow.com/a/4579917)
+
+# Todo
+
+* done - add damping?

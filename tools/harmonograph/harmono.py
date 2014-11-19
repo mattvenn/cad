@@ -4,7 +4,16 @@ import math
 import Tkinter
 import pickle
 
+#how long to make all the sliders
 scale_l = 150
+
+#how much to scale the background image to make the lines smoother
+resample = 3
+
+#size of background image
+size = (resample * 1000, resample * 800)
+
+
 class Sine():
     #we store parent so we can call update() when a control is changed
     def __init__(self,number,parent):
@@ -16,6 +25,7 @@ class Sine():
         self.freq = Tkinter.DoubleVar()
         self.amp = Tkinter.DoubleVar()
         self.angle = Tkinter.DoubleVar()
+        self.damp = Tkinter.DoubleVar()
 
         self.load()
 
@@ -27,7 +37,7 @@ class Sine():
         widget.bind('<ButtonRelease>',self.parent.update)
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='f',from_=0, to=2, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.freq,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='f',from_=0, to=1, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.freq,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
         self.controls.append(widget)
 
@@ -40,12 +50,18 @@ class Sine():
        
         self.controls.append(widget)
 
+        widget = Tkinter.Scale(self.frame,label='d',from_=0, to=0.1, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.damp,length=scale_l,showvalue=0)
+        widget.bind('<ButtonRelease>',self.parent.update)
+       
+        self.controls.append(widget)
+
+
     def get_x(self,t):
-        return self.amp.get() * math.sin(t*self.freq.get()+self.phase.get()) * self.angle.get() # math.sin(self.angle.get())
+        return resample * self.amp.get() * math.sin(t*self.freq.get()+self.phase.get()) * self.angle.get() * math.exp(-t*self.damp.get())
 
     
     def get_y(self,t):
-        return self.amp.get() * math.sin(t*self.freq.get()+self.phase.get()) * (1-self.angle.get())# math.cos(self.angle.get())
+        return resample * self.amp.get() * math.sin(t*self.freq.get()+self.phase.get()) * (1-self.angle.get()) * math.exp(-t*self.damp.get())
 
     def get_controls(self):
         for control in self.controls:
@@ -55,6 +71,7 @@ class Sine():
     def save(self):
         config = {
             'amp' : self.amp.get(),
+            'damp' : self.damp.get(),
             'freq' : self.freq.get(),
             'phase' : self.phase.get(),
             'angle' : self.angle.get(),
@@ -70,6 +87,7 @@ class Sine():
                 self.phase.set(config['phase'])
                 self.freq.set(config['freq'])
                 self.amp.set(config['amp'])
+                self.damp.set(config['damp'])
                 self.angle.set(config['angle'])
         except:
             #initialise
@@ -83,7 +101,8 @@ class Frame():
 
     def __init__(self):
         self.tk = Tkinter.Tk()
-        self.size = (1000,700)
+        #this will be halved as we will antialias the lines
+        self.size = size
         #label is where we show the image
         self.bg = Tkinter.Label()
         self.bg.grid(row=1,column=0,columnspan=30,rowspan=30)
@@ -139,6 +158,7 @@ class Frame():
             for sine in self.sines:
                 x += sine.get_x(t)
                 y += sine.get_y(t)
+                #print(x,y)
                 #hack for depth
                 z = abs(self.zsine.get_x(t))
 
@@ -207,11 +227,14 @@ class Frame():
         self.draw = ImageDraw.Draw(self.image)
 
     def update_image(self):
-        tk_image = ImageTk.PhotoImage(self.image)
+        #halve the image size
+        resized_image = self.image.resize((self.size[0]/resample,self.size[1]/resample),resample=Image.ANTIALIAS)
+        tk_image = ImageTk.PhotoImage(resized_image)
         self.bg.configure(image = tk_image)
         self.bg.image = tk_image
+
         #write it out
-        self.image.save("sine.png")
+        resized_image.save("sine.png")
 
 
 frame = Frame()
