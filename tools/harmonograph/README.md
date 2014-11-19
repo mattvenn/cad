@@ -7,6 +7,8 @@ This is an attempt to make a computer program that produces similiar patterns wi
 * allow an extra sine wave for modulating pen width
 * export the path as a GCODE file for engraving with a CNC machine
 
+![sine](sine.png)
+
 # Requirements
 
 * Python
