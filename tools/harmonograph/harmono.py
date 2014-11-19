@@ -119,7 +119,30 @@ class Frame():
         res = Tkinter.Scale(label='res',from_=0.01, to=0.1, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.res,length=scale_l,showvalue=0)
         res.bind('<ButtonRelease>',self.update)
         res.grid(row=0,column=1)
-    
+
+        self.zoom = Tkinter.DoubleVar()
+        zoom = Tkinter.Scale(label='zoom',from_=0.1, to=5, resolution=0.1, orient=Tkinter.VERTICAL,variable=self.zoom,length=scale_l,showvalue=0)
+        zoom.bind('<ButtonRelease>',self.update)
+        zoom.grid(row=0,column=2)
+   
+        export_frame = Tkinter.LabelFrame(text='Export')
+
+        self.real_width = Tkinter.Scale(export_frame,label='width',from_=10, to=500,orient=Tkinter.HORIZONTAL)
+        self.real_width.pack()
+
+        self.min_drill_z = Tkinter.Scale(export_frame,label='min z',from_=1, to=-1,resolution=0.1,orient=Tkinter.HORIZONTAL)
+        self.min_drill_z.pack()
+
+        self.max_drill_z = Tkinter.Scale(export_frame,label='max z',from_=-1, to=-5,resolution=0.1,orient=Tkinter.HORIZONTAL)
+        self.max_drill_z.pack()
+
+        export = Tkinter.Button(export_frame,text="GCODE",command=self.export)
+        export.pack()
+
+        export = Tkinter.Button(export_frame,text="Image",command=self.save_image)
+        export.pack()
+        export_frame.grid(row=0,column=3)
+        
         #load defaults
         self.load()
 
@@ -132,7 +155,7 @@ class Frame():
 
         self.zsine = Sine(5,self)
         #starting column for grid layout
-        col = 2
+        col = 4
         for sine in self.sines + [self.zsine]:
             for c in sine.get_controls():
                 c.grid(row=0,column=col)
@@ -140,15 +163,52 @@ class Frame():
 
         #do one update to start
         self.update()
+
+    def export(self):
+        print(self.min_x,self.max_x,self.min_y,self.max_y,self.max_z)
+        print(self.real_width.get(),self.min_drill_z.get(),self.max_drill_z.get())
+        dim_scale = self.real_width.get() / (self.max_x - self.min_x)
+        if self.max_z == 0:
+            z_scale = 1
+        else:
+            z_scale = (self.max_drill_z.get() - self.min_drill_z.get()) / self.max_z
+        z_min = self.min_drill_z.get()
+
+        print dim_scale
+        print z_scale
+
+        gcode = []
+        #header
+        safez = 3
+        feedspeed = 400
+        gcode.append( 'G17 G21 G90 G64 P0.003 M3 S3000 M7')
+        gcode.append( 'G00 Z%.4f F%d' % (float(safez), feedspeed) )
+
+        #points
+        #ensure the first cut we move to the position before lowering tool
+        (x,y,z) = self.points[0]
+        gcode.append( 'G00 X%.4f Y%.4f' % (x*dim_scale,y*dim_scale))
+        for (x,y,z) in self.points:
+            gcode.append('G01 X%.4f Y%.4f Z%.4f' % (x*dim_scale,y*dim_scale,z*z_scale+z_min))
+
+        gcode.append('G01 Z%.4f' % float(safez))
+        gcode.append( 'G00 X0 Y0')
+        gcode.append( 'M5 M9 M2' )
+        #export to file
+        with open('gcode.ngc','w') as fh:
+            for line in gcode:
+                fh.write("%s\n" % line)
     
     def update(self,*args):
         #print("updated")
         self.new_background()
-        min_y = 1000
-        max_y = -1000
-        min_x = 1000
-        max_x = -1000
-        points = []
+        self.min_x = self.size[0]
+        self.max_x = - self.size[0]
+        self.min_y = self.size[1]
+        self.max_y = - self.size[1]
+        self.max_z = 0
+
+        self.points = []
 
         t = 0
         for step in range(self.length.get()):
@@ -159,29 +219,35 @@ class Frame():
                 x += sine.get_x(t)
                 y += sine.get_y(t)
                 #print(x,y)
-                #hack for depth
-                z = abs(self.zsine.get_x(t) + self.zsine.get_y(t))
+                #hack for depth - need a separate type of sine for the z
+                z = self.zsine.amp.get()  + (self.zsine.get_x(t) / resample + self.zsine.get_y(t) / resample)
 
-            points.append((x,y,z))
+            x = x * self.zoom.get()
+            y = y * self.zoom.get()
+            self.points.append((x,y,z))
 
-            if x > max_x:
-                max_x = x
-            if x < min_x:
-                min_x = x
-            if y > max_y:
-                max_y = y
-            if y < min_y:
-                min_y = y
+            #store min and max data
+            if x > self.max_x:
+                self.max_x = x
+            if x < self.min_x:
+                self.min_x = x
+            if y > self.max_y:
+                self.max_y = y
+            if y < self.min_y:
+                self.min_y = y
+            if z > self.max_z:
+                self.max_z = z
 
-        width = max_x - min_x
-        height = max_y - min_y
+        width = self.max_x - self.min_x
+        height = self.max_y - self.min_y
 
-        x_off = width / 2 + self.size[0] / 2 - max_x
-        y_off = height / 2 + self.size[1] / 2 - max_y
+        x_off = width / 2 + self.size[0] / 2 - self.max_x
+        y_off = height / 2 + self.size[1] / 2 - self.max_y
+
 
         """
-        print min_x,max_x
-        print min_x,min_y
+        print self.min_x,self.max_x
+        print self.min_x,self.min_y
         print max_x,max_y
         print width, height
         print x_off
@@ -189,7 +255,7 @@ class Frame():
         """
 
         last_point = None
-        for point in points:
+        for point in self.points:
             if last_point:
                 self.draw.line([point[0]+x_off,point[1]+y_off,last_point[0]+x_off,last_point[1]+y_off],255,int(point[2]))
             last_point = point
@@ -206,6 +272,7 @@ class Frame():
         config = {
             'length' : self.length.get(),
             'res' : self.res.get(),
+            'zoom' : self.zoom.get(),
             }
         with open('config.pk','w') as fh:
             pickle.dump(config,fh)
@@ -217,10 +284,12 @@ class Frame():
                 config = pickle.load(fh)
                 self.length.set(config['length'])
                 self.res.set(config['res'])
+                self.zoom.set(config['zoom'])
         except:
             #initialise
             self.length.set(100)
             self.res.set(0.1)
+            self.zoom.set(1)
     
     def new_background(self):
         self.image = Image.new("L", self.size, "black")
@@ -233,8 +302,9 @@ class Frame():
         self.bg.configure(image = tk_image)
         self.bg.image = tk_image
 
+    def save_image(self):
         #write it out
-        resized_image.save("sine.png")
+        self.image.save("sine.png")
 
 
 frame = Frame()
