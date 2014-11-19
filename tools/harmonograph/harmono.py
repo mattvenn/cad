@@ -33,24 +33,24 @@ class Sine():
 
         self.controls = []
 
-        widget = Tkinter.Scale(self.frame,label='a',from_=0, to=300, resolution=1, orient=Tkinter.VERTICAL,variable=self.amp,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='a',from_=300, to=0, resolution=1, orient=Tkinter.VERTICAL,variable=self.amp,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='f',from_=0, to=1, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.freq,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='f',from_=1, to=0, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.freq,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='p',from_=0, to=math.pi*2, resolution=0.005, orient=Tkinter.VERTICAL,variable=self.phase,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='p',from_=math.pi*2, to=0, resolution=0.005, orient=Tkinter.VERTICAL,variable=self.phase,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='A',from_=0, to=1, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.angle,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='A',from_=1, to=0, resolution=0.01, orient=Tkinter.VERTICAL,variable=self.angle,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
        
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='d',from_=0, to=0.1, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.damp,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='d',from_=0.1, to=0, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.damp,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
        
         self.controls.append(widget)
@@ -111,7 +111,7 @@ class Frame():
         self.update_image()
         
         self.length = Tkinter.IntVar()
-        length = Tkinter.Scale(label='points',from_=100, to=20000,resolution=100, orient=Tkinter.VERTICAL,variable=self.length,length=scale_l,showvalue=0)
+        length = Tkinter.Scale(label='points',from_=20000, to=100,resolution=100, orient=Tkinter.VERTICAL,variable=self.length,length=scale_l,showvalue=0)
         length.bind('<ButtonRelease>',self.update)
         length.grid(row=0,column=0)
 
@@ -160,7 +160,7 @@ class Frame():
                 y += sine.get_y(t)
                 #print(x,y)
                 #hack for depth
-                z = abs(self.zsine.get_x(t))
+                z = abs(self.zsine.get_x(t) + self.zsine.get_y(t))
 
             points.append((x,y,z))
 

@@ -9,6 +9,29 @@ This is an attempt to make a computer program that produces similiar patterns wi
 
 ![sine](sine.png)
 
+# Controls
+
+All sliders have minimum at the bottom and max at the top.
+
+## Main controls
+
+* points - number of points to calculate
+* res - time resolution - will make curves smoother but more calculations required
+
+## Sine controls
+
+You have 4 sine waves that are added to get the x and y of the curve. The
+controls are:
+
+* a - amplitude
+* f - frequency
+* p - phase
+* A - angle
+* d - damping
+
+The final sine (5) controls the pen thickness (or z depth). Angle (A) has no
+effect.
+
 # Requirements
 
 * Python
@@ -21,3 +44,12 @@ This is an attempt to make a computer program that produces similiar patterns wi
 # Todo
 
 * done - add damping?
+
+# Notes on the code
+
+Scale widgets don't use callback because when they are loaded at the program
+start they then queue events for update() to be drawn lots of times (once for
+each slider).
+
+Image is made larger than you see and then resized with anti aliasing. This is
+because PIL can't draw antialiased lines and I wanted the curves to look good.
