@@ -44,6 +44,12 @@ effect.
 # Todo
 
 * done - add damping?
+* done - global scale for zooming
+* done - define min and max z
+* done - define size for gcode export
+* fix bad zsine stuff
+* ditch binded variables?
+* save export settings
 
 # Notes on the code
 
