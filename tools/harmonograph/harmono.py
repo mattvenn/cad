@@ -50,7 +50,7 @@ class Sine():
        
         self.controls.append(widget)
 
-        widget = Tkinter.Scale(self.frame,label='d',from_=0.1, to=0, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.damp,length=scale_l,showvalue=0)
+        widget = Tkinter.Scale(self.frame,label='d',from_=0.025, to=0, resolution=0.001, orient=Tkinter.VERTICAL,variable=self.damp,length=scale_l,showvalue=0)
         widget.bind('<ButtonRelease>',self.parent.update)
        
         self.controls.append(widget)
@@ -220,7 +220,8 @@ class Frame():
                 y += sine.get_y(t)
                 #print(x,y)
                 #hack for depth - need a separate type of sine for the z
-                z = self.zsine.amp.get()  + (self.zsine.get_x(t) / resample + self.zsine.get_y(t) / resample)
+                z =  (self.zsine.get_x(t) / resample + self.zsine.get_y(t) / resample)
+                z += self.zsine.amp.get()  *math.exp(-t*self.zsine.damp.get())
 
             x = x * self.zoom.get()
             y = y * self.zoom.get()
