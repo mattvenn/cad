@@ -50,6 +50,7 @@ effect.
 * fix bad zsine stuff
 * ditch binded variables?
 * save export settings
+* z damping should -> 0 width rather than A width
 
 # Notes on the code
 
