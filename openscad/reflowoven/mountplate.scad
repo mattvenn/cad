@@ -1,8 +1,9 @@
-base_w = 202.5;
-base_h = 98.6;
+base_w = 202.0;
+base_h = 98.0;
 screw_r = 1.5;
 w = 216;
 h = 113;
+th = 3;
 
 ssr_r = 5/2;
 ssr_w = 57;
