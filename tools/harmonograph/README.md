@@ -2,10 +2,11 @@
 
 A [harmonograph](http://en.wikipedia.org/wiki/Harmonograph) is a simple machine that draws amazing patterns. 
 
-This is an attempt to make a computer program that produces similiar patterns with 2 additional features:
+This is an attempt to make a computer program that produces similiar patterns with additional features:
 
 * allow an extra sine wave for modulating pen width
 * export the path as a GCODE file for engraving with a CNC machine
+* export path as SVG
 
 ![sine](sine.png)
 
