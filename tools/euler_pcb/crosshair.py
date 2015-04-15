@@ -22,7 +22,12 @@ while(1):
         cv2.line(frame,(w/2,0),(w/2,h),255,1)
         # crop it
         cropped = frame[h/4:3*h/4, w/4:3*w/4]
-        cv2.imshow('background',cropped)
+        rows,cols,chans = cropped.shape
+
+        M = cv2.getRotationMatrix2D((cols/2,rows/2),90,1)
+        dst = cv2.warpAffine(cropped,M,(cols,rows))
+
+        cv2.imshow('background',dst)
 
     #if key pressed is 'Esc', exit the loop
     if cv2.waitKey(33)== 27:
