@@ -6,8 +6,8 @@ push fit wooden circuit boards for kids
 $fs=0.6;
 
 //fundamentals
-tape_reel_r = 78 / 2;
-tape_reel_h = 30;
+tape_reel_r = 103 / 2;
+tape_reel_h = 50;
 thickness=3.03;
 clearance = 0.0; //laser clearance
 
@@ -23,8 +23,8 @@ mobile_wire_r = 3/2;
 resistor_space = 20;
 double_wire_space = 5;
 
-include </home/matthew/work/cad/MCAD/boxes.scad>;
-include </home/matthew/work/cad/MCAD/fonts.scad>;
+include </home/mattvenn/cad/MCAD/boxes.scad>;
+//include </home/matthew/work/cad/MCAD/fonts.scad>;
 solder = true;
 height = 100;
 
