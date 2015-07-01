@@ -1,4 +1,5 @@
-th = 3;
+$fn=20;
+th = 2;
 motor_d = 6;
 slot_z = 6; //height above base of the slot
 base_l = 100;
@@ -7,9 +8,9 @@ slider_h = sup_h/2;
 motor_l = 30;
 w = 50;
 //projection()base();
-projection() rotate([90,0,0])support();
+//projection() rotate([90,0,0])support();
 //made_supports();
-//projection() rotate([0,90,0])made_slider();
+projection() rotate([0,90,0])made_slider();
 //made_motor();
 module base()
 {
@@ -55,6 +56,10 @@ module motor()
 	cylinder(r=1.4/2,h=22,center=true);
 	translate([0,0,9.5])
 	cube([3.5,3.5,1.5],center=true);
+	translate([0,5,-motor_d/2+10])
+	rotate([90,0,0])cylinder(r=0.5,h=th*2,center=true);
+	translate([0,5,-motor_d/2+14])
+	rotate([90,0,0])cylinder(r=0.5,h=th*2,center=true);
 
 }
 module slider()
