@@ -24,4 +24,7 @@ A new file [adjust.ngc] is generated. Load this into emc and run!
 * Move the mill until the camera cross hair is on the hole
 * Change the camera offsets in the [cam_offset.py] program.
 
+# Todo
 
+* find a way to make linuxcnc output it's x and y
+* stop camera getting knocked!
