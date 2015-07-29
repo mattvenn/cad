@@ -3,6 +3,7 @@ from PIL import Image, ImageTk, ImageDraw
 import math
 import Tkinter
 import pickle
+from svgsimple import svgsimple
 
 #how long to make all the sliders
 scale_l = 150
@@ -11,7 +12,7 @@ scale_l = 150
 resample = 3
 
 #size of background image
-size = (resample * 1000, resample * 800)
+size = (resample * 1000, resample * 600)
 
 
 class Sine():
@@ -167,6 +168,10 @@ class Frame():
     def export(self):
         print(self.min_x,self.max_x,self.min_y,self.max_y,self.max_z)
         print(self.real_width.get(),self.min_drill_z.get(),self.max_drill_z.get())
+        print(self.x_off,self.y_off)
+        print(self.img_width,self.img_height)
+        svg = svgsimple()
+        svg.create(self.size[0],self.size[1])
         dim_scale = self.real_width.get() / (self.max_x - self.min_x)
         if self.max_z == 0:
             z_scale = 1
@@ -188,17 +193,20 @@ class Frame():
         #ensure the first cut we move to the position before lowering tool
         (x,y,z) = self.points[0]
         gcode.append( 'G00 X%.4f Y%.4f' % (x*dim_scale,y*dim_scale))
+        svg.start_path(x+self.x_off,y+self.y_off)
         for (x,y,z) in self.points:
             gcode.append('G01 X%.4f Y%.4f Z%.4f' % (x*dim_scale,y*dim_scale,z*z_scale+z_min))
+            svg.extend_path(x+self.x_off,y+self.y_off)
 
         gcode.append('G01 Z%.4f' % float(safez))
         gcode.append( 'G00 X0 Y0')
         gcode.append( 'M5 M9 M2' )
+        svg.end_path()
         #export to file
         with open('gcode.ngc','w') as fh:
             for line in gcode:
                 fh.write("%s\n" % line)
-    
+        svg.save('harmono.svg') 
     def update(self,*args):
         #print("updated")
         self.new_background()
@@ -239,11 +247,15 @@ class Frame():
             if z > self.max_z:
                 self.max_z = z
 
-        width = self.max_x - self.min_x
-        height = self.max_y - self.min_y
+        self.img_width = self.max_x - self.min_x
+        self.img_height = self.max_y - self.min_y
+        width = self.img_width
+        height = self.img_height
 
-        x_off = width / 2 + self.size[0] / 2 - self.max_x
-        y_off = height / 2 + self.size[1] / 2 - self.max_y
+        self.x_off = width / 2 + self.size[0] / 2 - self.max_x
+        self.y_off = height / 2 + self.size[1] / 2 - self.max_y
+        x_off = self.x_off
+        y_off = self.y_off
 
 
         """
