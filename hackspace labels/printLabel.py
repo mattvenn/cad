@@ -138,22 +138,26 @@ def print_label(args,text):
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            description='''program to make laser cuterable labels for bristol hackspace storage boxes.
-
-        defaults sizes are for louvred plastic boxes, override with the --width and --height arguments
+            description='''program to print to zebra label printer.
 
         process a newline separated file in one go with --file argument
 
         requirements
         ------------
 
-        * a good laser cutable font. I recommend this one 'Stencil Gothic JL'
         * an old version of pysvg: http://code.google.com/p/pysvg/downloads/detail?name=pysvg-0.2.1.zip&can=2&q=
         * some python modules that can query ttf fonts:
                 * http://pypi.python.org/pypi/TTFQuery
                 * http://sourceforge.net/projects/fonttools/?source=dlp
         * an up to date version of pstoedit http://www.pstoedit.net/
-        * inkscape''')
+        * inkscape
+
+	printer setup
+	-------------
+
+	* use cups at localhost:631, login as your username and password (make sure in the lpadmin group)
+	* add zebra usb printer, epl2, custom label 50x25mm
+''')
 
     group = argparser.add_mutually_exclusive_group(required=True)
     group.add_argument('--file',
