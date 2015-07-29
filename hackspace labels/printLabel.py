@@ -156,18 +156,15 @@ if __name__ == '__main__':
         * inkscape''')
 
     group = argparser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--text',
-            action='store', dest='text', default=None,
-            help="text to print")
     group.add_argument('--file',
             action='store', dest='file',
             help="file to generate labels from")
+    group.add_argument('text',
+            default=None, nargs='?',
+            help="text to print")
     argparser.add_argument('--font',
             action='store', dest='font', default="Arial Black",
             help="font to use")
-    argparser.add_argument('--columns',
-            action='store', dest='columns', type=int, default=3,
-            help="for sheet printing, number of columns")
     argparser.add_argument('--x_offset',
             action='store', dest='x_offset', type=int, default=0,
             help="positive numbers move text right")
@@ -241,4 +238,3 @@ if __name__ == '__main__':
         labels=list.read().splitlines()
         for label in labels:
             print_label(args,label)
-
