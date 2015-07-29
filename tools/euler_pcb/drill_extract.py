@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
-ngc = "input.ngc"
 import re
 
-def get_gcode_xy(num):
+def get_gcode_xy(num,ngc):
     # linuxcnc is 1 indexed
     hole = int(raw_input("what line in gcode for hole %d: " % num)) - 1
     #hole = 23
@@ -11,7 +10,7 @@ def get_gcode_xy(num):
     with open(ngc) as fh:
         gcodes = fh.readlines()
 
-    m = re.search('X(\d+.\d+) Y(\d+.\d+)', gcodes[hole])
+    m = re.search('X(-?\d+.\d+) Y(-?\d+.\d+)', gcodes[hole])
     if m:
         print(gcodes[hole])
         return(float(m.group(1)), float(m.group(2)))
