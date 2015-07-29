@@ -163,7 +163,7 @@ if __name__ == '__main__':
             action='store', dest='file',
             help="file to generate labels from")
     argparser.add_argument('--font',
-            action='store', dest='font', default="Arial Black",
+            action='store', dest='font', default="DejaVu Sans Condensed",
             help="font to use")
     argparser.add_argument('--columns',
             action='store', dest='columns', type=int, default=3,
