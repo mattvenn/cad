@@ -156,7 +156,7 @@ if __name__ == '__main__':
 	-------------
 
 	* use cups at localhost:631, login as your username and password (make sure in the lpadmin group)
-	* add zebra usb printer, epl2, custom label 50x25mm
+	* add zebra usb printer, epl2, custom label 50x25mm, 203dpi
 ''')
 
     group = argparser.add_mutually_exclusive_group(required=True)
@@ -205,8 +205,8 @@ if __name__ == '__main__':
 
     #defaults
     if args.size == 0:
-        height=25
-        width=50
+        height=32
+        width=38
         fontsize=10 
     elif args.size == 1:
         height=35
