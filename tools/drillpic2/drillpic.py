@@ -10,7 +10,6 @@ from PIL import ImageDraw
 import math
 import Tkinter
 import pickle
-import numpy as np
 
 tk = Tkinter.Tk()
 
@@ -71,6 +70,11 @@ def update_image(image):
     label.configure(image = tk_image)
     label.image = tk_image
 
+def frange(x, y, jump):
+  while x < y:
+      yield x
+      x += jump
+
 #the function that draws the lines
 def update(*args):
     if lockxy.get():
@@ -88,8 +92,8 @@ def update(*args):
     last_y = -1
     last_r = 0
     tan_angle = math.tan((2*math.pi/360)*drill_angle.get())
-    for c in np.arange(0,num_lines.get()):
-        for x in np.arange(0,image.size[0],x_step):
+    for c in range(num_lines.get()):
+        for x in frange(0,image.size[0],x_step):
             #the main bit
             y = amp.get() * math.sin(x*freq.get()/img_width) + x * pitch.get() + c * y_step + offset.get() + img_height/2 - y_step * num_lines.get() / 2
             avg_color = avg_region(background_img,x,y,x_step/2)
@@ -121,7 +125,7 @@ def update(*args):
         last_x = 0
         last_y = 0
     update_image(image)
-    return points
+    return points, image
 
 def export():
     gcode = []
@@ -132,7 +136,7 @@ def export():
     gcode.append( 'G00 Z%.4f F%d' % (float(safez), feedspeed) )
 
     #points
-    points = update()
+    points, image = update()
     if drill.get():
         for (x,y,z) in points:
             #g81 is a simple drill
@@ -157,6 +161,8 @@ def export():
     with open('gcode.ngc','w') as fh:
         for line in gcode:
             fh.write("%s\n" % line)
+    #export image as well
+    image.save("export.png")
 
 #vars for controls
 show_image = Tkinter.IntVar()
